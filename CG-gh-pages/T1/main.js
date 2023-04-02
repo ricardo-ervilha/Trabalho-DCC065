@@ -32,7 +32,6 @@ let plane = createGroundPlaneXZ(20, 20)
 scene.add(plane);
 
 
-
 // Use this to show information onscreen
 let controls = new InfoBox();
   controls.add("Basic Scene");
@@ -42,6 +41,10 @@ let controls = new InfoBox();
   controls.add("* Right button to translate (pan)");
   controls.add("* Scroll to zoom in/out.");
   controls.show();
+
+function turnShovels(){
+    
+}
 
 render();
 function render()
