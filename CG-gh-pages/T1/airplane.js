@@ -1,9 +1,12 @@
 import * as THREE from  'three';
 
+//Adicionar rodinhas no avião.
+
 export class Airplane{
 
-    constructor(){
-        
+    constructor(pin){
+        this.pin = pin    
+        this.mat4 = new THREE.Matrix4();
     }
 
     //Função que constroi um avião, e devolve o avião com as coordenadas na origem.
@@ -35,7 +38,7 @@ export class Airplane{
         shovelGeometry.scale(1,0.25,0.25);
 
         //Semi-esfera da ponta do avião
-        const nozzleGeometry = new THREE.SphereGeometry(0.5, 32, 16, 0, 6.283185307179586, 0, 1.15);
+        const nozzleGeometry = new THREE.SphereGeometry(0.5, 32, 16, 0, 6.283185307179586, 0, 1.2);
 
         //Materiais
         const bodyMaterial = new THREE.MeshBasicMaterial( {color: 0x565656} );
@@ -68,11 +71,14 @@ export class Airplane{
         horizontalTails.position.set(body.position.x, body.position.y-5.5, body.position.z);
         body.add(horizontalTails);
         
-        const pin = new THREE.Mesh(pinGeometry, pinMaterial);
-        pin.position.set(body.position.x, body.position.y+6.5, body.position.z);
+        this.pin = new THREE.Mesh(pinGeometry, pinMaterial);
+        this.pin.position.set(body.position.x, body.position.y+6.5, body.position.z);
+        this.pin.matrixAutoUpdate = false;
+        this.pin.matrix.identity();
+        this.pin.matrix.multiply(this.mat4.makeTranslation(0.0, 6.5, 0.0));
 
         const shovelA = new THREE.Mesh(shovelGeometry, wingsMaterial);
-        shovelA.position.set(pin.position.x+1, body.position.y+0.75, body.position.z)
+        shovelA.position.set(body.position.x+1, body.position.y+0.75, body.position.z)
         const shovelB = new THREE.Mesh(shovelGeometry, wingsMaterial);
         shovelB.position.set(body.position.x-1, body.position.y+0.75, body.position.z)
         const shovelC = new THREE.Mesh(shovelGeometry, wingsMaterial);
@@ -85,14 +91,21 @@ export class Airplane{
         const nozzle = new THREE.Mesh(nozzleGeometry, nozzleMaterial);
         nozzle.position.set(body.position.x, body.position.y+0.75, body.position.z);
 
-        pin.add(shovelA);
-        pin.add(shovelB);
-        pin.add(shovelC);
-        pin.add(shovelD);
-        pin.add(nozzle);
+        this.pin.add(shovelA);
+        this.pin.add(shovelB);
+        this.pin.add(shovelC);
+        this.pin.add(shovelD);
+        this.pin.add(nozzle);
         
-        body.add(pin);
+        body.add(this.pin);
+
+        body.position.y += 4;
 
         return body;
+    }
+
+    
+    turnPin(angle){
+        this.pin.matrix.multiply(this.mat4.makeRotationY(angle));
     }
 }

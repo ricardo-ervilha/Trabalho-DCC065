@@ -6,7 +6,8 @@ import {initRenderer,
         setDefaultMaterial,
         InfoBox,
         onWindowResize,
-        createGroundPlaneXZ} from "../libs/util/util.js";
+        createGroundPlaneXZ, 
+        createGroundPlaneWired} from "../libs/util/util.js";
 import { Airplane } from './airplane.js';
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
@@ -17,7 +18,7 @@ material = setDefaultMaterial(); // create a basic material
 light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
 orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
 
-let aviao = new Airplane();
+let aviao = new Airplane(null);
 scene.add(aviao.buildAirPlane());
 
 // Listen window size changes
@@ -28,7 +29,7 @@ let axesHelper = new THREE.AxesHelper( 12 );
 scene.add( axesHelper );
 
 // create the ground plane
-let plane = createGroundPlaneXZ(20, 20)
+let plane = createGroundPlaneWired(50, 50)
 scene.add(plane);
 
 
@@ -42,13 +43,10 @@ let controls = new InfoBox();
   controls.add("* Scroll to zoom in/out.");
   controls.show();
 
-function turnShovels(){
-    
-}
-
 render();
 function render()
 {
   requestAnimationFrame(render);
   renderer.render(scene, camera) // Render scene
+  aviao.turnPin(THREE.MathUtils.degToRad(5));
 }
