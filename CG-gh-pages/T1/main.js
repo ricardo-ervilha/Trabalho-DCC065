@@ -9,6 +9,8 @@ import {initRenderer,
         createGroundPlaneXZ, 
         createGroundPlaneWired} from "../libs/util/util.js";
 import { Airplane } from './airplane.js';
+import {Tree} from './tree.js'
+import {Environment} from './environment.js'
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
 scene = new THREE.Scene();    // Create main scene
@@ -29,7 +31,8 @@ let axesHelper = new THREE.AxesHelper( 12 );
 scene.add( axesHelper );
 
 // create the ground plane
-let plane = createGroundPlaneWired(50, 50)
+let ambiente = new Environment(100, 100);
+let plane = ambiente.buildPlan();
 scene.add(plane);
 
 

@@ -99,7 +99,8 @@ export class Airplane{
         
         body.add(this.pin);
 
-        body.position.y += 4;
+        body.position.y += 30;
+        body.position.z -= 20;
 
         return body;
     }
