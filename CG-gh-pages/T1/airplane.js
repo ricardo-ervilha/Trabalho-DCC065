@@ -102,7 +102,11 @@ export class Airplane{
         body.position.y += 30;
         body.position.z -= 20;
 
-        return body;
+      this.body = body;
+    }
+
+    getBody(){
+      return this.body;
     }
 
     
