@@ -1,5 +1,10 @@
 import * as THREE from 'three';
 
+/*
+Responsável por controlar a posição da câmera e seu movimento, sempre para frente. 
+É necessário implementar a movimentação da câmera em relação ao avião e aos planos retangulares do ambiente.
+*/
+
 export class Camera {
     constructor() {
         console.log("Construindo camera...")

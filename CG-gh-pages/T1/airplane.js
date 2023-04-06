@@ -1,11 +1,12 @@
 import * as THREE from  'three';
 
 //Adicionar rodinhas no avião.
+//Classe responsável por modelar o avião e sua movimentação.
 
 export class Airplane{
 
-    constructor(pin){
-        this.pin = pin    
+    constructor(){
+        this.pin = undefined;
         this.mat4 = new THREE.Matrix4();
     }
 
@@ -100,7 +101,7 @@ export class Airplane{
         body.add(this.pin);
 
         body.position.y += 30;
-        body.position.z -= 20;
+        body.position.z -= 150;
 
       this.body = body;
     }

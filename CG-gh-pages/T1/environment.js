@@ -2,8 +2,13 @@ import * as THREE from  'three';
 import { createGroundPlaneWired } from "../libs/util/util.js";
 import { Tree } from './tree.js';
 
+/*
+Classe responsável por modelar o ambiente e seus planos retangulares com um 
+número aleatório de árvores compostas.
+*/
 export class Environment{
     constructor(height, width){
+        console.log('Construindo ambiente...');
         this.plane = createGroundPlaneWired(width, height);
         this.vetPositions = [];
     }
@@ -16,8 +21,7 @@ export class Environment{
         let dist;
         for(var i = 0; i < this.vetPositions.length; i++){
             dist = Math.sqrt(Math.pow(x-this.vetPositions[i][0], 2) + Math.pow(y-this.vetPositions[i][1], 2));
-            console.log(`Valor de dist: ${dist}`);
-            if(dist <= 12)
+            if(dist <= 14)
                 return true;
         }
         return false;
@@ -39,7 +43,6 @@ export class Environment{
             this.plane.add(tree);
             let element = [x, y];
             this.vetPositions.push(element);
-            console.log(this.vetPositions);
         }
 
         return this.plane;

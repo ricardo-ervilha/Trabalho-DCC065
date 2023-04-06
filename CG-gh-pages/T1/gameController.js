@@ -10,6 +10,13 @@ import {
 import { Airplane } from "./airplane.js";
 import { Environment } from "./environment.js";
 import { Camera } from "./camera.js";
+import { Queue } from './queue.js'
+
+
+/*
+Description: Responsável por controlar o jogo em si. 
+É a classe principal que iniciará o jogo e coordenará as outras classes.
+*/
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
 scene = new THREE.Scene(); // Create main scene
@@ -23,7 +30,7 @@ material = setDefaultMaterial(); // create a basic material
 light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
 orbit = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
 
-let aviao = new Airplane(null);
+let aviao = new Airplane();
 aviao.buildAirPlane();
 scene.add(aviao.getBody());
 
@@ -34,10 +41,19 @@ window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)},
 let axesHelper = new THREE.AxesHelper(12);
 scene.add(axesHelper);
 
+
 // create the ground plane
-let ambiente = new Environment(100, 100);
-let plane = ambiente.buildPlan();
-scene.add(plane);
+let queue = new Queue(); 
+for(var i = -1; i < 2; i++){
+  let ambiente = new Environment(100, 100);
+  let plane = ambiente.buildPlan();
+  plane.position.z += i * 100;
+  queue.enqueue(plane);
+} 
+scene.add(queue.dequeue());
+scene.add(queue.dequeue());
+scene.add(queue.dequeue());
+
 
 // Use this to show information onscreen
 let controls = new InfoBox();
