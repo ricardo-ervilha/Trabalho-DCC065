@@ -19,6 +19,20 @@ Description: Responsável por controlar o jogo em si.
 */
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
+let aviao = new Airplane();
+let holder = new THREE.Object3D();
+const lerpConfig = {
+  destination: new THREE.Vector3(0.0, 0.0, 0.0),
+  alpha: 1
+}
+
+let mouseX = 0;
+let mouseY = 0;
+let targetX = 0;
+let targetY = 0;
+const windowHalfX = window.innerWidth / 2;
+const windowHalfY = window.innerHeight / 2;
+
 scene = new THREE.Scene(); // Create main scene
 renderer = initRenderer(); // Init a basic renderer
 
@@ -29,9 +43,6 @@ camera = camera.buildCamera();
 material = setDefaultMaterial(); // create a basic material
 light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
 orbit = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
-
-let aviao = new Airplane();
-let holder = new THREE.Object3D();
 
 aviao.buildAirPlane();
 holder.add(camera);
@@ -82,12 +93,6 @@ controls.add("* Scroll to zoom in/out.");
 controls.show();
 
 // Mouse variables
-let mouseX = 0;
-let mouseY = 0;
-let targetX = 0;
-let targetY = 0;
-const windowHalfX = window.innerWidth / 2;
-const windowHalfY = window.innerHeight / 2;
 document.addEventListener("mousemove", onDocumentMouseMove);
 
 function movementPlane(){
@@ -105,29 +110,41 @@ function movementPlane(){
   }
 }
 
-
-render();
-function render() {
-  requestAnimationFrame(render);
-  renderer.render(scene, camera); // Render scene
-  aviao.turnPin(THREE.MathUtils.degToRad(5));
-  mouseRotation();
-  movementPlane();
-}
-
 function mouseRotation() {
   targetX = mouseX * 0.001;
   targetY = mouseY * 0.001;
   if (aviao.getBody()) {
     aviao.getBody().rotation.y += 0.05 * (targetX - aviao.getBody().rotation.y);
     //aviao.getBody().rotation.x += (0.05 * (targetY - aviao.getBody().rotation.x));
-    holder.translateX(-targetX*2)
-    holder.translateY(-targetY*2)
+    //holder.translateX(-targetX*2)
+    //holder.translateY(-targetY*2)
     //holder.translateZ(0.5)
+
+    let mx = lerpConfig.destination.x + (-targetX);
+    let my = lerpConfig.destination.y + (-targetY);
+
+    mx = Math.max(-ambiente.width/2, Math.min(50, mx));
+    my = Math.max(-15, Math.min(75, my));
+
+    lerpConfig.destination.x = mx;
+    lerpConfig.destination.y = my;
+    
+    holder.position.lerp(lerpConfig.destination, lerpConfig.alpha);
   }
 }
 
 function onDocumentMouseMove(event) {
   mouseX = event.clientX - windowHalfX;
   mouseY = event.clientY - windowHalfY;
+}
+
+
+render();
+function render() {
+  
+  aviao.turnPin(THREE.MathUtils.degToRad(5));
+  mouseRotation();
+  movementPlane();
+  requestAnimationFrame(render);
+  renderer.render(scene, camera); // Render scene
 }

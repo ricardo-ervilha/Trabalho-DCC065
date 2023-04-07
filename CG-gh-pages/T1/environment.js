@@ -8,6 +8,8 @@ número aleatório de árvores compostas.
 */
 export class Environment{
     constructor(height, width){
+        this.height = height;
+        this.width = width;
         console.log('Construindo ambiente...');
         this.plane = createGroundPlaneWired(width, height);
         this.vetPositions = [];

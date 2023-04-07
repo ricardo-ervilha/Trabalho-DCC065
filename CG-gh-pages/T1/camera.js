@@ -24,7 +24,7 @@ export class Camera {
         let aspect = w / h;
         let near = 0.1;
         let far = 1000;
-        let position = new THREE.Vector3(0, 100, -300);
+        let position = new THREE.Vector3(0, 50, -150);
         let lookat = new THREE.Vector3(0, 30, -150);
         let up = new THREE.Vector3(0, 1, 0);
 
