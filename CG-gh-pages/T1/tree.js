@@ -10,7 +10,7 @@ export class Tree{
         const topGeometry = new THREE.ConeGeometry( 6, 6, 32 );
 
         const foundationMaterial = new THREE.MeshBasicMaterial({color: 0x8b4513});
-        const topMaterial = new THREE.MeshBasicMaterial({color: 0x008000});
+        const topMaterial = new THREE.MeshBasicMaterial({color: Math.random() * 0xffffff});
 
         const foundation = new THREE.Mesh(foundationGeometry, foundationMaterial);
         foundation.position.y += 2.5;

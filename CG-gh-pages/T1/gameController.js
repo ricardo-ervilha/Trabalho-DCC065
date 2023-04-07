@@ -42,18 +42,30 @@ let axesHelper = new THREE.AxesHelper(12);
 scene.add(axesHelper);
 
 
-// create the ground plane
+// create the wireframe plane
 let queue = new Queue(); 
-for(var i = -1; i < 2; i++){
-  let ambiente = new Environment(100, 100);
-  let plane = ambiente.buildPlan();
-  plane.position.z += i * 100;
-  queue.enqueue(plane);
-} 
-scene.add(queue.dequeue());
-scene.add(queue.dequeue());
-scene.add(queue.dequeue());
+let ambiente;
+for(var i = 0; i < 4; i++){
+  ambiente = new Environment(100, 100);
+  ambiente.buildPlan();
+  queue.enqueue(ambiente);
+}
 
+let currentPlanesRendered = [];
+for(var i = 0; i <= 1; i++){  
+  if(i == 0)
+    currentPlanesRendered.push(addPlaneScene(50));
+  else
+    currentPlanesRendered.push(addPlaneScene(50 + (i*100)));
+}
+
+function addPlaneScene(position){
+  let plan = queue.dequeue();
+  plan.getEnvironment().position.z = position;
+  scene.add(plan.getEnvironment());
+  queue.enqueue(plan);
+  return plan;
+}
 
 // Use this to show information onscreen
 let controls = new InfoBox();
@@ -74,12 +86,29 @@ const windowHalfX = window.innerWidth / 2;
 const windowHalfY = window.innerHeight / 2;
 document.addEventListener("mousemove", onDocumentMouseMove);
 
+function movementPlane(){
+  if(currentPlanesRendered[0].getEnvironment().position.z + 50 >= aviao.getBody().position.z){
+    for(var i = 0; i <=1; i++){
+      currentPlanesRendered[i].move();
+    }
+  }else{
+    scene.remove(currentPlanesRendered[0].getEnvironment());
+    let plan = addPlaneScene(150);
+    for(var i = 1; i < 2; i++){
+      currentPlanesRendered[i-1] = currentPlanesRendered[i];
+    }
+    currentPlanesRendered[currentPlanesRendered.length - 1] = plan;
+  }
+}
+
+
 render();
 function render() {
   requestAnimationFrame(render);
   renderer.render(scene, camera); // Render scene
   aviao.turnPin(THREE.MathUtils.degToRad(5));
   mouseRotation();
+  movementPlane();
 }
 
 function mouseRotation() {

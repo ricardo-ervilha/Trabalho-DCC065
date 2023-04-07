@@ -28,9 +28,10 @@ export class Environment{
     }
 
     buildPlan(){
+        let numTrees = 3//this.getRandomArbitrary(8, 18);
         let treeInstance = new Tree();
         let x, y;
-        for(var i = 0; i < 15; i++){
+        for(var i = 0; i < numTrees; i++){
             let tree = treeInstance.buildTree();
             tree.rotateX(THREE.MathUtils.degToRad(90));
             x = this.getRandomArbitrary(-48, 48);
@@ -44,7 +45,13 @@ export class Environment{
             let element = [x, y];
             this.vetPositions.push(element);
         }
+    }
 
+    getEnvironment(){
         return this.plane;
+    }
+
+    move(){
+        this.plane.position.z -= 0.8;
     }
 }

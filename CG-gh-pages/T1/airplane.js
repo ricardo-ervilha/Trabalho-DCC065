@@ -101,7 +101,7 @@ export class Airplane{
         body.add(this.pin);
 
         body.position.y += 30;
-        body.position.z -= 150;
+        // body.position.z -= 50;
 
       this.body = body;
     }
@@ -110,7 +110,10 @@ export class Airplane{
       return this.body;
     }
 
-    
+    move(speed){
+        this.body.position.z += speed;
+    }
+
     turnPin(angle){
         this.pin.matrix.multiply(this.mat4.makeRotationY(angle));
     }
