@@ -31,8 +31,12 @@ light = initDefaultBasicLight(scene); // Create a basic light to illuminate the 
 orbit = new OrbitControls(camera, renderer.domElement); // Enable mouse rotation, pan, zoom etc.
 
 let aviao = new Airplane();
+let holder = new THREE.Object3D();
+
 aviao.buildAirPlane();
-scene.add(aviao.getBody());
+holder.add(camera);
+holder.add(aviao.getBody());
+scene.add(holder);
 
 // Listen window size changes
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
@@ -117,6 +121,9 @@ function mouseRotation() {
   if (aviao.getBody()) {
     aviao.getBody().rotation.y += 0.05 * (targetX - aviao.getBody().rotation.y);
     //aviao.getBody().rotation.x += (0.05 * (targetY - aviao.getBody().rotation.x));
+    holder.translateX(-targetX*2)
+    holder.translateY(-targetY*2)
+    //holder.translateZ(0.5)
   }
 }
 

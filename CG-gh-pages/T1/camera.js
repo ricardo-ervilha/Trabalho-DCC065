@@ -3,6 +3,11 @@ import * as THREE from 'three';
 /*
 Responsável por controlar a posição da câmera e seu movimento, sempre para frente. 
 É necessário implementar a movimentação da câmera em relação ao avião e aos planos retangulares do ambiente.
+
+    TODO:
+ - Criar um Object3D
+ - Fixar a camera, avião e todos os objetos nesse objeto
+ - Fazer o movimento de translação do avião no plano xy conforme mexe o mouse
 */
 
 export class Camera {
@@ -19,8 +24,8 @@ export class Camera {
         let aspect = w / h;
         let near = 0.1;
         let far = 1000;
-        let position = new THREE.Vector3(0, 100, -100);
-        let lookat = new THREE.Vector3(0, 0, 0);
+        let position = new THREE.Vector3(0, 100, -300);
+        let lookat = new THREE.Vector3(0, 30, -150);
         let up = new THREE.Vector3(0, 1, 0);
 
         // Create perspective camera
