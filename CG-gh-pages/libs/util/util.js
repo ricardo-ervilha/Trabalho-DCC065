@@ -513,7 +513,7 @@ export function createGroundPlane(width, height, widthSegments = 10, heightSegme
  * Create a ground plane that has a grid over it
  */
 export function createGroundPlaneWired(width, height, widthSegments = 10, heightSegments = 10, lineWidth = 3, gcolor = null, wcolor = null) {
-   if (!gcolor) gcolor = "rgb(60, 30, 150)";
+   if (!gcolor) gcolor = "rgb(0, 204, 0)";
    if (!wcolor) wcolor = "rgb(150, 150, 150)"
 
    //---------------------------------------------------------------------------------------

@@ -65,7 +65,7 @@ scene.add(axesHelper);
 let queue = new Queue(); 
 let ambiente;
 for(var i = 0; i < numAmbientes; i++){
-  ambiente = new Environment(100, 100);
+  ambiente = new Environment(100, 200);
   ambiente.buildPlan();
   queue.enqueue(ambiente);
 }
@@ -90,12 +90,23 @@ function addPlaneScene(position){
 function controlsOpacity(){
   for(var i = 0; i < numPlanos; i++){
     let env = queue.dequeue(); 
+    if(env.getEnvironment().position.z >= 600){
+      env.getEnvironment().material.opacity = 0;
+    }else if(env.getEnvironment().position.z >= 500 && env.getEnvironment().position.z < 600){
+      env.getEnvironment().material.opacity = (1 + (500 - (env.getEnvironment().position.z)) / 100.0);
+    }else{
+      env.getEnvironment().material.opacity = 1;
+    }
     for(var j = 0; j < env.trees.length; j++)
     {    
-        if(env.trees[j].position.z >= 200){
-            env.trees[j].opacity = 0;
+        console.log('Epsecial: ' + env.getEnvironment().position.z);
+        console.log(env.trees[j].getFoundation().position.x + " " + (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z) + " " + env.trees[j].getFoundation().position.z);
+        if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 600){
+            env.trees[j].setOpacity(0);
+        }else if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 450 && env.trees[j].getFoundation().position.y + env.getEnvironment().position.z < 600){
+          env.trees[j].setOpacity(1 + (450 - (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z)) / 150.0);
         }else{
-          env.trees[j].opacity = 1 - env.trees[j].position.z / 200.0;
+          env.trees[j].setOpacity(1);
         }
     }
     queue.enqueue(env);
@@ -134,7 +145,7 @@ function mouseRotation() {
   targetX = mouseX * 0.001;
   targetY = mouseY * 0.001;
   if (aviao.getBody()) {
-    aviao.getBody().rotation.y += 0.05 * (targetX - aviao.getBody().rotation.y);
+    aviao.getBody().rotation.y += 0.15 * (targetX - aviao.getBody().rotation.y);
     //aviao.getBody().rotation.x += (0.05 * (targetY - aviao.getBody().rotation.x));
 
     // ---------------------- Movimetnação usando lerp ----------------------
@@ -178,7 +189,6 @@ function onDocumentMouseMove(event) {
 
 render();
 function render() {
-  
   aviao.turnPin(THREE.MathUtils.degToRad(5));
   mouseRotation();
   movementPlane();

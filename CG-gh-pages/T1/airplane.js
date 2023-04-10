@@ -1,4 +1,11 @@
 import * as THREE from  'three';
+import {
+    initRenderer,
+    initDefaultBasicLight,
+    setDefaultMaterial,
+    InfoBox,
+    onWindowResize,
+} from "../libs/util/util.js";
 
 //Adicionar rodinhas no avião.
 //Classe responsável por modelar o avião e sua movimentação.
@@ -42,12 +49,12 @@ export class Airplane{
         const nozzleGeometry = new THREE.SphereGeometry(0.5, 32, 16, 0, 6.283185307179586, 0, 1.2);
 
         //Materiais
-        const bodyMaterial = new THREE.MeshBasicMaterial( {color: 0x565656} );
-        const wingsMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00});
-        const cabinMaterial = new THREE.MeshBasicMaterial( {color: 0xcdcdcd});
-        const tailsMaterial = new THREE.MeshBasicMaterial( {color: 0xdcdcdc});
-        const pinMaterial = new THREE.MeshBasicMaterial( {color: 0x7d7a7a});
-        const nozzleMaterial = new THREE.MeshBasicMaterial( {color: 0xFF0000});
+        const bodyMaterial = setDefaultMaterial(  0x565656 );
+        const wingsMaterial = setDefaultMaterial( 0xffff00);
+        const cabinMaterial = setDefaultMaterial( 0xcdcdcd);
+        const tailsMaterial = setDefaultMaterial( 0xdcdcdc);
+        const pinMaterial = setDefaultMaterial( 0x7d7a7a);
+        const nozzleMaterial = setDefaultMaterial( 0xFF0000);
 
         //Criação dos objetos
         const body = new THREE.Mesh(bodyGeometry, bodyMaterial);

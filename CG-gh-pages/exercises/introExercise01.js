@@ -7,12 +7,13 @@ import {initRenderer,
         InfoBox,
         onWindowResize,
         createGroundPlaneXZ} from "../libs/util/util.js";
+import { MeshBasicMaterial } from '../build/three.module.js';
 
 let scene, renderer, camera, material, light, orbit;; // Initial variables
 scene = new THREE.Scene();    // Create main scene
 renderer = initRenderer();    // Init a basic renderer
 camera = initCamera(new THREE.Vector3(0, 15, 30)); // Init camera in this position
-material = setDefaultMaterial(); // create a basic material
+material = new MeshBasicMaterial({transparent: true, opacity: 1}); // create a basic material
 light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
 orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
 
@@ -30,6 +31,7 @@ scene.add(plane);
 // create a cube
 let cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
 let cube = new THREE.Mesh(cubeGeometry, material);
+cube.material.opacity = 0.5;
 // position the cube
 cube.position.set(0.0, 2.0, 0.0);
 // add the cube to the scene
