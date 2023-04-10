@@ -24,7 +24,7 @@ export class Camera {
         let aspect = w / h;
         let near = 0.1;
         let far = 1000;
-        let position = new THREE.Vector3(0, 50, -150);
+        let position = new THREE.Vector3(0,50, -100);
         let lookat = new THREE.Vector3(0, 30, -150);
         let up = new THREE.Vector3(0, 1, 0);
 
@@ -44,13 +44,12 @@ export class Camera {
     movimentar(camPos){
 
         //decrementar o camera.position em z a uma certa taxa
-        this.camera.position.copy(camPos);
+        //this.camera.position.copy(camPos);
 
 
         //fixar o lookAt no avião???
 
-        this.camera.lookAt = camLook;
-
+        //this.camera.lookAt = camLook;
     }
 
 }
