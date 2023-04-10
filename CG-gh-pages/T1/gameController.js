@@ -12,7 +12,8 @@ import { Environment } from "./environment.js";
 import { Camera } from "./camera.js";
 import { Queue } from './queue.js'
 
-
+const numPlanos = 10;
+const numAmbientes = 30;
 /*
 Description: Responsável por controlar o jogo em si. 
 É a classe principal que iniciará o jogo e coordenará as outras classes.
@@ -60,14 +61,14 @@ scene.add(axesHelper);
 // create the wireframe plane
 let queue = new Queue(); 
 let ambiente;
-for(var i = 0; i < 4; i++){
+for(var i = 0; i < numAmbientes; i++){
   ambiente = new Environment(100, 100);
   ambiente.buildPlan();
   queue.enqueue(ambiente);
 }
 
 let currentPlanesRendered = [];
-for(var i = 0; i <= 1; i++){  
+for(var i = 0; i <= numPlanos - 1; i++){  
   if(i == 0)
     currentPlanesRendered.push(addPlaneScene(50));
   else
@@ -80,6 +81,22 @@ function addPlaneScene(position){
   scene.add(plan.getEnvironment());
   queue.enqueue(plan);
   return plan;
+}
+
+
+function controlsOpacity(){
+  for(var i = 0; i < numPlanos; i++){
+    let env = queue.dequeue(); 
+    for(var j = 0; j < env.trees.length; j++)
+    {    
+        if(env.trees[j].position.z >= 200){
+            env.trees[j].opacity = 0;
+        }else{
+          env.trees[j].opacity = 1 - env.trees[j].position.z / 200.0;
+        }
+    }
+    queue.enqueue(env);
+  }
 }
 
 // Use this to show information onscreen
@@ -97,13 +114,13 @@ document.addEventListener("mousemove", onDocumentMouseMove);
 
 function movementPlane(){
   if(currentPlanesRendered[0].getEnvironment().position.z + 50 >= aviao.getBody().position.z){
-    for(var i = 0; i <=1; i++){
+    for(var i = 0; i <= numPlanos-1; i++){
       currentPlanesRendered[i].move();
     }
   }else{
     scene.remove(currentPlanesRendered[0].getEnvironment());
-    let plan = addPlaneScene(150);
-    for(var i = 1; i < 2; i++){
+    let plan = addPlaneScene(50 + (numPlanos - 1)*100);
+    for(var i = 1; i < numPlanos; i++){
       currentPlanesRendered[i-1] = currentPlanesRendered[i];
     }
     currentPlanesRendered[currentPlanesRendered.length - 1] = plan;
@@ -145,6 +162,7 @@ function render() {
   aviao.turnPin(THREE.MathUtils.degToRad(5));
   mouseRotation();
   movementPlane();
+  controlsOpacity();
   requestAnimationFrame(render);
   renderer.render(scene, camera); // Render scene
 }

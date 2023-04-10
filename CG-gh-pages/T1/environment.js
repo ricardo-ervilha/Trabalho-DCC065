@@ -13,6 +13,7 @@ export class Environment{
         console.log('Construindo ambiente...');
         this.plane = createGroundPlaneWired(width, height);
         this.vetPositions = [];
+        this.trees = [];
     }
 
     getRandomArbitrary(min, max) {
@@ -30,11 +31,12 @@ export class Environment{
     }
 
     buildPlan(){
-        let numTrees = 3//this.getRandomArbitrary(8, 18);
+        let numTrees = this.getRandomArbitrary(3, 6);
         let treeInstance = new Tree();
         let x, y;
         for(var i = 0; i < numTrees; i++){
             let tree = treeInstance.buildTree();
+            tree.transparent = true;
             tree.rotateX(THREE.MathUtils.degToRad(90));
             x = this.getRandomArbitrary(-48, 48);
             y = this.getRandomArbitrary(-48, 48);
@@ -46,6 +48,7 @@ export class Environment{
             this.plane.add(tree);
             let element = [x, y];
             this.vetPositions.push(element);
+            this.trees.push(tree);
         }
     }
 
