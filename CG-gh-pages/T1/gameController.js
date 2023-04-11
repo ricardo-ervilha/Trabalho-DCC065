@@ -24,9 +24,9 @@ let aviao = new Airplane();
 let cameraHolder = new THREE.Object3D();
 const lerpConfig = {
   destination: new THREE.Vector3(0.0, 0.0, 0.0),
-  alpha: 1
+  alpha: 0.1
 }
-
+const mouse = new THREE.Vector2();
 let mouseX = 0;
 let mouseY = 0;
 let targetX = 0;
@@ -99,8 +99,8 @@ function controlsOpacity(){
     }
     for(var j = 0; j < env.trees.length; j++)
     {    
-        console.log('Epsecial: ' + env.getEnvironment().position.z);
-        console.log(env.trees[j].getFoundation().position.x + " " + (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z) + " " + env.trees[j].getFoundation().position.z);
+        //console.log('Epsecial: ' + env.getEnvironment().position.z);
+        //console.log(env.trees[j].getFoundation().position.x + " " + (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z) + " " + env.trees[j].getFoundation().position.z);
         if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 600){
             env.trees[j].setOpacity(0);
         }else if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 450 && env.trees[j].getFoundation().position.y + env.getEnvironment().position.z < 600){
@@ -146,28 +146,28 @@ function mouseRotation() {
   targetY = mouseY * 0.001;
   if (aviao.getBody()) {
     aviao.getBody().rotation.y += 0.15 * (targetX - aviao.getBody().rotation.y);
+    aviao.getBody().position.lerp(lerpConfig.destination, lerpConfig.alpha);
     //aviao.getBody().rotation.x += (0.05 * (targetY - aviao.getBody().rotation.x));
 
     // ---------------------- Movimetnação usando lerp ----------------------
-    // let mx = lerpConfig.destination.x + (-targetX);
-    // let my = lerpConfig.destination.y + (-targetY);
+    /*let mx = lerpConfig.destination.x + (-targetX);
+    let my = lerpConfig.destination.y + (-targetY);
 
-    // mx = Math.max(-ambiente.width/2, Math.min(50, mx));
-    // my = Math.max(-15, Math.min(75, my));
+    mx = Math.max(-ambiente.width/2, Math.min(50, mx));
+    my = Math.max(-15, Math.min(75, my));
 
-    // lerpConfig.destination.x = mx;
-    // lerpConfig.destination.y = my;
+    lerpConfig.destination.x = mx;
+    lerpConfig.destination.y = my;
     
-    // cameraHolder.position.lerp(lerpConfig.destination, lerpConfig.alpha);
-    //--------------------------------------------------------------------
-    
-    //console.log(`posição mouse: ${mouseX}, ${mouseY}`)
-    //console.log(`posição camera: ${cameraHolder.position.x}, ${cameraHolder.position.y}`)
+    cameraHolder.position.lerp(lerpConfig.destination, lerpConfig.alpha);
 
-    //cameraHolder.position.set(-mouseX,-mouseY,0);
+    console.log(`posição mouse: ${mouseX}, ${mouseY}`)
+    console.log(`posição camera: ${cameraHolder.position.x}, ${cameraHolder.position.y}`)
+
+    cameraHolder.position.set(-mouseX,-mouseY,0);*/
     
      // ---------------------- Movimetnação usando translate ----------------------
-    let mx = -mouseX*0.01;
+    /*let mx = -mouseX*0.01;
     let my = -mouseY*0.01;
 
     if((cameraHolder.position.x+mx)>=-ambiente.width/2 && (cameraHolder.position.x+mx)<=ambiente.width/2){
@@ -176,7 +176,7 @@ function mouseRotation() {
 
     if((cameraHolder.position.y+my)>=0 && (cameraHolder.position.y+my)<=100){
       cameraHolder.translateY(my);
-    }
+    }*/
     //cameraHolder.translateZ(0.5)
   }
 }
@@ -184,6 +184,18 @@ function mouseRotation() {
 function onDocumentMouseMove(event) {
   mouseX = event.clientX - windowHalfX;
   mouseY = event.clientY - windowHalfY;
+
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+  vector.unproject(camera);
+  var dir = vector.sub(camera.position).normalize();
+  var distance = - camera.position.z / dir.z;
+  var pos = camera.position.clone().add(dir.multiplyScalar(distance));
+
+  lerpConfig.destination.x = pos.x;
+  lerpConfig.destination.y = pos.y;
 }
 
 
