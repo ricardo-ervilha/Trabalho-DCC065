@@ -108,7 +108,6 @@ export class Airplane{
         body.add(this.pin);
 
         body.position.y += 15;
-        // body.position.z -= 50;
 
       this.body = body;
     }

@@ -65,7 +65,7 @@ scene.add(axesHelper);
 let queue = new Queue(); 
 let ambiente;
 for(var i = 0; i < numAmbientes; i++){
-  ambiente = new Environment(100, 200);
+  ambiente = new Environment(100, window.innerWidth);
   ambiente.buildPlan();
   queue.enqueue(ambiente);
 }
@@ -89,22 +89,27 @@ function addPlaneScene(position){
 
 function controlsOpacity(){
   for(var i = 0; i < numPlanos; i++){
+    
     let env = queue.dequeue(); 
-    if(env.getEnvironment().position.z >= 600){
+    
+    if(env.getEnvironment().position.z >= 350){
       env.getEnvironment().material.opacity = 0;
-    }else if(env.getEnvironment().position.z >= 500 && env.getEnvironment().position.z < 600){
-      env.getEnvironment().material.opacity = (1 + (500 - (env.getEnvironment().position.z)) / 100.0);
+      env.getGrid().material.opacity = 0;
+    }else if(env.getEnvironment().position.z >= 325 && env.getEnvironment().position.z < 350){
+      env.getEnvironment().material.opacity = (1 + (325 - (env.getEnvironment().position.z)) / 25.0);
+      env.getGrid().material.opacity = (1 + (300 - (env.getGrid().position.z)) / 50.0);
     }else{
       env.getEnvironment().material.opacity = 1;
+      env.getGrid().material.opacity = 1;
     }
+
     for(var j = 0; j < env.trees.length; j++)
     {    
-        //console.log('Epsecial: ' + env.getEnvironment().position.z);
-        //console.log(env.trees[j].getFoundation().position.x + " " + (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z) + " " + env.trees[j].getFoundation().position.z);
-        if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 600){
+        console.log(env.trees[j].getFoundation().position.x + " " + (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z) + " " + env.trees[j].getFoundation().position.z);
+        if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 350){
             env.trees[j].setOpacity(0);
-        }else if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 450 && env.trees[j].getFoundation().position.y + env.getEnvironment().position.z < 600){
-          env.trees[j].setOpacity(1 + (450 - (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z)) / 150.0);
+        }else if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 310 && env.trees[j].getFoundation().position.y + env.getEnvironment().position.z < 350){
+          env.trees[j].setOpacity(1 + (310 - (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z)) / 40.0);
         }else{
           env.trees[j].setOpacity(1);
         }
@@ -127,13 +132,13 @@ controls.show();
 document.addEventListener("mousemove", onDocumentMouseMove);
 
 function movementPlane(){
-  if(currentPlanesRendered[0].getEnvironment().position.z + 50 >= aviao.getBody().position.z){
+  if(currentPlanesRendered[0].getEnvironment().position.z + 200 >= aviao.getBody().position.z){
     for(var i = 0; i <= numPlanos-1; i++){
       currentPlanesRendered[i].move();
     }
   }else{
     scene.remove(currentPlanesRendered[0].getEnvironment());
-    let plan = addPlaneScene(50 + (numPlanos - 1)*100);
+    let plan = addPlaneScene(-150 + (numPlanos - 1)*100);
     for(var i = 1; i < numPlanos; i++){
       currentPlanesRendered[i-1] = currentPlanesRendered[i];
     }
@@ -195,7 +200,7 @@ function onDocumentMouseMove(event) {
   var pos = camera.position.clone().add(dir.multiplyScalar(distance));
 
   lerpConfig.destination.x = pos.x;
-  if(pos.y>0){
+  if(pos.y>5){
     lerpConfig.destination.y = pos.y;
   }
 }

@@ -527,6 +527,7 @@ export function createGroundPlaneWired(width, height, widthSegments = 10, height
       polygonOffsetUnits: 1
    });
 
+
    // Create the grid object
    let grid = new Grid(width, height, widthSegments, heightSegments, wcolor, lineWidth);
 
@@ -535,7 +536,13 @@ export function createGroundPlaneWired(width, height, widthSegments = 10, height
    plane.rotateX(-Math.PI / 2);
 
    plane.add(grid); // Add the grid to the plane
-   return plane;
+
+   let obj = {
+      plane: plane,
+      grid: grid
+   }
+   
+   return obj;
 }
 
 /**

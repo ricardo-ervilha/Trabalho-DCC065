@@ -11,9 +11,17 @@ export class Environment{
         this.height = height;
         this.width = width;
         console.log('Construindo ambiente...');
-        this.plane = createGroundPlaneWired(width, height);
+        
+        let obj = createGroundPlaneWired(width, height);
+        
+        this.plane = obj.plane;
         this.plane.material.transparent = true;
         this.plane.material.opacity = 0;
+
+        this.grid = obj.grid;
+        this.grid.material.transparent = true;
+        this.grid.material.opacity = 0;
+        
         this.vetPositions = [];
         this.trees = [];
     }
@@ -33,14 +41,14 @@ export class Environment{
     }
 
     buildPlan(){
-        let numTrees = 6;//this.getRandomArbitrary(3, 6);
+        let numTrees = 40;//this.getRandomArbitrary(3, 6);
         let x, y;
         for(var i = 0; i < numTrees; i++){
             let treeInstance = new Tree();
             treeInstance.buildTree();
             let tree = treeInstance.getFoundation();
             tree.rotateX(THREE.MathUtils.degToRad(90));
-            x = this.getRandomArbitrary(-48, 48);
+            x = this.getRandomArbitrary(-window.innerWidth/2, window.innerWidth/2);
             y = this.getRandomArbitrary(-48, 48);
             while(this.verificationDistance(x, y)){
                 x = this.getRandomArbitrary(-100, 100);
@@ -56,6 +64,11 @@ export class Environment{
 
     getEnvironment(){
         return this.plane;
+    }
+
+    getGrid()
+    {
+        return this.grid;
     }
 
     move(){
