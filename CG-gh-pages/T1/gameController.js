@@ -195,7 +195,9 @@ function onDocumentMouseMove(event) {
   var pos = camera.position.clone().add(dir.multiplyScalar(distance));
 
   lerpConfig.destination.x = pos.x;
-  lerpConfig.destination.y = pos.y;
+  if(pos.y>0){
+    lerpConfig.destination.y = pos.y;
+  }
 }
 
 
