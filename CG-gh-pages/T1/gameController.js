@@ -118,16 +118,6 @@ function controlsOpacity(){
   }
 }
 
-// Use this to show information onscreen
-let controls = new InfoBox();
-controls.add("Basic Scene");
-controls.addParagraph();
-controls.add("Use mouse to interact:");
-controls.add("* Left button to rotate");
-controls.add("* Right button to translate (pan)");
-controls.add("* Scroll to zoom in/out.");
-controls.show();
-
 // Mouse variables
 document.addEventListener("mousemove", onDocumentMouseMove);
 
@@ -146,11 +136,21 @@ function movementPlane(){
   }
 }
 var lastMouseMoveTime = 0;
+let targetXOld;
 function mouseRotation() {
+  targetXOld = targetX;
   targetX = mouseX * 0.001;
   targetY = mouseY * 0.001;
   if (aviao.getBody()) {
-    aviao.getBody().rotation.y += 0.15 * (targetX - aviao.getBody().rotation.y);
+    
+    if((targetXOld-targetX)>0){
+      //aviao.getBody().rotation.y += 0.15 * (targetX - aviao.getBody().rotation.y);
+      aviao.getBody().rotation.y = -0.5;
+    }else if((targetXOld-targetX)<0){
+      aviao.getBody().rotation.y = 0.5;
+      //aviao.getBody().rotation.y += -0.15 * (targetX - aviao.getBody().rotation.y);
+    }
+    
     aviao.getBody().position.lerp(lerpConfig.destination, lerpConfig.alpha);
     //aviao.getBody().rotation.x += (0.05 * (targetY - aviao.getBody().rotation.x));
   }
@@ -189,12 +189,22 @@ function onDocumentMouseMove(event) {
   lastMouseMoveTime = Date.now();
 }
 
+function rotateObjectToZero() {
+  var angle = aviao.getBody().rotation.y;
+  var axis = new THREE.Vector3(0, 1, 0);
+
+  if (angle !== 0) {
+      aviao.getBody().rotateOnAxis(axis, -angle);
+  }
+}
+
 render();
 function render() {
   var currentTime = Date.now();
 
   if (currentTime - lastMouseMoveTime > 500) {
-    aviao.getBody().rotation.y  =0;
+    //aviao.getBody().rotation.y += aviao.getBody().rotation.y;
+    rotateObjectToZero();
   }
 
   aviao.turnPin(THREE.MathUtils.degToRad(5));
