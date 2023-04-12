@@ -41,7 +41,7 @@ export class Environment{
     }
 
     buildPlan(){
-        let numTrees = 40;//this.getRandomArbitrary(3, 6);
+        let numTrees = this.getRandomArbitrary(40, 50);
         let x, y;
         for(var i = 0; i < numTrees; i++){
             let treeInstance = new Tree();

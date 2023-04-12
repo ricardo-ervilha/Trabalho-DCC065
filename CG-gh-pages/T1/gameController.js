@@ -143,7 +143,7 @@ function mouseRotation() {
   targetY = mouseY * 0.001;
   if (aviao.getBody()) {
     
-    if(lerpConfig.destination.distanceTo(aviao.getBody().position)>10){
+    if(lerpConfig.destination.distanceTo(aviao.getBody().position)>3.5){
       if((targetXOld-targetX)>0){
         //aviao.getBody().rotation.y += 0.15 * (targetX - aviao.getBody().rotation.y);
         aviao.getBody().rotation.y = -0.5;
@@ -204,7 +204,7 @@ render();
 function render() {
   var currentTime = Date.now();
 
-  if (currentTime - lastMouseMoveTime > 500) {
+  if (currentTime - lastMouseMoveTime > 425) {
     //aviao.getBody().rotation.y += aviao.getBody().rotation.y;
     rotateObjectToZero();
   }
