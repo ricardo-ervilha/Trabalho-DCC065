@@ -105,7 +105,7 @@ function controlsOpacity(){
 
     for(var j = 0; j < env.trees.length; j++)
     {    
-        console.log(env.trees[j].getFoundation().position.x + " " + (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z) + " " + env.trees[j].getFoundation().position.z);
+        //console.log(env.trees[j].getFoundation().position.x + " " + (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z) + " " + env.trees[j].getFoundation().position.z);
         if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 350){
             env.trees[j].setOpacity(0);
         }else if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 310 && env.trees[j].getFoundation().position.y + env.getEnvironment().position.z < 350){
@@ -145,7 +145,7 @@ function movementPlane(){
     currentPlanesRendered[currentPlanesRendered.length - 1] = plan;
   }
 }
-
+var lastMouseMoveTime = 0;
 function mouseRotation() {
   targetX = mouseX * 0.001;
   targetY = mouseY * 0.001;
@@ -153,36 +153,6 @@ function mouseRotation() {
     aviao.getBody().rotation.y += 0.15 * (targetX - aviao.getBody().rotation.y);
     aviao.getBody().position.lerp(lerpConfig.destination, lerpConfig.alpha);
     //aviao.getBody().rotation.x += (0.05 * (targetY - aviao.getBody().rotation.x));
-
-    // ---------------------- Movimetnação usando lerp ----------------------
-    /*let mx = lerpConfig.destination.x + (-targetX);
-    let my = lerpConfig.destination.y + (-targetY);
-
-    mx = Math.max(-ambiente.width/2, Math.min(50, mx));
-    my = Math.max(-15, Math.min(75, my));
-
-    lerpConfig.destination.x = mx;
-    lerpConfig.destination.y = my;
-    
-    cameraHolder.position.lerp(lerpConfig.destination, lerpConfig.alpha);
-
-    console.log(`posição mouse: ${mouseX}, ${mouseY}`)
-    console.log(`posição camera: ${cameraHolder.position.x}, ${cameraHolder.position.y}`)
-
-    cameraHolder.position.set(-mouseX,-mouseY,0);*/
-    
-     // ---------------------- Movimetnação usando translate ----------------------
-    /*let mx = -mouseX*0.01;
-    let my = -mouseY*0.01;
-
-    if((cameraHolder.position.x+mx)>=-ambiente.width/2 && (cameraHolder.position.x+mx)<=ambiente.width/2){
-      cameraHolder.translateX(mx);
-    }
-
-    if((cameraHolder.position.y+my)>=0 && (cameraHolder.position.y+my)<=100){
-      cameraHolder.translateY(my);
-    }*/
-    //cameraHolder.translateZ(0.5)
   }
 }
 
@@ -190,24 +160,43 @@ function onDocumentMouseMove(event) {
   mouseX = event.clientX - windowHalfX;
   mouseY = event.clientY - windowHalfY;
 
+  //normaliza os valores da posição do mouse de modo que fique com valores entre -1 a +1 (NDC - Normalized Device Coordinate)
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
+  //cria um Vector3 com as posições normalizadas (NDC)
   var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+
+  /*
+    converte o vector que está no formato NDC para word space (espaço do mundo)
+  */
   vector.unproject(camera);
-  var dir = vector.sub(camera.position).normalize();
-  var distance = - camera.position.z / dir.z;
-  var pos = camera.position.clone().add(dir.multiplyScalar(distance));
+
+  //vetor direção entre a posição do mouse a posição da camera
+   vector.sub(camera.position).normalize();
+
+  //distancia a ser entre  posição da camera e a posição do clique
+  var distance = - camera.position.z / vector.z;
+
+  //pos posição efetiva do clique
+  var pos = camera.position.clone().add(vector.multiplyScalar(distance));
 
   lerpConfig.destination.x = pos.x;
   if(pos.y>5){
     lerpConfig.destination.y = pos.y;
   }
-}
 
+  lastMouseMoveTime = Date.now();
+}
 
 render();
 function render() {
+  var currentTime = Date.now();
+
+  if (currentTime - lastMouseMoveTime > 500) {
+    aviao.getBody().rotation.y  =0;
+  }
+
   aviao.turnPin(THREE.MathUtils.degToRad(5));
   mouseRotation();
   movementPlane();
