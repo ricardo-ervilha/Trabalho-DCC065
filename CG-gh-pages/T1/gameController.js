@@ -143,12 +143,14 @@ function mouseRotation() {
   targetY = mouseY * 0.001;
   if (aviao.getBody()) {
     
-    if((targetXOld-targetX)>0){
-      //aviao.getBody().rotation.y += 0.15 * (targetX - aviao.getBody().rotation.y);
-      aviao.getBody().rotation.y = -0.5;
-    }else if((targetXOld-targetX)<0){
-      aviao.getBody().rotation.y = 0.5;
-      //aviao.getBody().rotation.y += -0.15 * (targetX - aviao.getBody().rotation.y);
+    if(lerpConfig.destination.distanceTo(aviao.getBody().position)>10){
+      if((targetXOld-targetX)>0){
+        //aviao.getBody().rotation.y += 0.15 * (targetX - aviao.getBody().rotation.y);
+        aviao.getBody().rotation.y = -0.5;
+      }else if((targetXOld-targetX)<0){
+        aviao.getBody().rotation.y = 0.5;
+        //aviao.getBody().rotation.y += -0.15 * (targetX - aviao.getBody().rotation.y);
+      }
     }
     
     aviao.getBody().position.lerp(lerpConfig.destination, lerpConfig.alpha);
