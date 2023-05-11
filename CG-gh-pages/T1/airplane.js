@@ -24,7 +24,7 @@ export class Airplane{
         
         //Asas do avião são uma elipse
         const wingsGeometry = new THREE.SphereGeometry(1, 32, 16);
-        wingsGeometry.scale(7,1,0.5);
+        wingsGeometry.scale(7,2,0.5);
 
         //Cabine do avião é uma semi-esfera
         const cabinGeometry = new THREE.SphereGeometry(2, 64, 32, 0, 6.283185307179586, 0, 1.15);

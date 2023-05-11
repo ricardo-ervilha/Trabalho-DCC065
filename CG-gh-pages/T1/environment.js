@@ -51,7 +51,7 @@ export class Environment{
             x = this.getRandomArbitrary(-window.innerWidth/2, window.innerWidth/2);
             y = this.getRandomArbitrary(-48, 48);
             while(this.verificationDistance(x, y)){
-                x = this.getRandomArbitrary(-100, 100);
+                x = this.getRandomArbitrary(-window.innerWidth/2, window.innerWidth/2);
                 y = this.getRandomArbitrary(-48, 48);
             }
             tree.position.set(x, y, 2.5);

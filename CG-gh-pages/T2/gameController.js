@@ -20,7 +20,71 @@ Description: Responsável por controlar o jogo em si.
 */
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
-let aviao = new Airplane();
+
+buildAirPlane();
+
+//Instancio o loader
+function buildAirPlane(){
+    var loader = new GLTFLoader();
+    var obj;
+    // Carrego o arquivo glb nele
+    loader.load('./airplane.glb', function (gltf) {
+        obj = gltf.scene;
+        obj.visible = true;
+        obj.traverse(function (child) {
+            if (child) {
+                child.castShadow = true;
+            }
+        });
+        obj.traverse(function (node) {
+            if (node.material) node.material.side = THREE.DoubleSide;
+        });
+        var obj = normalizeAndRescale(obj, 5.0);
+        scene.add(obj);
+    });
+}
+
+// function buildTurret()
+// {
+//   var mtlLoader = new MTLLoader( );
+  
+//   mtlLoader.load( './turret.mtl', function ( materials ) {
+//       materials.preload();
+
+//       var objLoader = new OBJLoader( );
+//       objLoader.setMaterials(materials);
+
+//       objLoader.load( "./turret.obj", function ( obj ) {
+         
+//          obj.visible = true;
+//          obj.traverse( function (child)
+//          {
+//             child.castShadow = true;
+//          });
+
+//          obj.traverse( function( node )
+//          {
+//             if( node.material ) node.material.side = THREE.DoubleSide;
+//          });
+
+//          var obj = normalizeAndRescale(obj, 7.0);
+         
+
+//          scene.add ( obj );
+         
+//       });
+//   });
+// }
+
+function normalizeAndRescale(obj, newScale) {
+    var scale = getMaxSize(obj);
+    obj.scale.set(newScale * (1.0 / scale),
+        newScale * (1.0 / scale),
+        newScale * (1.0 / scale));
+    return obj;
+}
+
+
 let cameraHolder = new THREE.Object3D();
 const lerpConfig = {
   destination: new THREE.Vector3(0.0, 0.0, 0.0),
