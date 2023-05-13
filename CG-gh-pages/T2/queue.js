@@ -24,9 +24,9 @@ export class Queue{
     }
 
     //Devolve o primeiro elemento da fila.
-    peek(){
+    peek(i){
         if(!this.is_empty()){
-            return this.items[this.lowestCount];
+            return this.items[i];
         }
         return undefined;
     }

@@ -103,6 +103,6 @@ export class Environment{
 
     //Movimenta a posição do plano
     move(){
-        this.plane.position.z -= velocityPlan;
+        this.plane.position.z += velocityPlan;
     }
 }

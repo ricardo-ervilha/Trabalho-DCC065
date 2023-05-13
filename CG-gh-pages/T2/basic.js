@@ -9,8 +9,10 @@ import {initRenderer,
         createGroundPlaneXZ,
     getMaxSize} from "../libs/util/util.js";
 import {GLTFLoader} from '../build/jsm/loaders/GLTFLoader.js';
-import { airPlaneHeight, scale} from './variables.js';
+import { airPlaneHeight, numPlans, scale} from './variables.js';
 import { Environment } from './environment.js';
+import { MathUtils } from '../build/three.module.js';
+import {Queue} from './queue.js';
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
 scene = new THREE.Scene();    // Create main scene
@@ -27,17 +29,14 @@ window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)},
 let axesHelper = new THREE.AxesHelper( 12 );
 scene.add( axesHelper );
 
-// Cria o avião
-buildAirPlane();
-
-// Cria os planos
-
+var queue = new Queue();
 // O oitavo plano será o que estará na parte de reposição.
-for(var i = 0; i < 8; i++){
+for(var i = 0; i < numPlans; i++){
     let environment = new Environment(100, 100);
 
     let plane = environment.getPlan();
-    plane.position.z = -550 + i * 100;
+    //O primeiro plano será renderizado SEMPRE na posição 150 em z.
+    plane.position.z = 150 - 100 * i;
     plane.material.opacity = 1;
 
     let grid = environment.getGrid();
@@ -45,31 +44,51 @@ for(var i = 0; i < 8; i++){
 
     scene.add(plane);
 
+    queue.enqueue(environment);
 }
 
-//Carrega o avião
-function buildAirPlane() {
-    var loader = new GLTFLoader();
-    var obj;
-    // Carrego o arquivo glb nele
-    loader.load('./airplane.glb', function (gltf) {
-        obj = gltf.scene;
-        obj.visible = true;
-        obj.traverse(function (child) {
-            if (child) {
-                child.castShadow = true;
-            }
-        });
-        obj.traverse(function (node) {
-            if (node.material) node.material.side = THREE.DoubleSide;
-        });
-        var obj = normalizeAndRescale(obj, scale);
-        var obj = fixPosition(obj);
-        obj.position.set(0, airPlaneHeight, 0);
-        obj.rotateY(THREE.MathUtils.degToRad(-90));
-        scene.add(obj);
+//Cria o avião
+var airplane = null;
+
+// Load animated files
+loadGLTFFile('airplane.glb');
+
+render();
+
+
+function loadGLTFFile(modelName)
+{
+  var loader = new GLTFLoader( );
+  loader.load( modelName, function ( gltf ) {
+    var obj = gltf.scene;
+    obj.traverse( function ( child ) {
+      if ( child ) {
+          child.castShadow = true;
+      }
     });
+    obj.traverse( function( node )
+    {
+      if( node.material ) node.material.side = THREE.DoubleSide;
+    });
+
+      obj = normalizeAndRescale(obj, scale);
+      obj = fixPosition(obj);
+      obj.position.y = 10;
+      obj.rotateY(MathUtils.degToRad(-90));
+      airplane = obj;
+
+    
+    scene.add ( obj );
+
+    }, onProgress, onError);
 }
+
+function onError() { };
+
+function onProgress () {
+    
+}
+
 
 function normalizeAndRescale(obj, newScale) {
 
@@ -92,6 +111,32 @@ function fixPosition(obj) {
     return obj;
 }
 
+/*
+    Parte do fade
+*/
+
+function updatePositionPlanes(){
+    var count = 0;
+    for(var i = 0; i < numPlans; i++){
+        let env = queue.peek(i);
+        env.move();
+        let plane = env.getPlan();
+        if(plane.position.z == 250){
+            plane.position.z = 150 - (numPlans-1) * 100;
+        }
+
+        if(plane.position.z > 150){
+            plane.material.opacity = 0;
+        }
+        else if(plane.position.z < 150 - (numPlans -2) * 100)
+        {
+            plane.material.opacity = 0;
+        } else{
+            plane.material.opacity = 1;
+        }
+    }
+    console.log(count);
+}
 
 // Use this to show information onscreen
 let controls = new InfoBox();
@@ -103,9 +148,10 @@ let controls = new InfoBox();
   controls.add("* Scroll to zoom in/out.");
   controls.show();
 
-render();
 function render()
 {
+  //Para usar o airplane, botar um if dentro desse render.
+  updatePositionPlanes();
   requestAnimationFrame(render);
   renderer.render(scene, camera) // Render scene
 }
