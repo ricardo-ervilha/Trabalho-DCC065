@@ -7,10 +7,15 @@ export class Airplane {
   
   constructor() {
     this.airplane = null;
+    this.originalRotation = null;
   }
 
   getAirplane(){
     return this.airplane;
+  }
+
+  getOriginalRotation(){
+    return this.originalRotation;
   }
 
   buildAirPlane(scene) {
@@ -31,6 +36,7 @@ export class Airplane {
         //obj = this.fixPosition(obj);
         obj.position.y = airPlaneHeight;
         obj.rotateY(MathUtils.degToRad(-90));
+        this.originalRotation = obj.rotation.clone();
         this.airplane = obj;
         this.airplane.add(new THREE.AxesHelper( 12 ));
         scene.add(obj);

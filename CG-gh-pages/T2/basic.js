@@ -44,7 +44,7 @@ planeMaterial.side = THREE.DoubleSide;
 planeMaterial.transparent = true;
 planeMaterial.opacity = 0.5;
 plane = new THREE.Mesh(planeGeometry, planeMaterial);
-plane.translateY(15);//move para cima para evitar que o avião passe abaixo do plano
+plane.translateY(30);//move para cima para evitar que o avião passe abaixo do plano
 scene.add(plane);
 
 // Show axes (parameter is size of each axis)
@@ -146,8 +146,11 @@ let posicaoAntigaX = 0;
 let posicaoAntigaY = 0;
 let posicaoNovaX = 0;
 let posicaoNovaY = 0;
-let sensibilidadeMouse = 0.01;
-let velocidadeRetorno = 0.9;
+let sensibilidadeMouse = 0.05;
+let velocidadeRetorno = 0.05;
+var anguloX;
+var anguloY;
+var anguloZ;
 
 function atualizarPosicaoMouse(event) {
   posicaoNovaX = event.clientX;
@@ -169,25 +172,27 @@ document.addEventListener('mousemove', capturarMovimentoMouse);
  */
 function rotateAirplane(){
     
-    if(aviao.getAirplane()){
-        const dx = posicaoAntigaX - posicaoNovaX;
-        const dy = posicaoAntigaY - posicaoNovaY;
-        const dif = Math.sqrt(dx * dx + dy * dy);
-        console.log(posicaoAntigaX)
-        console.log(posicaoNovaX)
-        console.log(posicaoAntigaY)
-        console.log(posicaoNovaY)
-        console.log(dif);
-        if(dif > 0){
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(dif * sensibilidadeMouse));
-        }else if(dif < 0){
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(dif * sensibilidadeMouse));
-        }//else{
-           // aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(velocidadeRetorno));
-        //}
-        // let rad = THREE.MathUtils.degToRad(45);
-        // let quat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), rad);
-        //aviao.getAirplane().quaternion.slerp(quat, 0.01);
+    // Distância entre a posição do avião e do mouse
+    let dist = Math.round(lerpConfig.destination.distanceTo(aviao.getAirplane().position));
+
+    if(aviao.getAirplane() && dist > 4){
+        //Fazer rotação em função da distancia, quant maior a distancia mais rapido rotaciona
+        if(lerpConfig.destination.x > aviao.getAirplane().position.x){
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-dist * sensibilidadeMouse));
+        }else{
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(dist * sensibilidadeMouse));
+        }
+        if(lerpConfig.destination.y > aviao.getAirplane().position.y){
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(-dist*sensibilidadeMouse*0.1));
+            
+        }else{
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(dist*sensibilidadeMouse *0.1));
+        }
+    } else {
+        let quat = new THREE.Quaternion().setFromEuler(aviao.getOriginalRotation());
+        aviao.getAirplane().quaternion.slerp(quat, velocidadeRetorno);
+        
+        
     }
 }
 
@@ -198,6 +203,13 @@ function moveAirPlane(){
     if(aviao.getAirplane()){
         aviao.getAirplane().position.lerp(lerpConfig.destination, lerpConfig.alpha);
         rotateAirplane();
+        
+        anguloX =  Math.round(aviao.getAirplane().rotation.x * 180 / Math.PI);
+        anguloY =  Math.round(aviao.getAirplane().rotation.y * 180 / Math.PI);
+        anguloZ =  Math.round(aviao.getAirplane().rotation.z * 180 / Math.PI);
+        // console.log("Ângulo em graus em torno do eixo X: " + anguloX);
+        // console.log("Ângulo em graus em torno do eixo Y: " + anguloY);
+        // console.log("Ângulo em graus em torno do eixo Z: " + anguloZ);
     }
 }
 
