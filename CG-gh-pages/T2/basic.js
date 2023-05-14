@@ -27,6 +27,7 @@ orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotati
 // Listen window size changes
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
 window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
+document.body.style.cursor = "none";
 
 //Cria o avião e o adiciona na cena
 let aviao = new Airplane();
@@ -49,6 +50,7 @@ scene.add(plane);
 
 // Show axes (parameter is size of each axis)
 let axesHelper = new THREE.AxesHelper( 12 );
+axesHelper.translateY(10)
 scene.add(axesHelper);
 
 var queue = new Queue();
@@ -142,30 +144,11 @@ function onMouseMove(event){
     }
 };
 
-let posicaoAntigaX = 0;
-let posicaoAntigaY = 0;
-let posicaoNovaX = 0;
-let posicaoNovaY = 0;
 let sensibilidadeMouse = 0.05;
 let velocidadeRetorno = 0.05;
 var anguloX;
 var anguloY;
 var anguloZ;
-
-function atualizarPosicaoMouse(event) {
-  posicaoNovaX = event.clientX;
-  posicaoNovaY = event.clientY;
-}
-
-function capturarMovimentoMouse() {
-  posicaoAntigaX = posicaoNovaX;
-  posicaoAntigaY = posicaoNovaY;
-}
-
-// Adicione os listeners de eventos
-document.addEventListener('mousemove', atualizarPosicaoMouse);
-document.addEventListener('mousemove', capturarMovimentoMouse);
-
 
 /**
  * Função para fazer a rotação do avião
@@ -183,16 +166,13 @@ function rotateAirplane(){
             aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(dist * sensibilidadeMouse));
         }
         if(lerpConfig.destination.y > aviao.getAirplane().position.y){
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(-dist*sensibilidadeMouse*0.1));
-            
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(-dist*sensibilidadeMouse*0.2));
         }else{
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(dist*sensibilidadeMouse *0.1));
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(dist*sensibilidadeMouse *0.2));
         }
     } else {
         let quat = new THREE.Quaternion().setFromEuler(aviao.getOriginalRotation());
         aviao.getAirplane().quaternion.slerp(quat, velocidadeRetorno);
-        
-        
     }
 }
 
@@ -202,6 +182,7 @@ function rotateAirplane(){
 function moveAirPlane(){
     if(aviao.getAirplane()){
         aviao.getAirplane().position.lerp(lerpConfig.destination, lerpConfig.alpha);
+        aviao.target.position.copy(lerpConfig.destination);
         rotateAirplane();
         
         anguloX =  Math.round(aviao.getAirplane().rotation.x * 180 / Math.PI);

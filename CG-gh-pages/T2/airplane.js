@@ -2,12 +2,13 @@ import * as THREE from "three";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
 import { airPlaneHeight, scale} from './variables.js';
 import {getMaxSize} from "../libs/util/util.js";
-import { AxesHelper, MathUtils } from '../build/three.module.js';
+import { AxesHelper, MathUtils, Scene } from '../build/three.module.js';
 export class Airplane {
   
   constructor() {
     this.airplane = null;
     this.originalRotation = null;
+    this.target = null;
   }
 
   getAirplane(){
@@ -40,8 +41,51 @@ export class Airplane {
         this.airplane = obj;
         this.airplane.add(new THREE.AxesHelper( 12 ));
         scene.add(obj);
+        this.buildTarget(scene);
 
     },this.onProgress, this.onError);
+  }
+
+  buildTarget(scene){
+    const geometry = new THREE.BufferGeometry();
+    //   const vertices = new Float32Array( [
+    //   0, -2.0,  -2.0, 
+    //   0, -2.0,  2.0, 
+
+    //   .0, 2.0,  -2.0, 
+    //   0,  2.0,  2.0, 
+
+    //   0, -2.0,  -2.0,
+    //   0,  2.0,  -2.0, 
+
+    //   0, -2.0,  2.0, 
+    //   0,  2.0,  2.0,
+    // ] );
+
+    const vertices = new Float32Array( [
+    -1.0, -1.0,  0,
+    1.0, -1.0,  0, 
+
+    -1.0, 1.0,  0, 
+    1.0,  1.0,  0, 
+
+    -1.0, -1.0,  0, 
+    -1.0,  1.0,  0,
+
+    1.0, -1.0,  0, 
+    1.0,  1.0,  0
+    ] );
+
+    // itemSize = 3 because there are 3 values (components) per vertex
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const material = new THREE.LineBasicMaterial( { color: 0x008800 } );
+    const mesh = new THREE.LineSegments( geometry, material );
+    //mesh.position.set(this.airplane.x,this.airplane.y,this.airplane.z)
+    this.airplane.add(mesh);
+    
+
+    this.target = mesh;
+    scene.add(mesh)
   }
 
   onError() {}
