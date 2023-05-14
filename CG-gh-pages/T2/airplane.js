@@ -1,9 +1,10 @@
 import * as THREE from "three";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
-import { scale} from './variables.js';
+import { airPlaneHeight, scale} from './variables.js';
 import {getMaxSize} from "../libs/util/util.js";
 import { AxesHelper, MathUtils } from '../build/three.module.js';
 export class Airplane {
+  
   constructor() {
     this.airplane = null;
   }
@@ -11,7 +12,6 @@ export class Airplane {
   getAirplane(){
     return this.airplane;
   }
-
 
   buildAirPlane(scene) {
     var loader = new GLTFLoader( );
@@ -29,7 +29,7 @@ export class Airplane {
 
         obj = this.normalizeAndRescale(obj, scale);
         //obj = this.fixPosition(obj);
-        obj.position.y = 10;
+        obj.position.y = airPlaneHeight;
         obj.rotateY(MathUtils.degToRad(-90));
         this.airplane = obj;
         this.airplane.add(new THREE.AxesHelper( 12 ));

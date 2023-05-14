@@ -6,12 +6,10 @@ import {initRenderer,
         setDefaultMaterial,
         InfoBox,
         onWindowResize,
-        createGroundPlaneXZ,
-        getMaxSize} from "../libs/util/util.js";
-import {GLTFLoader} from '../build/jsm/loaders/GLTFLoader.js';
-import { airPlaneHeight, numPlans, scale} from './variables.js';
+       } from "../libs/util/util.js";
+
+import {  heightPlan, numPlans} from './variables.js';
 import { Environment } from './environment.js';
-import { MathUtils } from '../build/three.module.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
 
@@ -44,7 +42,7 @@ planeGeometry = new THREE.PlaneGeometry(150, 30, 1, 1);
 planeMaterial = new THREE.MeshLambertMaterial();
 planeMaterial.side = THREE.DoubleSide;
 planeMaterial.transparent = true;
-planeMaterial.opacity = 1;
+planeMaterial.opacity = 0.5;
 plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.translateY(15);//move para cima para evitar que o avião passe abaixo do plano
 scene.add(plane);
@@ -56,11 +54,11 @@ scene.add(axesHelper);
 var queue = new Queue();
 // O oitavo plano será o que estará na parte de reposição.
 for(var i = 0; i < numPlans; i++){
-    let environment = new Environment(100, 100);
+    let environment = new Environment(heightPlan, 100);
 
     let plane = environment.getPlan();
-    //O primeiro plano será renderizado SEMPRE na posição 150 em z.
-    plane.position.z = 150 - 100 * i;
+    //O primeiro plano será renderizado SEMPRE na posição (3h)/2  em z.
+    plane.position.z = ((3*heightPlan)/2) - heightPlan * i;
     plane.material.opacity = 1;
 
     let grid = environment.getGrid();
@@ -76,26 +74,42 @@ for(var i = 0; i < numPlans; i++){
 */
 
 function updatePositionPlanes(){
-    var count = 0;
+
     for(var i = 0; i < numPlans; i++){
         let env = queue.peek(i);
         env.move();
         let plane = env.getPlan();
-        if(plane.position.z == 250){
-            plane.position.z = 150 - (numPlans-1) * 100;
+        let grid = env.getGrid();
+
+        //Se plano está no 5h/2 mover ele lá para frente
+
+        if(plane.position.z == (5*heightPlan)/2){
+            plane.position.z = (3*heightPlan)/2 - (numPlans-1) * heightPlan;
         }
 
-        if(plane.position.z > 150){
+        //Dados x(limite inferior), y(limite superior); com x < y e um n(posição do plano)
+        //O fade é dado por m(opacidade) == 1 + [(y-n)/(x-y)]
+
+        //Se plano está muito na frente, fazer ele ficar invisível
+        var y = ((3*heightPlan)/2) - heightPlan * 6// -350
+        var x = y + heightPlan;
+        var n = plane.position.z;
+
+
+        if(n < y){
             plane.material.opacity = 0;
+            grid.material.opacity = 0;
         }
-        else if(plane.position.z < 150 - (numPlans -2) * 100)
-        {
-            plane.material.opacity = 0;
-        } else{
+        if(n <= x && n >= y )
+        {   
+            plane.material.opacity = (n-y)/(heightPlan);
+            grid.material.opacity = (n-y)/(heightPlan);
+
+        } else if (n > x){
             plane.material.opacity = 1;
+            grid.material.opacity = 1;
         }
     }
-    //console.log(count);
 }
 
 /**
@@ -128,13 +142,51 @@ function onMouseMove(event){
     }
 };
 
+let posicaoAntigaX = 0;
+let posicaoAntigaY = 0;
+let posicaoNovaX = 0;
+let posicaoNovaY = 0;
+let sensibilidadeMouse = 0.01;
+let velocidadeRetorno = 0.9;
+
+function atualizarPosicaoMouse(event) {
+  posicaoNovaX = event.clientX;
+  posicaoNovaY = event.clientY;
+}
+
+function capturarMovimentoMouse() {
+  posicaoAntigaX = posicaoNovaX;
+  posicaoAntigaY = posicaoNovaY;
+}
+
+// Adicione os listeners de eventos
+document.addEventListener('mousemove', atualizarPosicaoMouse);
+document.addEventListener('mousemove', capturarMovimentoMouse);
+
+
 /**
  * Função para fazer a rotação do avião
  */
 function rotateAirplane(){
+    
     if(aviao.getAirplane()){
-        let rad = THREE.MathUtils.degToRad(45);
-        let quat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), rad);
+        const dx = posicaoAntigaX - posicaoNovaX;
+        const dy = posicaoAntigaY - posicaoNovaY;
+        const dif = Math.sqrt(dx * dx + dy * dy);
+        console.log(posicaoAntigaX)
+        console.log(posicaoNovaX)
+        console.log(posicaoAntigaY)
+        console.log(posicaoNovaY)
+        console.log(dif);
+        if(dif > 0){
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(dif * sensibilidadeMouse));
+        }else if(dif < 0){
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(dif * sensibilidadeMouse));
+        }//else{
+           // aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(velocidadeRetorno));
+        //}
+        // let rad = THREE.MathUtils.degToRad(45);
+        // let quat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), rad);
         //aviao.getAirplane().quaternion.slerp(quat, 0.01);
     }
 }
@@ -164,7 +216,6 @@ function render()
 { 
     moveAirPlane();
     updatePositionPlanes();
-
     requestAnimationFrame(render);
     renderer.render(scene, camera) // Render scene
 }

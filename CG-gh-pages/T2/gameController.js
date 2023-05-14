@@ -5,78 +5,83 @@ import {
   initDefaultBasicLight,
   setDefaultMaterial,
   InfoBox,
-  onWindowResize,
+  onWindowResize, getMaxSize
 } from "../libs/util/util.js";
-import { Airplane } from "./airplane.js";
+import {GLTFLoader} from '../build/jsm/loaders/GLTFLoader.js';
+import { airPlaneHeight, heightPlan, numPlans, scale} from './variables.js';
 import { Environment } from "./environment.js";
 import { Camera } from "./camera.js";
 import { Queue } from './queue.js'
+import { MathUtils } from '../build/three.module.js';
 
-const numPlanos = 10;
-const numAmbientes = 30;
 /*
 Description: Responsável por controlar o jogo em si. 
 É a classe principal que iniciará o jogo e coordenará as outras classes.
 */
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
+scene = new THREE.Scene();
 
-buildAirPlane();
+var queue = new Queue();
+// O oitavo plano será o que estará na parte de reposição.
+for(var i = 0; i < numPlans; i++){
+    let environment = new Environment(heightPlan, 100);
 
-//Instancio o loader
-function buildAirPlane(){
-    var loader = new GLTFLoader();
-    var obj;
-    // Carrego o arquivo glb nele
-    loader.load('./airplane.glb', function (gltf) {
-        obj = gltf.scene;
-        obj.visible = true;
-        obj.traverse(function (child) {
-            if (child) {
-                child.castShadow = true;
-            }
-        });
-        obj.traverse(function (node) {
-            if (node.material) node.material.side = THREE.DoubleSide;
-        });
-        var obj = normalizeAndRescale(obj, 5.0);
-        scene.add(obj);
-    });
+    let plane = environment.getPlan();
+    //O primeiro plano será renderizado SEMPRE na posição (3h)/2  em z.
+    plane.position.z = ((3*heightPlan)/2) - heightPlan * i;
+    plane.material.opacity = 1;
+
+    let grid = environment.getGrid();
+    grid.material.opacity = 1;
+
+    scene.add(plane);
+
+    queue.enqueue(environment);
 }
 
-// function buildTurret()
-// {
-//   var mtlLoader = new MTLLoader( );
-  
-//   mtlLoader.load( './turret.mtl', function ( materials ) {
-//       materials.preload();
+//Cria o avião
+var airplane = null;
 
-//       var objLoader = new OBJLoader( );
-//       objLoader.setMaterials(materials);
+// Load animated files
+loadGLTFFile('airplane.glb');
 
-//       objLoader.load( "./turret.obj", function ( obj ) {
-         
-//          obj.visible = true;
-//          obj.traverse( function (child)
-//          {
-//             child.castShadow = true;
-//          });
+function loadGLTFFile(modelName)
+{
+  var loader = new GLTFLoader( );
+  loader.load( modelName, function ( gltf ) {
+    var obj = gltf.scene;
+    obj.traverse( function ( child ) {
+      if ( child ) {
+          child.castShadow = true;
+      }
+    });
+    obj.traverse( function( node )
+    {
+      if( node.material ) node.material.side = THREE.DoubleSide;
+    });
 
-//          obj.traverse( function( node )
-//          {
-//             if( node.material ) node.material.side = THREE.DoubleSide;
-//          });
+      obj = normalizeAndRescale(obj, scale);
+      obj = fixPosition(obj);
+      obj.position.y = airPlaneHeight;
+      obj.rotateY(MathUtils.degToRad(-90));
+      airplane = obj;
 
-//          var obj = normalizeAndRescale(obj, 7.0);
-         
+    
+    scene.add ( obj );
 
-//          scene.add ( obj );
-         
-//       });
-//   });
-// }
+    }, onProgress, onError);
+}
+
+function onError() { };
+
+function onProgress () {
+    
+}
 
 function normalizeAndRescale(obj, newScale) {
+
+    //Normaliza o objeto e multiplica por uma nova escala
     var scale = getMaxSize(obj);
     obj.scale.set(newScale * (1.0 / scale),
         newScale * (1.0 / scale),
@@ -84,6 +89,60 @@ function normalizeAndRescale(obj, newScale) {
     return obj;
 }
 
+function fixPosition(obj) {
+
+    // Corrige a posição do objeto acima do plano
+    var box = new THREE.Box3().setFromObject(obj);
+    if (box.min.y > 0)
+        obj.translateY(-box.min.y);
+    else
+        obj.translateY(-1 * box.min.y);
+    return obj;
+}
+
+/*
+    Parte do fade
+*/
+
+function updatePositionPlanes(){
+    var count = 0;
+    for(var i = 0; i < numPlans; i++){
+        let env = queue.peek(i);
+        env.move();
+        let plane = env.getPlan();
+        let grid = env.getGrid();
+
+        //Se plano está no 5h/2 mover ele lá para frente
+
+        if(plane.position.z == (5*heightPlan)/2){
+            plane.position.z = (3*heightPlan)/2 - (numPlans-1) * heightPlan;
+        }
+
+        //Dados x(limite inferior), y(limite superior); com x < y e um n(posição do plano)
+        //O fade é dado por m(opacidade) == 1 + [(y-n)/(x-y)]
+
+        //Se plano está muito na frente, fazer ele ficar invisível
+        var y = ((3*heightPlan)/2) - heightPlan * 4.5// -350
+        var x = y + heightPlan;
+        var n = plane.position.z;
+        console.log('y: ' + y);
+        console.log('x: ' + x)
+
+        if(n < y){
+            plane.material.opacity = 0;
+            grid.material.opacity = 0;
+        }
+        if(n <= x && n >= y )
+        {   
+            plane.material.opacity = (n-y)/(heightPlan);
+            grid.material.opacity = (n-y)/(heightPlan);
+
+        } else if (n > x){
+            plane.material.opacity = 1;
+            grid.material.opacity = 1;
+        }
+    }
+}
 
 let cameraHolder = new THREE.Object3D();
 const lerpConfig = {
@@ -112,9 +171,9 @@ orbit.enablePan =false;
 orbit.enableRotate = false;
 orbit.enableZoom = false;
 
-aviao.buildAirPlane();
+
 cameraHolder.add(camera);
-cameraHolder.add(aviao.getBody());
+cameraHolder.add(airplane);
 scene.add(cameraHolder);
 
 // Listen window size changes
@@ -125,81 +184,9 @@ let axesHelper = new THREE.AxesHelper(12);
 scene.add(axesHelper);
 
 
-// create the wireframe plane
-let queue = new Queue(); 
-let ambiente;
-for(var i = 0; i < numAmbientes; i++){
-  ambiente = new Environment(100, window.innerWidth);
-  ambiente.buildPlan();
-  queue.enqueue(ambiente);
-}
-
-let currentPlanesRendered = [];
-for(var i = 0; i <= numPlanos - 1; i++){  
-  if(i == 0)
-    currentPlanesRendered.push(addPlaneScene(50));
-  else
-    currentPlanesRendered.push(addPlaneScene(50 + (i*100)));
-}
-
-function addPlaneScene(position){
-  let plan = queue.dequeue();
-  plan.getEnvironment().position.z = position;
-  scene.add(plan.getEnvironment());
-  queue.enqueue(plan);
-  return plan;
-}
-
-function controlsOpacity(){
-  for(var i = 0; i < numAmbientes; i++){
-    
-    let env = queue.dequeue(); 
-    
-    if(env.getEnvironment().position.z >= 350){
-      env.getEnvironment().material.opacity = 0;
-      env.getGrid().material.opacity = 0;
-    }else if(env.getEnvironment().position.z >= 325 && env.getEnvironment().position.z < 350){
-      env.getEnvironment().material.opacity = (1 + (325 - (env.getEnvironment().position.z)) / 25.0);
-      env.getGrid().material.opacity = (1 + (300 - (env.getGrid().position.z)) / 50.0);
-    }else{
-      env.getEnvironment().material.opacity = 1;
-      env.getGrid().material.opacity = 1;
-    }
-
-    for(var j = 0; j < env.trees.length; j++)
-    {    
-        //console.log(env.trees[j].getFoundation().position.x + " " + (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z) + " " + env.trees[j].getFoundation().position.z);
-        if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 350){
-            env.trees[j].setOpacity(0);
-        }else if(env.trees[j].getFoundation().position.y + env.getEnvironment().position.z >= 310 && env.trees[j].getFoundation().position.y + env.getEnvironment().position.z < 350){
-          env.trees[j].setOpacity(1 + (310 - (env.trees[j].getFoundation().position.y + env.getEnvironment().position.z)) / 40.0);
-        }else{
-          env.trees[j].setOpacity(1);
-        }
-    }
-    queue.enqueue(env);
-  }
-}
-
 // Mouse variables
 document.addEventListener("mousemove", onDocumentMouseMove);
 
-function movementPlane(){
-  console.log(currentPlanesRendered[0].getEnvironment().position.z)
-  console.log(aviao.getBody().position.z)
-  if(currentPlanesRendered[0].getEnvironment().position.z + 200 >= aviao.getBody().position.z){
-    for(var i = 0; i <= numPlanos-1; i++){
-      currentPlanesRendered[i].move();
-    }
-  }else{
-    scene.remove(currentPlanesRendered[0].getEnvironment());
-    let plan = addPlaneScene(-100 + (numPlanos - 1)*100);
-    for(var i = 1; i < numPlanos; i++){
-      currentPlanesRendered[i-1] = currentPlanesRendered[i];
-    }
-    currentPlanesRendered[currentPlanesRendered.length - 1] = plan;
-  }
-}
 
 var lastMouseMoveTime = 0;
 let targetXOld;
@@ -207,20 +194,20 @@ function mouseRotation() {
   targetXOld = targetX;
   targetX = mouseX * 0.001;
   targetY = mouseY * 0.001;
-  if (aviao.getBody()) {
+  if (airplane) {
     
-    if(lerpConfig.destination.distanceTo(aviao.getBody().position)>3.5){
+    if(lerpConfig.destination.distanceTo(airplane.position)>3.5){
       if((targetXOld-targetX)>0){
-        //aviao.getBody().rotation.y += 0.15 * (targetX - aviao.getBody().rotation.y);
-        aviao.getBody().rotation.y = -0.5;
+        //airplane().rotation.y += 0.15 * (targetX - airplane().rotation.y);
+        airplane.rotation.y = -0.5;
       }else if((targetXOld-targetX)<0){
-        aviao.getBody().rotation.y = 0.5;
-        //aviao.getBody().rotation.y += -0.15 * (targetX - aviao.getBody().rotation.y);
+        airplane.rotation.y = 0.5;
+        //airplane().rotation.y += -0.15 * (targetX - airplane().rotation.y);
       }
     }
     
-    aviao.getBody().position.lerp(lerpConfig.destination, lerpConfig.alpha);
-    //aviao.getBody().rotation.x += (0.05 * (targetY - aviao.getBody().rotation.x));
+    airplane.position.lerp(lerpConfig.destination, lerpConfig.alpha);
+    //airplane().rotation.x += (0.05 * (targetY - airplane().rotation.x));
   }
 }
 
@@ -258,11 +245,11 @@ function onDocumentMouseMove(event) {
 }
 
 function rotateObjectToZero() {
-  var angle = aviao.getBody().rotation.y;
+  var angle = airplane.rotation.y;
   var axis = new THREE.Vector3(0, 1, 0);
 
   if (angle !== 0) {
-      aviao.getBody().rotateOnAxis(axis, -angle);
+      airplane.rotateOnAxis(axis, -angle);
   }
 }
 
@@ -271,14 +258,13 @@ function render() {
   var currentTime = Date.now();
 
   if (currentTime - lastMouseMoveTime > 425) {
-    //aviao.getBody().rotation.y += aviao.getBody().rotation.y;
+    //airplane().rotation.y += airplane().rotation.y;
     rotateObjectToZero();
   }
+  
 
-  aviao.turnPin(THREE.MathUtils.degToRad(5));
   mouseRotation();
-  movementPlane();
-  controlsOpacity();
+  updatePositionPlanes();
   requestAnimationFrame(render);
   renderer.render(scene, camera); // Render scene
 }
