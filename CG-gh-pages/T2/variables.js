@@ -17,5 +17,9 @@ export const heightPlan = 200;
 //Largura do plano -> Usado na gameController para setar o plano da environment
 export const widthPlan = 100;
 
-export const velocityRotation = 0.01
-export const velocityReturn = 0.9 
+//Colocar aqui as constantes para rotação do avião -> Usado na gameController
+export const velocityRotation = 0.01;
+export const velocityReturn = 0.9;
+
+//Tamanho do cubo usado lá para ficar como bordas
+export const sizeCube = heightPlan;

@@ -58,7 +58,7 @@ var queue = new Queue();
 for(var i = 0; i < numPlans; i++){
     let environment = new Environment(heightPlan, 100);
 
-    let plane = environment.getPlan();
+    let plane = environment.getPlane();
     //O primeiro plano será renderizado SEMPRE na posição (3h)/2  em z.
     plane.position.z = ((3*heightPlan)/2) - heightPlan * i;
     plane.material.opacity = 1;
@@ -80,8 +80,7 @@ function updatePositionPlanes(){
     for(var i = 0; i < numPlans; i++){
         let env = queue.peek(i);
         env.move();
-        let plane = env.getPlan();
-        let grid = env.getGrid();
+        let plane = env.getPlane();
 
         //Se plano está no 5h/2 mover ele lá para frente
 
@@ -93,23 +92,26 @@ function updatePositionPlanes(){
         //O fade é dado por m(opacidade) == 1 + [(y-n)/(x-y)]
 
         //Se plano está muito na frente, fazer ele ficar invisível
-        var y = ((3*heightPlan)/2) - heightPlan * 6// -350
+        var y = ((3*heightPlan)/2) - heightPlan * 6
         var x = y + heightPlan;
         var n = plane.position.z;
 
 
         if(n < y){
-            plane.material.opacity = 0;
-            grid.material.opacity = 0;
+            env.setLeftCubeOpacity(0);
+            env.setRightCubeOpacity(0);
+            env.setPlaneOpacity(0);
         }
         if(n <= x && n >= y )
         {   
-            plane.material.opacity = (n-y)/(heightPlan);
-            grid.material.opacity = (n-y)/(heightPlan);
+            env.setLeftCubeOpacity((n-y)/(heightPlan));
+            env.setRightCubeOpacity((n-y)/(heightPlan));
+            env.setPlaneOpacity((n-y)/(heightPlan));
 
         } else if (n > x){
-            plane.material.opacity = 1;
-            grid.material.opacity = 1;
+            env.setLeftCubeOpacity(1);
+            env.setRightCubeOpacity(1);
+            env.setPlaneOpacity(1);
         }
     }
 }

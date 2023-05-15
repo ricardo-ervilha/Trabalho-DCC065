@@ -1,7 +1,7 @@
 import * as THREE from  'three';
 import { createGroundPlaneWired } from "../libs/util/util.js";
 import { Tree } from './tree.js';
-import { velocityPlan } from './variables.js';
+import { sizeCube, velocityPlan, widthPlan } from './variables.js';
 import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js';
 /*
@@ -16,7 +16,7 @@ export class Environment{
 
         console.log('Construindo ambiente...');
         
-        let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(0, 204, 0)", "rgb(204, 204, 204)");
+        let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(18, 80, 112)", "rgb(204, 204, 204)");
         
         //Desempacoto obj e pego o plano, setando a opacidade para 0
         this.plane = obj.plane;
@@ -28,8 +28,38 @@ export class Environment{
         this.grid.material.transparent = true;
         this.grid.material.opacity = 0;
 
+        this.leftCube = null;
+        this.rightCube = null;
+        this.leftLine = null;
+        this.rightLine = null;
         // this.buildOneTurret();
+        this.conectCubesPlane();
         this.buildOneTree();
+    }
+
+    conectCubesPlane(){
+        //Usar isso para criar os cubos com arestas.
+        var geometry = new THREE.BoxGeometry( sizeCube, sizeCube, sizeCube ); 
+        var material = new THREE.MeshPhongMaterial( {color: 0x125070, transparent: true} ); 
+        
+        this.leftCube = new THREE.Mesh( geometry, material ); 
+        this.leftCube.position.x = -widthPlan/2 - sizeCube/2;
+        this.plane.add(this.leftCube);
+        
+        var edges = new THREE.EdgesGeometry( geometry ); 
+        
+        this.leftLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true } ) ); 
+        this.leftCube.add( this.leftLine );
+
+        this.rightCube = new THREE.Mesh( geometry, material);
+        this.rightCube.position.x = widthPlan/2 + sizeCube/2;
+        
+        this.plane.add(this.rightCube);
+        
+        this.rightLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true }));
+        
+        this.rightCube.add( this.rightLine );
+
     }
 
     buildOneTree(){
@@ -89,15 +119,28 @@ export class Environment{
     //         newScale * (1.0 / scale));
     //     return obj;
     // }
+    setLeftCubeOpacity(opacity){
+        this.leftCube.material.opacity = opacity;
+        this.leftLine.material.opacity = opacity;
+    }
+
+    setRightCubeOpacity(opacity){
+        this.rightCube.material.opacity = opacity;
+        this.rightLine.material.opacity = opacity;
+    }
+
+    setPlaneOpacity(opacity){
+        this.plane.material.opacity = opacity;
+        this.grid.material.opacity = opacity;
+    }
 
     //Retorna o plano
-    getPlan(){
+    getPlane(){
         return this.plane;
     }
 
-    //Retorna o grid
-    getGrid()
-    {
+
+    getGrid(){
         return this.grid;
     }
 
