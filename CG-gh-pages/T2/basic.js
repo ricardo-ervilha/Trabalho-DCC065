@@ -8,7 +8,7 @@ import {initRenderer,
         onWindowResize,
        } from "../libs/util/util.js";
 
-import {  heightPlan, numPlans} from './variables.js';
+import {  heightPlan, numPlans, widthPlan} from './variables.js';
 import { Environment } from './environment.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
@@ -39,11 +39,11 @@ let raycaster = new THREE.Raycaster();
 // Cria o plano que será usado para fazer interseção com o mouse
 let plane, planeGeometry, planeMaterial;
 
-planeGeometry = new THREE.PlaneGeometry(150, 30, 1, 1);
+planeGeometry = new THREE.PlaneGeometry(widthPlan, 30, 1, 1);
 planeMaterial = new THREE.MeshLambertMaterial();
 planeMaterial.side = THREE.DoubleSide;
 planeMaterial.transparent = true;
-planeMaterial.opacity = 0.5;
+planeMaterial.opacity = 0.;
 plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.translateY(30);//move para cima para evitar que o avião passe abaixo do plano
 scene.add(plane);
@@ -168,9 +168,9 @@ function rotateAirplane(){
             aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(dist * sensibilidadeMouse));
         }
         if(lerpConfig.destination.y > aviao.getAirplane().position.y){
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(-dist*sensibilidadeMouse*0.2));
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(-dist*sensibilidadeMouse)*0.4);
         }else{
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(dist*sensibilidadeMouse *0.2));
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(dist*sensibilidadeMouse*0.4));
         }
     } else {
         let quat = new THREE.Quaternion().setFromEuler(aviao.getOriginalRotation());

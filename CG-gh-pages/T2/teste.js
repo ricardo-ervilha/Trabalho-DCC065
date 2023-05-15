@@ -29,15 +29,21 @@ scene.add(plane);
 
 //Usar isso para criar os cubos com arestas.
 var geometry = new THREE.BoxGeometry( 3, 3, 3 ); 
- material = new THREE.MeshPhongMaterial( {color: 0x00ff00} ); 
+ material = new THREE.MeshPhongMaterial( {color: 0x005500} ); 
     const cube = new THREE.Mesh( geometry, material ); 
+    
     cube.position.y += 3;
     scene.add( cube );
 
+var material2 = new THREE.MeshPhongMaterial( {color: 0xffffff,  wireframe: true} ); 
+
+const cube2 = new THREE.Mesh(geometry ,material2);
+cube2.position.y += 3;
+scene.add(cube2);
 // create a cube
-const edges = new THREE.EdgesGeometry( geometry ); 
-const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff } ) ); 
-cube.add( line );
+// const edges = new THREE.EdgesGeometry( geometry ); 
+// const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff } ) ); 
+// cube.add( line );
 
 
 // Use this to show information onscreen
