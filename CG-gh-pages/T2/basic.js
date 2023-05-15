@@ -6,9 +6,10 @@ import {initRenderer,
         setDefaultMaterial,
         InfoBox,
         onWindowResize,
+        createLightSphere,
        } from "../libs/util/util.js";
 
-import {  heightPlan, numPlans, widthPlan} from './variables.js';
+import {  airPlaneHeight, heightPlan, numPlans, widthPlan} from './variables.js';
 import { Environment } from './environment.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
@@ -18,10 +19,50 @@ let pointer = new THREE.Vector2();// posição do mouse na tela
 const lerpConfig = { destination: new THREE.Vector3(0.0, 0.0, 0.0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
 scene = new THREE.Scene();    // Create main scene
-renderer = initRenderer();    // Init a basic renderer
+
+/* Parte do Renderer */
+let color = "rgb(0, 0, 0)";
+
+renderer = new THREE.WebGLRenderer();
+renderer.shadowMap.enabled = true; //Habilita sombras
+renderer.shadowMapSoft = true;
+renderer.shadowMap.type = THREE.PCFShadowMap; //Tipo de sombra
+
+renderer.setClearColor(new THREE.Color(color));
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById("webgl-output").appendChild(renderer.domElement);
+renderer.setClearColor("rgb(30, 30, 42)");
+
 camera = initCamera(new THREE.Vector3(0, 30, 100)); // Init camera in this position
 material = setDefaultMaterial(); // create a basic material
-light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
+
+/*---------------------------------------------------------------------------------------------*/
+
+/* Luz Direcional */
+let lightIntensity = 1.0;
+let lightPosition = new THREE.Vector3(30, 80, 20);
+let lightColor = "rgb(255, 255, 255)";
+
+light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(0, 50, -10);
+light.castShadow = true; // Permite que a luz projete sombras
+light.shadow.camera.left = -20;
+  light.shadow.camera.right = 20;
+scene.add(light);
+
+const geometry3 = new THREE.SphereGeometry( 0.3, 32, 16 ); 
+const material3 = new THREE.MeshBasicMaterial( { color: 0xffff00 } ); 
+const sphere = new THREE.Mesh( geometry3, material3 ); scene.add( sphere );
+sphere.position.set(light.position.x,light.position.y,light.position.z);
+
+const geometry2 = new THREE.BoxGeometry( 3, 3, 3 ); 
+    const material2 = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
+    const cube = new THREE.Mesh( geometry2, material2); 
+    cube.position.y = 1.5;
+    cube.castShadow = true;
+    scene.add( cube );
+/*---------------------------------------------------------------------------------------------*/
+
 orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
 
 // Listen window size changes

@@ -1,64 +1,52 @@
-import * as THREE from  'three';
-import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
-import {initRenderer, 
-        initCamera,
-        initDefaultBasicLight,
-        setDefaultMaterial,
-        InfoBox,
-        onWindowResize,
-        createGroundPlaneXZ} from "../libs/util/util.js";
+// Importando as bibliotecas necessárias
+import * as THREE from 'three';
 
-let scene, renderer, camera, material, light, orbit; // Initial variables
-scene = new THREE.Scene();    // Create main scene
-renderer = initRenderer();    // Init a basic renderer
-camera = initCamera(new THREE.Vector3(0, 15, 30)); // Init camera in this position
-material = setDefaultMaterial(); // create a basic material
-light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
-orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
+// Inicializando a cena, a câmera e o renderizador
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-// Listen window size changes
-window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
+// Criando o cubo
+const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+scene.add(cube);
 
-// Show axes (parameter is size of each axis)
-let axesHelper = new THREE.AxesHelper( 12 );
-scene.add( axesHelper );
+// Criando a geometria e o material dos cilindros
+const cylinderGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 32);
+const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-// create the ground plane
-let plane = createGroundPlaneXZ(20, 20)
-scene.add(plane);
+// Função para disparar os cilindros
+function shootCylinder() {
+  const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+  cylinder.position.copy(cube.position);
+  cylinder.position.y -= 0.5; // Ajuste para que o cilindro fique no chão
+  scene.add(cylinder);
 
-//Usar isso para criar os cubos com arestas.
-var geometry = new THREE.BoxGeometry( 3, 3, 3 ); 
- material = new THREE.MeshPhongMaterial( {color: 0x005500} ); 
-    const cube = new THREE.Mesh( geometry, material ); 
-    
-    cube.position.y += 3;
-    scene.add( cube );
-
-var material2 = new THREE.MeshPhongMaterial( {color: 0xffffff,  wireframe: true} ); 
-
-const cube2 = new THREE.Mesh(geometry ,material2);
-cube2.position.y += 3;
-scene.add(cube2);
-// create a cube
-// const edges = new THREE.EdgesGeometry( geometry ); 
-// const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff } ) ); 
-// cube.add( line );
-
-
-// Use this to show information onscreen
-let controls = new InfoBox();
-  controls.add("Basic Scene");
-  controls.addParagraph();
-  controls.add("Use mouse to interact:");
-  controls.add("* Left button to rotate");
-  controls.add("* Right button to translate (pan)");
-  controls.add("* Scroll to zoom in/out.");
-  controls.show();
-
-render();
-function render()
-{
-  requestAnimationFrame(render);
-  renderer.render(scene, camera) // Render scene
+  const targetPosition = new THREE.Vector3(0, -5, 0); // Posição alvo no chão
+  const tween = new TWEEN.Tween(cylinder.position)
+    .to(targetPosition, 2000) // Duração do movimento do cilindro
+    .onComplete(() => {
+      scene.remove(cylinder);
+    })
+    .start();
 }
+
+// Função de animação
+function animate() {
+  requestAnimationFrame(animate);
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.01;
+  renderer.render(scene, camera);
+}
+
+// Dispara um cilindro a cada 2 segundos
+setInterval(shootCylinder, 2000);
+
+// Configuração da câmera
+camera.position.z = 5;
+
+// Inicia a animação
+animate();

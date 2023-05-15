@@ -10,6 +10,7 @@ import {
 export class Tree{
     constructor(){
         this.foundation;
+        this.foundation;
         this.topLow;
         this.topMedium;
         this.topHigh;
