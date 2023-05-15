@@ -44,23 +44,28 @@ let lightPosition = new THREE.Vector3(30, 80, 20);
 let lightColor = "rgb(255, 255, 255)";
 
 light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(0, 50, -10);
+
+light.position.set(30, 50, 20);
 light.castShadow = true; // Permite que a luz projete sombras
-light.shadow.camera.left = -20;
-  light.shadow.camera.right = 20;
+light.shadow.camera.left = -widthPlan/2;
+light.shadow.camera.right = widthPlan/2;
+light.shadow.camera.near = 1;
+light.shadow.camera.far = light.position.y + 50;
+light.shadow.camera.top = 100;
+light.shadow.camera.bottom = -100;
+
+const helper = new THREE.DirectionalLightHelper( light, 3, 0xffff00 );
+const shadowHelper = new THREE.CameraHelper(light.shadow.camera);
+
 scene.add(light);
+scene.add(helper);
+scene.add(shadowHelper);
 
 const geometry3 = new THREE.SphereGeometry( 0.3, 32, 16 ); 
 const material3 = new THREE.MeshBasicMaterial( { color: 0xffff00 } ); 
 const sphere = new THREE.Mesh( geometry3, material3 ); scene.add( sphere );
 sphere.position.set(light.position.x,light.position.y,light.position.z);
 
-const geometry2 = new THREE.BoxGeometry( 3, 3, 3 ); 
-    const material2 = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
-    const cube = new THREE.Mesh( geometry2, material2); 
-    cube.position.y = 1.5;
-    cube.castShadow = true;
-    scene.add( cube );
 /*---------------------------------------------------------------------------------------------*/
 
 orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
@@ -82,11 +87,12 @@ let plane, planeGeometry, planeMaterial;
 
 planeGeometry = new THREE.PlaneGeometry(widthPlan, 30, 1, 1);
 planeMaterial = new THREE.MeshLambertMaterial();
-planeMaterial.side = THREE.DoubleSide;
+// planeMaterial.side = THREE.DoubleSide;
 planeMaterial.transparent = true;
 planeMaterial.opacity = 0.;
 plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.translateY(30);//move para cima para evitar que o avião passe abaixo do plano
+plane.translateZ(-30);
 scene.add(plane);
 
 // Show axes (parameter is size of each axis)
@@ -219,6 +225,22 @@ function rotateAirplane(){
     }
 }
 
+let asset = {
+    obj: aviao.getAirplane(),
+    bb: new THREE.Box3()
+} 
+
+var aviaoHelper = createBBHelper(asset.bb, 'white');
+
+
+function createBBHelper(bb, color)
+{
+   // Create a bounding box helper
+   let helper = new THREE.Box3Helper( bb, color );
+   scene.add( helper );
+   return helper;
+}
+
 /**
  * Função para mover o avião para  a posição do mouse
  */
@@ -250,6 +272,9 @@ controls.show();
 render();
 function render()
 { 
+    if(aviao.getAirplane()){
+        aviao.getAirplane().add(aviaoHelper);
+    }
     moveAirPlane();
     updatePositionPlanes();
     requestAnimationFrame(render);

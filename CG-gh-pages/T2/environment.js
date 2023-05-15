@@ -1,5 +1,5 @@
 import * as THREE from  'three';
-import { createGroundPlaneWired } from "../libs/util/util.js";
+import { createGroundPlaneWired, getMaxSize } from "../libs/util/util.js";
 import { Tree } from './tree.js';
 import { sizeCube, velocityPlan, widthPlan } from './variables.js';
 import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';
@@ -11,6 +11,8 @@ Além disso, nela associamos as "turrets" que serão gerados no ambiente.
 export class Environment{
 
     constructor(height, width){
+        this.turret = null;
+
         this.height = height;
         this.width = width;
 
@@ -34,7 +36,7 @@ export class Environment{
         this.rightLine = null;
         // this.buildOneTurret();
         this.conectCubesPlane();
-        this.buildOneTree();
+        this.buildOneTurret();
     }
 
     conectCubesPlane(){
@@ -44,6 +46,7 @@ export class Environment{
         
         this.leftCube = new THREE.Mesh( geometry, material ); 
         this.leftCube.position.x = -widthPlan/2 - sizeCube/2;
+        this.leftCube.receiveShadow = true;
         this.plane.add(this.leftCube);
         
         var edges = new THREE.EdgesGeometry( geometry ); 
@@ -52,6 +55,7 @@ export class Environment{
         this.leftCube.add( this.leftLine );
 
         this.rightCube = new THREE.Mesh( geometry, material);
+        this.rightCube.receiveShadow = true;
         this.rightCube.position.x = widthPlan/2 + sizeCube/2;
         
         this.plane.add(this.rightCube);
@@ -62,63 +66,40 @@ export class Environment{
 
     }
 
-    buildOneTree(){
-        var treeObj = new Tree();
-        
-        var tree = treeObj.buildTree();
-        tree.material.opacity = 1;
-        //Rotaciono para a árvore ficar em pé
-        tree.rotateX(THREE.MathUtils.degToRad(90));
+    buildOneTurret() {
+       
 
-        //Somo essa posição para o tronco da árvore não ficar abaixo do plano
-        tree.position.z += 2.5;
+            var objLoader = new OBJLoader();
 
-        //Seto a posição em x, y no (10,10)
-        tree.position.set(10, 10, tree.position.z);
+            objLoader.load("./turret2.obj", (obj) => {
+
+                obj.visible = true;
+                obj.traverse(function (child) {
+                    child.castShadow = true;
+                });
+
+                obj.traverse(function (node) {
+                    if (node.material) node.material.side = THREE.DoubleSide;
+                });
+
+                var obj = this.normalizeAndRescale(obj, 20);
+                this.turret = obj;
+                this.turret.rotateX(THREE.MathUtils.degToRad(90));
+                this.turret.rotateY(THREE.MathUtils.degToRad(90))
+                this.plane.add(this.turret);
+            });
         
-        this.plane.add(tree);
     }
 
-/* Pq isso não retorna de jeito nenhum o obj ? */
-
-    // buildOneTurret() {
-    //     var mtlLoader = new MTLLoader();
-
-    //     mtlLoader.load('./turret.mtl', function (materials) {
-    //         materials.preload();
-
-    //         var objLoader = new OBJLoader();
-    //         objLoader.setMaterials(materials);
-
-    //         objLoader.load("./turret.obj", function (obj) {
-
-    //             obj.visible = true;
-    //             obj.traverse(function (child) {
-    //                 child.castShadow = true;
-    //             });
-
-    //             obj.traverse(function (node) {
-    //                 if (node.material) node.material.side = THREE.DoubleSide;
-    //             });
-
-    //             var obj = this.normalizeAndRescale(obj, 7.0);
-    //             console.log(obj);
-
-    //             //Preciso retornar esse objeto criado.
-                
-    //         });
-    //     });
-    // }
-
-    // normalizeAndRescale(obj, newScale) {
+    normalizeAndRescale(obj, newScale) {
     
-    //     //Normaliza o objeto e multiplica por uma nova escala
-    //     var scale = getMaxSize(obj);
-    //     obj.scale.set(newScale * (1.0 / scale),
-    //         newScale * (1.0 / scale),
-    //         newScale * (1.0 / scale));
-    //     return obj;
-    // }
+        //Normaliza o objeto e multiplica por uma nova escala
+        var scale = getMaxSize(obj);
+        obj.scale.set(newScale * (1.0 / scale),
+            newScale * (1.0 / scale),
+            newScale * (1.0 / scale));
+        return obj;
+    }
     setLeftCubeOpacity(opacity){
         this.leftCube.material.opacity = opacity;
         this.leftLine.material.opacity = opacity;
