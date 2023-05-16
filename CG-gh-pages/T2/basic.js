@@ -13,9 +13,12 @@ import {  airPlaneHeight, heightPlan, numPlans, widthPlan, bulletVelocity} from 
 import { Environment } from './environment.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
+import KeyboardState from '../libs/util/KeyboardState.js';
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
+let keyboard = new KeyboardState();
+let boolSimulation = true;//simulação está rodando
 let clock = new THREE.Clock();
 let delta = 0;//segundos entre cada iteraçao do render
 let bullets = [];
@@ -311,6 +314,20 @@ function updateBullets () {
         //bullet.translateX(-delta*speed)
     });
 };
+
+function keyboardUpdate() {
+    keyboard.update();
+  
+    if ( keyboard.down("esc") ){
+        boolSimulation = !boolSimulation;
+        if(boolSimulation){            
+            document.body.style.cursor = "none";
+        }else{
+            document.body.style.cursor = null;
+        }
+    }   
+    
+}
 // Use this to show information onscreen
 let controls = new InfoBox();
 controls.add("Basic Scene");
@@ -330,6 +347,7 @@ function render()
         updateBullets();
     }
     moveAirPlane();
+    keyboardUpdate();
     updatePositionPlanes();
     requestAnimationFrame(render);
     renderer.render(scene, camera) // Render scene
