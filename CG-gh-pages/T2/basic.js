@@ -9,13 +9,16 @@ import {initRenderer,
         createLightSphere,
        } from "../libs/util/util.js";
 
-import {  airPlaneHeight, heightPlan, numPlans, widthPlan} from './variables.js';
+import {  airPlaneHeight, heightPlan, numPlans, widthPlan, bulletVelocity} from './variables.js';
 import { Environment } from './environment.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
 
 let scene, renderer, camera, material, light, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
+let clock = new THREE.Clock();
+let delta = 0;//segundos entre cada iteraçao do render
+let bullets = [];
 const lerpConfig = { destination: new THREE.Vector3(0.0, 0.0, 0.0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
 scene = new THREE.Scene();    // Create main scene
@@ -73,6 +76,7 @@ orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotati
 // Listen window size changes
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
 window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
+window.addEventListener("mousedown", onMouseDown);
 document.body.style.cursor = "none";
 
 //Cria o avião e o adiciona na cena
@@ -259,6 +263,54 @@ function moveAirPlane(){
     }
 }
 
+
+
+function onMouseDown() {
+    let bullet = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 4), new THREE.MeshBasicMaterial({
+      color: "red"
+    }));
+    
+    scene.add(bullet);
+
+    //Bullet recebe a posição do avião
+    aviao.getAirplane().getWorldPosition(bullet.position);
+    //aviao.getAirplane().getWorldQuaternion(bullet.quaternion);
+    
+    bullets.push(bullet);
+}
+
+
+const raycasterB = new THREE.Raycaster();
+const raycasterOrigin = new THREE.Vector3();
+const raycasterDirection = new THREE.Vector3();
+
+function updateBullets () {
+    [...bullets].forEach(bullet => {
+        // NOTE Raycast from each bullet and see if it hit any target compatible with the idea of being hit by a bullet
+        bullet.getWorldPosition(raycasterOrigin);
+        bullet.getWorldDirection(raycasterDirection);
+
+        raycasterB.set(raycasterOrigin, raycasterDirection);
+
+        const hits = raycasterB.intersectObjects([], true);//possivelmente a lista de objetos da cena
+
+        if (hits.length>0) {
+            const firstHitTarget = hits[0];
+
+            // NOTE React to being hit by the bullet in some way, for example:
+            // firstHitTarget.onHit();
+
+            // NOTE Remove bullet from the world
+            bullet.removeFromParent();
+
+            bullets.splice(bullets.indexOf(bullet), 1);
+        }
+
+        // NOTE If no target was hit, just travel further, apply gravity to the bullet etc.
+        bullet.position.add(raycasterDirection.multiplyScalar(-delta*bulletVelocity));
+        //bullet.translateX(-delta*speed)
+    });
+};
 // Use this to show information onscreen
 let controls = new InfoBox();
 controls.add("Basic Scene");
@@ -272,8 +324,10 @@ controls.show();
 render();
 function render()
 { 
+    delta = clock.getDelta();
     if(aviao.getAirplane()){
         aviao.getAirplane().add(aviaoHelper);
+        updateBullets();
     }
     moveAirPlane();
     updatePositionPlanes();

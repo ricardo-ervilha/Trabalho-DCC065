@@ -23,3 +23,6 @@ export const velocityReturn = 0.9;
 
 //Tamanho do cubo usado lá para ficar como bordas
 export const sizeCube = heightPlan;
+
+//velocidade das balas
+export const bulletVelocity = 50;
