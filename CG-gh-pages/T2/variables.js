@@ -25,4 +25,4 @@ export const velocityReturn = 0.9;
 export const sizeCube = heightPlan;
 
 //velocidade das balas
-export const bulletVelocity = 50;
+export const bulletVelocity = 500;

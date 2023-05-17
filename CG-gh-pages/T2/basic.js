@@ -175,6 +175,8 @@ function updatePositionPlanes(){
  * @param {*} event 
  */
 
+
+
 function onMouseMove(event){
     if(aviao.getAirplane()){
         // calculate pointer position in normalized device coordinates
@@ -191,7 +193,7 @@ function onMouseMove(event){
         if (intersects.length > 0) // Check if there is a intersection
         {
             let point = intersects[0].point; // Pick the point where interception occurrs
-
+            
             if(plane == intersects[0].object ) {
                 lerpConfig.destination.x = point.x;
                 lerpConfig.destination.y = point.y;
@@ -267,9 +269,13 @@ function moveAirPlane(){
 }
 
 
-
 function onMouseDown() {
-    let bullet = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 4), new THREE.MeshBasicMaterial({
+    let obj = {
+        bullet: null,
+        dir: null
+    }
+    
+    let bullet = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 4), new THREE.MeshBasicMaterial({
       color: "red"
     }));
     
@@ -279,7 +285,25 @@ function onMouseDown() {
     aviao.getAirplane().getWorldPosition(bullet.position);
     //aviao.getAirplane().getWorldQuaternion(bullet.quaternion);
     
-    bullets.push(bullet);
+    //Pego a diferença entre as coordenadas da câmera e do target
+    var x = camera.position.x - aviao.target.position.x;
+    var y =  camera.position.y - aviao.target.position.y;
+    var z = camera.position.z - aviao.target.position.z;
+
+    //Extraio o módulo
+    var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
+
+    //Normalizo
+    x = x / moduloDirectBullet;
+    y = y / moduloDirectBullet;
+    z = z / moduloDirectBullet;
+
+    var directionBullet = new THREE.Vector3(x,y,z);
+
+    obj.bullet = bullet;
+    obj.dir = directionBullet;
+
+    bullets.push(obj);
 }
 
 
@@ -288,10 +312,10 @@ const raycasterOrigin = new THREE.Vector3();
 const raycasterDirection = new THREE.Vector3();
 
 function updateBullets () {
-    [...bullets].forEach(bullet => {
+    [...bullets].forEach(bulletObj => {
         // NOTE Raycast from each bullet and see if it hit any target compatible with the idea of being hit by a bullet
-        bullet.getWorldPosition(raycasterOrigin);
-        bullet.getWorldDirection(raycasterDirection);
+        bulletObj.bullet.getWorldPosition(raycasterOrigin);
+        bulletObj.bullet.getWorldDirection(raycasterDirection);
 
         raycasterB.set(raycasterOrigin, raycasterDirection);
 
@@ -304,13 +328,15 @@ function updateBullets () {
             // firstHitTarget.onHit();
 
             // NOTE Remove bullet from the world
-            bullet.removeFromParent();
+            bulletObj.bullet.removeFromParent();
 
-            bullets.splice(bullets.indexOf(bullet), 1);
+            bullets.splice(bullets.indexOf(bulletObj.bullet), 1);
         }
 
         // NOTE If no target was hit, just travel further, apply gravity to the bullet etc.
-        bullet.position.add(raycasterDirection.multiplyScalar(-delta*bulletVelocity));
+        bulletObj.bullet.position.x -= bulletObj.dir.getComponent(0) * bulletVelocity * delta;
+        bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta;
+        bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta;
         //bullet.translateX(-delta*speed)
     });
 };
