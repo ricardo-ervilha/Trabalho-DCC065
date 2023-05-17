@@ -74,6 +74,13 @@ sphere.position.set(light.position.x,light.position.y,light.position.z);
 
 /*---------------------------------------------------------------------------------------------*/
 
+//---------------------------------------------------------
+//Cria o avião e o adiciona na cena
+let aviao = new Airplane();
+aviao.buildAirPlane(scene);
+
+/********************************************************************************************** */
+
 orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
 
 // Listen window size changes
@@ -82,9 +89,6 @@ window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atuali
 window.addEventListener("mousedown", onMouseDown);
 document.body.style.cursor = "none";
 
-//Cria o avião e o adiciona na cena
-let aviao = new Airplane();
-aviao.buildAirPlane(scene);
 
 // -- Cria o raycaster que será usado para fazer interseção entre o plano e a posição do mouse
 let raycaster = new THREE.Raycaster();
@@ -108,6 +112,7 @@ axesHelper.translateY(10)
 scene.add(axesHelper);
 
 var queue = new Queue();
+var torretas = [];
 // O oitavo plano será o que estará na parte de reposição.
 for(var i = 0; i < numPlans; i++){
     let environment = new Environment(heightPlan, 100);
@@ -122,6 +127,14 @@ for(var i = 0; i < numPlans; i++){
 
     scene.add(plane);
 
+    let conjunto = {
+        torreta: environment.getTurrets(),
+        bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
+    }
+
+    conjunto.bb.setFromObject(conjunto.torreta);
+
+    torretas.push(conjunto);
     queue.enqueue(environment);
 }
 
@@ -234,22 +247,6 @@ function rotateAirplane(){
     }
 }
 
-let asset = {
-    obj: aviao.getAirplane(),
-    bb: new THREE.Box3()
-} 
-
-var aviaoHelper = createBBHelper(asset.bb, 'white');
-
-
-function createBBHelper(bb, color)
-{
-   // Create a bounding box helper
-   let helper = new THREE.Box3Helper( bb, color );
-   scene.add( helper );
-   return helper;
-}
-
 /**
  * Função para mover o avião para  a posição do mouse
  */
@@ -272,13 +269,17 @@ function moveAirPlane(){
 function onMouseDown() {
     let obj = {
         bullet: null,
-        dir: null
+        dir: null,
+        bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
     }
     
     let bullet = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 4), new THREE.MeshBasicMaterial({
       color: "red"
     }));
-    
+
+    obj.bullet = bullet;
+    obj.bb.setFromObject(obj.bullet);
+
     scene.add(bullet);
 
     //Bullet recebe a posição do avião
@@ -300,7 +301,6 @@ function onMouseDown() {
 
     var directionBullet = new THREE.Vector3(x,y,z);
 
-    obj.bullet = bullet;
     obj.dir = directionBullet;
 
     bullets.push(obj);
@@ -364,17 +364,45 @@ controls.add("* Right button to translate (pan)");
 controls.add("* Scroll to zoom in/out.");
 controls.show();
 
+function checkColisions(){
+    bullets.forEach( (bulletObj) => {
+        torretas.forEach ( (torretaObj) => {
+            if(bulletObj.bb.intersectsBox(torretaObj.bb)){
+                animation1(torretaObj.torreta);
+            }
+        })
+    })
+}
+
+function animation1(obj){
+    obj.material.transparent = true;
+    obj.material.opacity = 0.5;
+    obj.material.color = new THREE.Color(Math.random() * 0xffffff);
+  }
+
 render();
 function render()
 { 
+    torretas.forEach( (conjunto) => {
+        conjunto.bb.copy( conjunto.torreta.geometry.boundingBox).applyMatrix4(conjunto.torreta.matrixWorld);
+    });
+
+    bullets.forEach( (bulletObj) => {
+        bulletObj.bb.copy( bulletObj.bullet.geometry.boundingBox).applyMatrix4(bulletObj.bullet.matrixWorld);
+    })
+
+    checkColisions();
+    
     delta = clock.getDelta();
     if(aviao.getAirplane()){
-        aviao.getAirplane().add(aviaoHelper);
         updateBullets();
     }
+    
     moveAirPlane();
     keyboardUpdate();
+    
     updatePositionPlanes();
+    
     requestAnimationFrame(render);
     renderer.render(scene, camera) // Render scene
 }

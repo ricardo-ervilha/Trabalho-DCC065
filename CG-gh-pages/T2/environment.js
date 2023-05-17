@@ -4,6 +4,7 @@ import { Tree } from './tree.js';
 import { sizeCube, velocityPlan, widthPlan } from './variables.js';
 import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js';
+import { MeshBasicMaterial } from '../build/three.module.js';
 /*
 Classe responsável por modelar o ambiente com seus planos retangulares e cubos nas bordas.
 Além disso, nela associamos as "turrets" que serão gerados no ambiente.
@@ -69,25 +70,31 @@ export class Environment{
     buildOneTurret() {
        
 
-            var objLoader = new OBJLoader();
+            // var objLoader = new OBJLoader();
 
-            objLoader.load("./turret2.obj", (obj) => {
+            // objLoader.load("./turret2.obj", (obj) => {
 
-                obj.visible = true;
-                obj.traverse(function (child) {
-                    child.castShadow = true;
-                });
+            //     obj.visible = true;
+            //     obj.traverse(function (child) {
+            //         child.castShadow = true;
+            //     });
 
-                obj.traverse(function (node) {
-                    if (node.material) node.material.side = THREE.DoubleSide;
-                });
+            //     obj.traverse(function (node) {
+            //         if (node.material) node.material.side = THREE.DoubleSide;
+            //     });
 
-                var obj = this.normalizeAndRescale(obj, 20);
-                this.turret = obj;
-                this.turret.rotateX(THREE.MathUtils.degToRad(90));
-                this.turret.rotateY(THREE.MathUtils.degToRad(90))
-                this.plane.add(this.turret);
-            });
+            //     var obj = this.normalizeAndRescale(obj, 20);
+            //     this.turret = obj;
+            //     this.turret.rotateX(THREE.MathUtils.degToRad(90));
+            //     this.turret.rotateY(THREE.MathUtils.degToRad(90))
+            //     this.plane.add(this.turret);
+            // });
+
+            var esferaGeom = new THREE.SphereGeometry(5, 20, 20);
+            var material = new MeshBasicMaterial();
+            this.turret = new THREE.Mesh(esferaGeom, material);
+            this.plane.add(this.turret);
+            this.turret.position.z = 5;
         
     }
 
@@ -120,6 +127,9 @@ export class Environment{
         return this.plane;
     }
 
+    getTurrets(){
+        return this.turret;
+    }
 
     getGrid(){
         return this.grid;

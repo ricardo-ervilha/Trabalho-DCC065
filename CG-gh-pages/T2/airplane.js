@@ -41,6 +41,8 @@ export class Airplane {
         this.airplane = obj;
         this.airplane.add(new THREE.AxesHelper( 12 ));
         scene.add(obj);
+
+        
         this.buildTarget(scene);
 
     },this.onProgress, this.onError);
