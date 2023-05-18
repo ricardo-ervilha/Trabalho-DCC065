@@ -1,5 +1,4 @@
 import * as THREE from  'three';
-import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
 import {initRenderer, 
         initCamera,
         initDefaultBasicLight,
@@ -14,7 +13,7 @@ import { Environment } from './environment.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
-
+import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
 let scene, renderer, camera, material, light, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
 let keyboard = new KeyboardState();
@@ -40,6 +39,9 @@ document.getElementById("webgl-output").appendChild(renderer.domElement);
 renderer.setClearColor("rgb(30, 30, 42)");
 
 camera = initCamera(new THREE.Vector3(0, 30, 100)); // Init camera in this position
+// // Enable mouse rotation, pan, zoom etc.
+var cameraControl = new OrbitControls( camera, renderer.domElement );
+
 material = setDefaultMaterial(); // create a basic material
 
 /*---------------------------------------------------------------------------------------------*/
@@ -80,8 +82,6 @@ let aviao = new Airplane();
 aviao.buildAirPlane(scene);
 
 /********************************************************************************************** */
-
-orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
 
 // Listen window size changes
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
@@ -206,7 +206,7 @@ function onMouseMove(event){
         {
             let point = intersects[0].point; // Pick the point where interception occurrs
             
-            if(invisiblePlane == intersects[0].object ) {
+            if(point.x>-45 && point.x<45 && invisiblePlane == intersects[0].object ) {
                 lerpConfig.destination.x = point.x;
                 lerpConfig.destination.y = point.y;
             }
@@ -261,6 +261,40 @@ function moveAirPlane(){
         // console.log("Ângulo em graus em torno do eixo X: " + anguloX);
         // console.log("Ângulo em graus em torno do eixo Y: " + anguloY);
         // console.log("Ângulo em graus em torno do eixo Z: " + anguloZ);
+    }
+}
+
+/*
+    Função para fazer pequenos movimentos na camera quando o avião chegar próximo às bordas
+*/
+function moveCamera(){
+
+    if(aviao.getAirplane().position.x < -25){
+        if(cameraControl.target.x > -5){
+            cameraControl.update();
+            cameraControl.target.x -= 0.1;
+        }
+    }
+
+    if(aviao.getAirplane().position.x > 25){
+        if(cameraControl.target.x < 5){
+            cameraControl.update();
+            cameraControl.target.x += 0.1;
+        }
+    }
+
+    console.log("y avião: "+aviao.getAirplane().position.y)
+    console.log("y camera: "+cameraControl.target.y)
+    if(aviao.getAirplane().position.y > 30){
+        if(cameraControl.target.y < 15){
+            cameraControl.update();
+            cameraControl.target.y += 0.1;
+        }
+    }else {
+        if(cameraControl.target.y > 0){
+            cameraControl.update();
+            cameraControl.target.y -= 0.1;
+        }
     }
 }
 
@@ -397,9 +431,14 @@ function render()
     delta = clock.getDelta();
     if(aviao.getAirplane()){
         updateBullets();
+
+        moveAirPlane();
+
+        moveCamera();
+
     }
     
-    moveAirPlane();
+    
     keyboardUpdate();
     
     updatePositionPlanes();
