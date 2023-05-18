@@ -35,14 +35,15 @@ export class Airplane {
 
         obj = this.normalizeAndRescale(obj, scale);
         //obj = this.fixPosition(obj);
-        obj.position.y = airPlaneHeight;
+        
         obj.rotateY(MathUtils.degToRad(-90));
         this.originalRotation = obj.rotation.clone();
         this.airplane = obj;
+        
         this.airplane.add(new THREE.AxesHelper( 12 ));
                 
         this.buildTarget(scene);
-
+        
         scene.add(obj);
 
     },this.onProgress, this.onError);
@@ -83,7 +84,7 @@ export class Airplane {
     const material = new THREE.LineBasicMaterial( { color: 0x008800 } );
     this.target = new THREE.LineSegments( geometry, material );
     this.target.position.z = invisiblePlanePosition.z;
-
+  
     scene.add(this.target)
   }
 

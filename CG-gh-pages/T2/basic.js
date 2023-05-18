@@ -14,7 +14,7 @@ import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
 import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
-let scene, renderer, camera, material, light, orbit; // Initial variables
+let scene, renderer, camera, material, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
 let keyboard = new KeyboardState();
 let boolSimulation = true;//simulação está rodando
@@ -30,7 +30,6 @@ let color = "rgb(0, 0, 0)";
 
 renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true; //Habilita sombras
-renderer.shadowMapSoft = true;
 renderer.shadowMap.type = THREE.PCFShadowMap; //Tipo de sombra
 
 renderer.setClearColor(new THREE.Color(color));
@@ -47,20 +46,23 @@ material = setDefaultMaterial(); // create a basic material
 /*---------------------------------------------------------------------------------------------*/
 
 /* Luz Direcional */
-let lightIntensity = 1.0;
-let lightPosition = new THREE.Vector3(30, 80, 20);
-let lightColor = "rgb(255, 255, 255)";
 
-light = new THREE.DirectionalLight(0xffffff, 1);
+var light = new THREE.DirectionalLight(0xffffff, 1);
 
-light.position.set(30, 50, 20);
+light.position.set(50, 70, 30); //Luz no X e Y positivos, sombra está a esquerda do avião.
+light.shadow.mapSize.width = 2048;
+light.shadow.mapSize.height = 2048;
 light.castShadow = true; // Permite que a luz projete sombras
 light.shadow.camera.left = -widthPlan/2;
-light.shadow.camera.right = widthPlan/2;
+light.shadow.camera.right = widthPlan/2 * 19;
 light.shadow.camera.near = 1;
-light.shadow.camera.far = light.position.y + 50;
+light.shadow.camera.far = light.position.y + 100;
 light.shadow.camera.top = 100;
 light.shadow.camera.bottom = -100;
+light.shadow.radius = 2;
+
+light.target.position.set(-50,0,25);
+light.target.updateMatrixWorld();
 
 const helper = new THREE.DirectionalLightHelper( light, 3, 0xffff00 );
 const shadowHelper = new THREE.CameraHelper(light.shadow.camera);
@@ -416,10 +418,8 @@ function checkColisions(){
 }
 
 function animation1(obj){
-    obj.material.transparent = true;
-    obj.material.opacity = 0.5;
-    obj.material.color = new THREE.Color(Math.random() * 0xffffff);
-  }
+    obj.scale.set(0,0,0);
+}
 
 render();
 function render()

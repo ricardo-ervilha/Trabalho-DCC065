@@ -95,6 +95,7 @@ export class Environment{
             this.turret = new THREE.Mesh(esferaGeom, material);
             this.plane.add(this.turret);
             this.turret.position.z = 5;
+            this.turret.castShadow = true;
         
     }
 
