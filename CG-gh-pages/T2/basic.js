@@ -268,7 +268,6 @@ function moveAirPlane(){
     Função para fazer pequenos movimentos na camera quando o avião chegar próximo às bordas
 */
 function moveCamera(){
-
     if(aviao.getAirplane().position.x < -25){
         if(cameraControl.target.x > -5){
             cameraControl.update();
@@ -295,6 +294,13 @@ function moveCamera(){
             cameraControl.update();
             cameraControl.target.y -= 0.1;
         }
+    }
+}
+
+function moveCamera2(){
+    if(aviao.getAirplane().position.x < -25 || aviao.getAirplane().position.x > 25){
+        cameraControl.target.lerp(aviao.getAirplane().position, 0.01);
+        cameraControl.update();
     }
 }
 
@@ -434,7 +440,9 @@ function render()
 
         moveAirPlane();
 
+    
         moveCamera();
+        
 
     }
     
