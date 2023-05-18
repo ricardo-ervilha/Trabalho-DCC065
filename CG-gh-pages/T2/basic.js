@@ -9,7 +9,7 @@ import {initRenderer,
         createLightSphere,
        } from "../libs/util/util.js";
 
-import {  airPlaneHeight, heightPlan, numPlans, widthPlan, bulletVelocity} from './variables.js';
+import {  airPlaneHeight, heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition} from './variables.js';
 import { Environment } from './environment.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
@@ -86,7 +86,7 @@ orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotati
 // Listen window size changes
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
 window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
-window.addEventListener("mousedown", onMouseDown);
+window.addEventListener("click", onMouseClick);
 document.body.style.cursor = "none";
 
 
@@ -94,17 +94,16 @@ document.body.style.cursor = "none";
 let raycaster = new THREE.Raycaster();
 
 // Cria o plano que será usado para fazer interseção com o mouse
-let plane, planeGeometry, planeMaterial;
+let invisiblePlane, planeGeometry, planeMaterial;
 
-planeGeometry = new THREE.PlaneGeometry(widthPlan, 30, 1, 1);
+planeGeometry = new THREE.PlaneGeometry(widthPlan, 60, 1, 1);
 planeMaterial = new THREE.MeshLambertMaterial();
 // planeMaterial.side = THREE.DoubleSide;
 planeMaterial.transparent = true;
-planeMaterial.opacity = 0.;
-plane = new THREE.Mesh(planeGeometry, planeMaterial);
-plane.translateY(30);//move para cima para evitar que o avião passe abaixo do plano
-plane.translateZ(-30);
-scene.add(plane);
+planeMaterial.opacity = 0.5;
+invisiblePlane = new THREE.Mesh(planeGeometry, planeMaterial);
+invisiblePlane.position.set(invisiblePlanePosition.x, invisiblePlanePosition.y, invisiblePlanePosition.z)
+scene.add(invisiblePlane);
 
 // Show axes (parameter is size of each axis)
 let axesHelper = new THREE.AxesHelper( 12 );
@@ -201,13 +200,13 @@ function onMouseMove(event){
         raycaster.setFromCamera(pointer, camera);
 
         // calculate plane intersecting the picking ray
-        let intersects = raycaster.intersectObject(plane);
+        let intersects = raycaster.intersectObject(invisiblePlane);
 
         if (intersects.length > 0) // Check if there is a intersection
         {
             let point = intersects[0].point; // Pick the point where interception occurrs
             
-            if(plane == intersects[0].object ) {
+            if(invisiblePlane == intersects[0].object ) {
                 lerpConfig.destination.x = point.x;
                 lerpConfig.destination.y = point.y;
             }
@@ -253,7 +252,7 @@ function rotateAirplane(){
 function moveAirPlane(){
     if(aviao.getAirplane()){
         aviao.getAirplane().position.lerp(lerpConfig.destination, lerpConfig.alpha);
-        aviao.target.position.copy(lerpConfig.destination);
+        aviao.target.position.set(lerpConfig.destination.x, lerpConfig.destination.y, invisiblePlanePosition.z);
         rotateAirplane();
         
         anguloX =  Math.round(aviao.getAirplane().rotation.x * 180 / Math.PI);
@@ -266,44 +265,46 @@ function moveAirPlane(){
 }
 
 
-function onMouseDown() {
-    let obj = {
-        bullet: null,
-        dir: null,
-        bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
+function onMouseClick(event) {
+    if(event.button == 0){
+        let obj = {
+            bullet: null,
+            dir: null,
+            bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
+        }
+        
+        let bullet = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 4), new THREE.MeshBasicMaterial({
+          color: "red"
+        }));
+    
+        obj.bullet = bullet;
+        obj.bb.setFromObject(obj.bullet);
+    
+        scene.add(bullet);
+    
+        //Bullet recebe a posição do avião
+        aviao.getAirplane().getWorldPosition(bullet.position);
+        //aviao.getAirplane().getWorldQuaternion(bullet.quaternion);
+        
+        //Pego a diferença entre as coordenadas da câmera e do target
+        var x = camera.position.x - aviao.target.position.x;
+        var y =  camera.position.y - aviao.target.position.y;
+        var z = camera.position.z - aviao.target.position.z;
+    
+        //Extraio o módulo
+        var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
+    
+        //Normalizo
+        x = x / moduloDirectBullet;
+        y = y / moduloDirectBullet;
+        z = z / moduloDirectBullet;
+    
+        var directionBullet = new THREE.Vector3(x,y,z);
+    
+        obj.dir = directionBullet;
+    
+        bullets.push(obj);
     }
-    
-    let bullet = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 4), new THREE.MeshBasicMaterial({
-      color: "red"
-    }));
-
-    obj.bullet = bullet;
-    obj.bb.setFromObject(obj.bullet);
-
-    scene.add(bullet);
-
-    //Bullet recebe a posição do avião
-    aviao.getAirplane().getWorldPosition(bullet.position);
-    //aviao.getAirplane().getWorldQuaternion(bullet.quaternion);
-    
-    //Pego a diferença entre as coordenadas da câmera e do target
-    var x = camera.position.x - aviao.target.position.x;
-    var y =  camera.position.y - aviao.target.position.y;
-    var z = camera.position.z - aviao.target.position.z;
-
-    //Extraio o módulo
-    var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
-
-    //Normalizo
-    x = x / moduloDirectBullet;
-    y = y / moduloDirectBullet;
-    z = z / moduloDirectBullet;
-
-    var directionBullet = new THREE.Vector3(x,y,z);
-
-    obj.dir = directionBullet;
-
-    bullets.push(obj);
 }
 
 

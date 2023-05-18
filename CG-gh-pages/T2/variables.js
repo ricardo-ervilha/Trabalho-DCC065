@@ -3,7 +3,7 @@
 export const scale = 12.0;
 
 //Altura que o avião ficará do plano -> Usado na gameController
-export const airPlaneHeight = 10;
+export const airPlaneHeight = 50;
 
 //Velocidade do plano -> Usado na environment
 export const velocityPlan = 1.0;
@@ -26,3 +26,6 @@ export const sizeCube = heightPlan;
 
 //velocidade das balas
 export const bulletVelocity = 500;
+
+//posição do plano invisível
+export const invisiblePlanePosition = {x:0, y:30, z: -10};

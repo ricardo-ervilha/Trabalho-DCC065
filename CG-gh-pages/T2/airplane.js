@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
-import { airPlaneHeight, scale} from './variables.js';
+import { airPlaneHeight, scale, invisiblePlanePosition} from './variables.js';
 import {getMaxSize} from "../libs/util/util.js";
 import { AxesHelper, MathUtils, Scene } from '../build/three.module.js';
 export class Airplane {
@@ -40,10 +40,10 @@ export class Airplane {
         this.originalRotation = obj.rotation.clone();
         this.airplane = obj;
         this.airplane.add(new THREE.AxesHelper( 12 ));
-        scene.add(obj);
-
-        
+                
         this.buildTarget(scene);
+
+        scene.add(obj);
 
     },this.onProgress, this.onError);
   }
@@ -81,13 +81,10 @@ export class Airplane {
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
     const material = new THREE.LineBasicMaterial( { color: 0x008800 } );
-    const mesh = new THREE.LineSegments( geometry, material );
-    //mesh.position.set(this.airplane.x,this.airplane.y,this.airplane.z)
-    this.airplane.add(mesh);
-    
+    this.target = new THREE.LineSegments( geometry, material );
+    this.target.position.z = invisiblePlanePosition.z;
 
-    this.target = mesh;
-    scene.add(mesh)
+    scene.add(this.target)
   }
 
   onError() {}
