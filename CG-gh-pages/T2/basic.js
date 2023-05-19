@@ -1,12 +1,12 @@
 import * as THREE from  'three';
 import {initRenderer, 
-        initCamera,
-        initDefaultBasicLight,
-        setDefaultMaterial,
-        InfoBox,
-        onWindowResize,
-        createLightSphere,
-       } from "../libs/util/util.js";
+    initCamera,
+    initDefaultBasicLight,
+    setDefaultMaterial,
+    InfoBox,
+    onWindowResize,
+    createLightSphere,
+} from "../libs/util/util.js";
 
 import {  airPlaneHeight, heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition} from './variables.js';
 import { Environment } from './environment.js';
@@ -133,7 +133,7 @@ for(var i = 0; i < numPlans; i++){
         bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
         loaded: false
     }
-    
+
     torretas.push(conjunto);
     queue.enqueue(environment);
 }
@@ -206,7 +206,7 @@ function onMouseMove(event){
         if (intersects.length > 0) // Check if there is a intersection
         {
             let point = intersects[0].point; // Pick the point where interception occurrs
-            
+
             if(point.x>-45 && point.x<45 && invisiblePlane == intersects[0].object ) {
                 lerpConfig.destination.x = point.x;
                 lerpConfig.destination.y = point.y;
@@ -236,10 +236,10 @@ function limitAngleRotation(angleOld, angleNew){
  * Função para fazer a rotação do avião
  */
 function rotateAirplane(){
-    
+
     // Distância entre a posição do avião e do mouse
     let dist = Math.round(lerpConfig.destination.distanceTo(aviao.getAirplane().position));
-    
+
     let distX = lerpConfig.destination.x - aviao.getAirplane().position.x;
     let distY = lerpConfig.destination.y - aviao.getAirplane().position.y;
     let distZ = lerpConfig.destination.z - aviao.getAirplane().position.z;
@@ -257,7 +257,7 @@ function rotateAirplane(){
 
     if(aviao.getAirplane() && dist > 4){
         //Fazer rotação em função da distancia, quant maior a distancia mais rapido rotaciona
-        
+
         if(distX > 0){
             aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse)));
             aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse*0.4)));
@@ -334,37 +334,37 @@ function onMouseClick(event) {
             dir: null,
             bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
         }
-        
+
         let bullet = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 4), new THREE.MeshBasicMaterial({
-          color: "red"
+            color: "red"
         }));
-    
+
         obj.bullet = bullet;
         obj.bb.setFromObject(obj.bullet);
-    
+
         scene.add(bullet);
-    
+
         //Bullet recebe a posição do avião
         aviao.getAirplane().getWorldPosition(bullet.position);
         //aviao.getAirplane().getWorldQuaternion(bullet.quaternion);
-        
+
         //Pego a diferença entre as coordenadas da câmera e do target
         var x = camera.position.x - aviao.target.position.x;
         var y =  camera.position.y - aviao.target.position.y;
         var z = camera.position.z - aviao.target.position.z;
-    
+
         //Extraio o módulo
         var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
-    
+
         //Normalizo
         x = x / moduloDirectBullet;
         y = y / moduloDirectBullet;
         z = z / moduloDirectBullet;
-    
+
         var directionBullet = new THREE.Vector3(x,y,z);
-    
+
         obj.dir = directionBullet;
-    
+
         bullets.push(obj);
     }
 }
@@ -406,7 +406,7 @@ function updateBullets () {
 
 function keyboardUpdate() {
     keyboard.update();
-  
+
     if ( keyboard.down("esc") ){
         boolSimulation = !boolSimulation;
         if(boolSimulation){            
@@ -414,8 +414,8 @@ function keyboardUpdate() {
         }else{
             document.body.style.cursor = null;
         }
-    }   
-    
+    }
+
 }
 // Use this to show information onscreen
 let controls = new InfoBox();
@@ -444,52 +444,52 @@ function animation1(obj){
 }
 
 render();
-function render()
-{ 
-    bullets.forEach( (bulletObj) => {
-        bulletObj.bb.setFromObject( bulletObj.bullet );
-    })
+function render() {
 
-    torretas.forEach( (conjunto) => {
-        if(conjunto.torreta != null && !conjunto.loaded){
-            conjunto.bb.setFromObject(conjunto.torreta);
-            conjunto.loaded = true;
-
-        }else if(conjunto.torreta != null && conjunto.loaded){
-            conjunto.bb.setFromObject(conjunto.torreta);
-        }
-    })
-
-    for(var i = 0; i < numPlans-1; i++){
-        var teste = queue.peek(i).getTurrets();
-        if(teste != null && torretas[i].torreta == null){
-            torretas[i].torreta = teste;
-        }
-    }
-
-    checkColisions();
-    
-    delta = clock.getDelta();
-    if(aviao.getAirplane()){
-        updateBullets();
-
-        moveAirPlane();
-
-    
-        moveCamera();
-        
-
-    }
-    
-    
-    keyboardUpdate();
-    
-    updatePositionPlanes();
-    
     console.log(boolSimulation)
-    
-    requestAnimationFrame(render);
-    if(boolSimulation){
+
+    if (boolSimulation) {
+        if (aviao.getAirplane()) {
+            bullets.forEach((bulletObj) => {
+                bulletObj.bb.setFromObject(bulletObj.bullet);
+            })
+
+            torretas.forEach((conjunto) => {
+                if (conjunto.torreta != null && !conjunto.loaded) {
+                    conjunto.bb.setFromObject(conjunto.torreta);
+                    conjunto.loaded = true;
+
+                } else if (conjunto.torreta != null && conjunto.loaded) {
+                    conjunto.bb.setFromObject(conjunto.torreta);
+                }
+            })
+
+            for (var i = 0; i < numPlans - 1; i++) {
+                var teste = queue.peek(i).getTurrets();
+                if (teste != null && torretas[i].torreta == null) {
+                    torretas[i].torreta = teste;
+                }
+            }
+
+            checkColisions();
+
+            delta = clock.getDelta();
+            updateBullets();
+
+            moveAirPlane();
+
+
+            moveCamera();
+
+            updatePositionPlanes();
+        }
+
         renderer.render(scene, camera) // Render scene
-    }  
+    }
+
+
+    keyboardUpdate();
+
+    requestAnimationFrame(render);
+
 }
