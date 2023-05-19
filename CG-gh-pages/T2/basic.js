@@ -129,12 +129,11 @@ for(var i = 0; i < numPlans; i++){
     scene.add(plane);
 
     let conjunto = {
-        torreta: environment.getTurrets(),
-        bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
+        torreta: null,
+        bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
+        loaded: false
     }
-
-    conjunto.bb.setFromObject(conjunto.torreta);
-
+    
     torretas.push(conjunto);
     queue.enqueue(environment);
 }
@@ -284,8 +283,6 @@ function moveCamera(){
         }
     }
 
-    console.log("y avião: "+aviao.getAirplane().position.y)
-    console.log("y camera: "+cameraControl.target.y)
     if(aviao.getAirplane().position.y > 30){
         if(cameraControl.target.y < 15){
             cameraControl.update();
@@ -410,8 +407,10 @@ controls.show();
 function checkColisions(){
     bullets.forEach( (bulletObj) => {
         torretas.forEach ( (torretaObj) => {
-            if(bulletObj.bb.intersectsBox(torretaObj.bb)){
-                animation1(torretaObj.torreta);
+            if(torretaObj.torreta != null){
+                if(bulletObj.bb.intersectsBox(torretaObj.bb)){
+                    animation1(torretaObj.torreta);
+                }
             }
         })
     })
@@ -424,13 +423,26 @@ function animation1(obj){
 render();
 function render()
 { 
-    torretas.forEach( (conjunto) => {
-        conjunto.bb.copy( conjunto.torreta.geometry.boundingBox).applyMatrix4(conjunto.torreta.matrixWorld);
-    });
-
     bullets.forEach( (bulletObj) => {
-        bulletObj.bb.copy( bulletObj.bullet.geometry.boundingBox).applyMatrix4(bulletObj.bullet.matrixWorld);
+        bulletObj.bb.setFromObject( bulletObj.bullet );
     })
+
+    torretas.forEach( (conjunto) => {
+        if(conjunto.torreta != null && !conjunto.loaded){
+            conjunto.bb.setFromObject(conjunto.torreta);
+            conjunto.loaded = true;
+
+        }else if(conjunto.torreta != null && conjunto.loaded){
+            conjunto.bb.setFromObject(conjunto.torreta);
+        }
+    })
+
+    for(var i = 0; i < numPlans-1; i++){
+        var teste = queue.peek(i).getTurrets();
+        if(teste != null && torretas[i].torreta == null){
+            torretas[i].torreta = teste;
+        }
+    }
 
     checkColisions();
     

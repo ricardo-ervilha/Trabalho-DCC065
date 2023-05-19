@@ -52,7 +52,7 @@ export class Environment{
         
         var edges = new THREE.EdgesGeometry( geometry ); 
         
-        this.leftLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true } ) ); 
+        this.leftLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 50} ) ); 
         this.leftCube.add( this.leftLine );
 
         this.rightCube = new THREE.Mesh( geometry, material);
@@ -61,41 +61,39 @@ export class Environment{
         
         this.plane.add(this.rightCube);
         
-        this.rightLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true }));
+        this.rightLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 50 }));
         
         this.rightCube.add( this.rightLine );
 
     }
 
     buildOneTurret() {
-       
+            var objLoader = new OBJLoader();
 
-            // var objLoader = new OBJLoader();
+            objLoader.load("./turret2.obj", (obj) => {
 
-            // objLoader.load("./turret2.obj", (obj) => {
+                obj.visible = true;
+                obj.traverse(function (child) {
+                    child.castShadow = true;
+                });
 
-            //     obj.visible = true;
-            //     obj.traverse(function (child) {
-            //         child.castShadow = true;
-            //     });
+                obj.traverse(function (node) {
+                    if (node.material) node.material.side = THREE.DoubleSide;
+                });
 
-            //     obj.traverse(function (node) {
-            //         if (node.material) node.material.side = THREE.DoubleSide;
-            //     });
+                var obj = this.normalizeAndRescale(obj, 20);
+                this.turret = obj;
+                this.turret.rotateX(THREE.MathUtils.degToRad(90));
+                this.turret.rotateY(THREE.MathUtils.degToRad(90))
+                this.plane.add(this.turret);
+            });
 
-            //     var obj = this.normalizeAndRescale(obj, 20);
-            //     this.turret = obj;
-            //     this.turret.rotateX(THREE.MathUtils.degToRad(90));
-            //     this.turret.rotateY(THREE.MathUtils.degToRad(90))
-            //     this.plane.add(this.turret);
-            // });
-
-            var esferaGeom = new THREE.SphereGeometry(5, 20, 20);
-            var material = new MeshBasicMaterial();
-            this.turret = new THREE.Mesh(esferaGeom, material);
-            this.plane.add(this.turret);
-            this.turret.position.z = 5;
-            this.turret.castShadow = true;
+            // var esferaGeom = new THREE.SphereGeometry(5, 20, 20);
+            // var material = new MeshBasicMaterial();
+            // this.turret = new THREE.Mesh(esferaGeom, material);
+            // this.plane.add(this.turret);
+            // this.turret.position.z = 5;
+            // this.turret.castShadow = true;
         
     }
 
