@@ -28,6 +28,6 @@ export const sizeCube = heightPlan;
 export const bulletVelocity = 500;
 
 //posição do plano invisível
-export const invisiblePlanePosition = {x:0, y:30, z: -10};
+export const invisiblePlanePosition = {x:0, y:30, z: -60};
 
 //angulo maximo de rotação do avião

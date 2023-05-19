@@ -1,7 +1,7 @@
 import * as THREE from  'three';
 import { createGroundPlaneWired, getMaxSize } from "../libs/util/util.js";
 import { Tree } from './tree.js';
-import { sizeCube, velocityPlan, widthPlan } from './variables.js';
+import { heightPlan, sizeCube, velocityPlan, widthPlan } from './variables.js';
 import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js';
 import { MeshBasicMaterial } from '../build/three.module.js';
@@ -13,6 +13,7 @@ export class Environment{
 
     constructor(height, width){
         this.turret = null;
+        this.trees = [];
 
         this.height = height;
         this.width = width;
@@ -38,6 +39,7 @@ export class Environment{
         // this.buildOneTurret();
         this.conectCubesPlane();
         this.buildOneTurret();
+        this.buildTrees();
     }
 
     conectCubesPlane(){
@@ -67,6 +69,42 @@ export class Environment{
 
     }
 
+    getRandomArbitrary(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    verificationDistance(x,y){
+        let dist;
+        for(var i = 0; i < this.trees.length; i++){
+            dist = Math.sqrt(Math.pow(x-this.trees[i].position[0], 2) + Math.pow(y-this.trees[i].position[1], 2));
+            if(dist <= 14)
+                return true;
+        }
+        return false;
+    }
+
+    buildTrees(){
+        let x, y;
+        for(var i = 0; i < 5; i++){
+            let treeInstance =  new Tree();
+            let tree = treeInstance.getFoundation();
+            tree.rotateX(THREE.MathUtils.degToRad(90));
+            x = this.getRandomArbitrary(-widthPlan/2 + 20, widthPlan/2 -20);
+            y = this.getRandomArbitrary(-heightPlan/2 + 20, heightPlan/2 - 20);
+            while(this.verificationDistance(x, y)){
+                x = this.getRandomArbitrary(-widthPlan/2 + 20, widthPlan/2 - 20);
+                y = this.getRandomArbitrary(-heightPlan/2 + 20, heightPlan/2 - 20);
+            }
+            tree.position.set(x, y, 2.5);
+            this.plane.add(tree);
+            let obj = {
+                treeObj: treeInstance,
+                position: [x,y]
+            }
+            this.trees.push(obj);
+        }
+    }
+
     buildOneTurret() {
             var objLoader = new OBJLoader();
 
@@ -75,6 +113,7 @@ export class Environment{
                 obj.visible = true;
                 obj.traverse(function (child) {
                     child.castShadow = true;
+                    child.receiveShadow = true;
                 });
 
                 obj.traverse(function (node) {
@@ -84,7 +123,8 @@ export class Environment{
                 var obj = this.normalizeAndRescale(obj, 20);
                 this.turret = obj;
                 this.turret.rotateX(THREE.MathUtils.degToRad(90));
-                this.turret.rotateY(THREE.MathUtils.degToRad(90))
+                this.turret.rotateY(THREE.MathUtils.degToRad(90));
+                this.turret.transparent = true;
                 this.plane.add(this.turret);
             });
 
@@ -95,6 +135,12 @@ export class Environment{
             // this.turret.position.z = 5;
             // this.turret.castShadow = true;
         
+    }
+
+    setOpacityTrees(val){
+        this.trees.forEach(element => {
+            element.treeObj.setOpacity(val);
+        });
     }
 
     normalizeAndRescale(obj, newScale) {

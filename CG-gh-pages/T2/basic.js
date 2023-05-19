@@ -45,7 +45,10 @@ material = setDefaultMaterial(); // create a basic material
 
 /*---------------------------------------------------------------------------------------------*/
 
-/* Luz Direcional */
+/* Luz Direcional e Ambiente*/
+let ambientColor = "rgb(100,100,100)";
+let ambientLight = new THREE.AmbientLight(ambientColor);
+scene.add( ambientLight );
 
 var light = new THREE.DirectionalLight(0xffffff, 1);
 
@@ -71,11 +74,6 @@ scene.add(light);
 scene.add(helper);
 scene.add(shadowHelper);
 
-const geometry3 = new THREE.SphereGeometry( 0.3, 32, 16 ); 
-const material3 = new THREE.MeshBasicMaterial( { color: 0xffff00 } ); 
-const sphere = new THREE.Mesh( geometry3, material3 ); scene.add( sphere );
-sphere.position.set(light.position.x,light.position.y,light.position.z);
-
 /*---------------------------------------------------------------------------------------------*/
 
 //---------------------------------------------------------
@@ -99,7 +97,7 @@ let raycaster = new THREE.Raycaster();
 let invisiblePlane, planeGeometry, planeMaterial;
 
 planeGeometry = new THREE.PlaneGeometry(widthPlan, 60, 1, 1);
-planeMaterial = new THREE.MeshLambertMaterial();
+planeMaterial = new THREE.MeshPhongMaterial();
 // planeMaterial.side = THREE.DoubleSide;
 planeMaterial.transparent = true;
 planeMaterial.opacity = 0.5;
@@ -168,17 +166,43 @@ function updatePositionPlanes(){
             env.setLeftCubeOpacity(0);
             env.setRightCubeOpacity(0);
             env.setPlaneOpacity(0);
+            env.setOpacityTrees(0);
+            if(env.getTurrets() != null){
+                env.getTurrets().traverse( function( node ) {
+                    if( node.material ) {
+                        node.material.opacity = 0.0;
+                        node.material.transparent = true;
+                    }
+                });
+            }
         }
         if(n <= x && n >= y )
         {   
             env.setLeftCubeOpacity((n-y)/(heightPlan));
             env.setRightCubeOpacity((n-y)/(heightPlan));
             env.setPlaneOpacity((n-y)/(heightPlan));
-
+            env.setOpacityTrees((n-y)/(heightPlan));
+            if(env.getTurrets() != null){
+                env.getTurrets().traverse( function( node ) {
+                    if( node.material ) {
+                        node.material.opacity = (n-y)/(heightPlan);
+                        node.material.transparent = true;
+                    }
+                });
+            }
         } else if (n > x){
             env.setLeftCubeOpacity(1);
             env.setRightCubeOpacity(1);
             env.setPlaneOpacity(1);
+            env.setOpacityTrees(1);
+            if(env.getTurrets() != null){
+                env.getTurrets().traverse( function( node ) {
+                    if( node.material ) {
+                        node.material.opacity = 1.0;
+                        node.material.transparent = true;
+                    }
+                });
+            }
         }
     }
 }
@@ -187,8 +211,6 @@ function updatePositionPlanes(){
  * Função chamada quando o evento mover o mouse é disparado
  * @param {*} event 
  */
-
-
 
 function onMouseMove(event){
     if(aviao.getAirplane()){
@@ -335,7 +357,7 @@ function onMouseClick(event) {
             bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
         }
 
-        let bullet = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 4), new THREE.MeshBasicMaterial({
+        let bullet = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 4), new THREE.MeshPhongMaterial({
             color: "red"
         }));
 
@@ -368,7 +390,6 @@ function onMouseClick(event) {
         bullets.push(obj);
     }
 }
-
 
 const raycasterB = new THREE.Raycaster();
 const raycasterOrigin = new THREE.Vector3();
