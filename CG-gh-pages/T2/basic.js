@@ -116,7 +116,7 @@ var queue = new Queue();
 var torretas = [];
 // O oitavo plano será o que estará na parte de reposição.
 for(var i = 0; i < numPlans; i++){
-    let environment = new Environment(heightPlan, 100);
+    let environment = new Environment(heightPlan, widthPlan);
 
     let plane = environment.getPlane();
     //O primeiro plano será renderizado SEMPRE na posição (3h)/2  em z.
@@ -217,9 +217,20 @@ function onMouseMove(event){
 
 let sensibilidadeMouse = 0.05;
 let velocidadeRetorno = 0.05;
-var anguloX;
-var anguloY;
-var anguloZ;
+let anguloX;
+let anguloY;
+let anguloZ;
+
+/*
+    Limitar angulo de rotação do avião
+*/
+function limitAngleRotation(angleOld, angleNew){
+    return angleNew;
+    if(angleOld>45)
+        return 0;
+    return angleNew;
+}
+
 
 /**
  * Função para fazer a rotação do avião
@@ -228,18 +239,37 @@ function rotateAirplane(){
     
     // Distância entre a posição do avião e do mouse
     let dist = Math.round(lerpConfig.destination.distanceTo(aviao.getAirplane().position));
+    
+    let distX = lerpConfig.destination.x - aviao.getAirplane().position.x;
+    let distY = lerpConfig.destination.y - aviao.getAirplane().position.y;
+    let distZ = lerpConfig.destination.z - aviao.getAirplane().position.z;
+
+    anguloX =  Math.round(aviao.getAirplane().rotation.x * 180 / Math.PI);
+    anguloY =  Math.round(aviao.getAirplane().rotation.y * 180 / Math.PI);
+    anguloZ =  Math.round(aviao.getAirplane().rotation.z * 180 / Math.PI);
+
+    // console.log("Ângulo em graus em torno do eixo X: " + anguloX);
+    //console.log("Ângulo em graus em torno do eixo Y: " + anguloY);
+    // console.log("Ângulo em graus em torno do eixo Z: " + anguloZ);
+
+    // //Por algum motivo ainda não identificado, rotaciono em X mas o angulo modificado é o Y
+    // aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(1));
 
     if(aviao.getAirplane() && dist > 4){
         //Fazer rotação em função da distancia, quant maior a distancia mais rapido rotaciona
-        if(lerpConfig.destination.x > aviao.getAirplane().position.x){
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-dist * sensibilidadeMouse));
+        
+        if(distX > 0){
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse)));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse*0.4)));
         }else{
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(dist * sensibilidadeMouse));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse)));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse*0.4)));
         }
-        if(lerpConfig.destination.y > aviao.getAirplane().position.y){
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(-dist*sensibilidadeMouse)*0.4);
+
+        if(distY > 0){
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloZ,-distY*sensibilidadeMouse*0.04)));
         }else{
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(dist*sensibilidadeMouse*0.4));
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloZ,-distY*sensibilidadeMouse*0.04)));
         }
     } else {
         let quat = new THREE.Quaternion().setFromEuler(aviao.getOriginalRotation());
@@ -255,13 +285,6 @@ function moveAirPlane(){
         aviao.getAirplane().position.lerp(lerpConfig.destination, lerpConfig.alpha);
         aviao.target.position.set(lerpConfig.destination.x, lerpConfig.destination.y, invisiblePlanePosition.z);
         rotateAirplane();
-        
-        anguloX =  Math.round(aviao.getAirplane().rotation.x * 180 / Math.PI);
-        anguloY =  Math.round(aviao.getAirplane().rotation.y * 180 / Math.PI);
-        anguloZ =  Math.round(aviao.getAirplane().rotation.z * 180 / Math.PI);
-        // console.log("Ângulo em graus em torno do eixo X: " + anguloX);
-        // console.log("Ângulo em graus em torno do eixo Y: " + anguloY);
-        // console.log("Ângulo em graus em torno do eixo Z: " + anguloZ);
     }
 }
 
@@ -463,6 +486,10 @@ function render()
     
     updatePositionPlanes();
     
+    console.log(boolSimulation)
+    
     requestAnimationFrame(render);
-    renderer.render(scene, camera) // Render scene
+    if(boolSimulation){
+        renderer.render(scene, camera) // Render scene
+    }  
 }

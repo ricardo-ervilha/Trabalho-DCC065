@@ -52,7 +52,7 @@ export class Environment{
         
         var edges = new THREE.EdgesGeometry( geometry ); 
         
-        this.leftLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 50} ) ); 
+        this.leftLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 5} ) ); 
         this.leftCube.add( this.leftLine );
 
         this.rightCube = new THREE.Mesh( geometry, material);
@@ -61,7 +61,7 @@ export class Environment{
         
         this.plane.add(this.rightCube);
         
-        this.rightLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 50 }));
+        this.rightLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 5 }));
         
         this.rightCube.add( this.rightLine );
 
