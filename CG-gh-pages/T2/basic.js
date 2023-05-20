@@ -265,8 +265,8 @@ let anguloZ;
 /*
     Limitar angulo de rotação do avião
 */
-function limitAngleRotation(angleOld, angleNew){
-    if(angleOld<-45 || angleOld>45){
+function limitAngleRotation(angleOld, angleNew, maxAngle){
+    if(angleOld<-maxAngle || angleOld>maxAngle){
         return 0;
     }
     return angleNew;
@@ -304,17 +304,17 @@ function rotateAirplane(){
         //Fazer rotação em função da distancia, quant maior a distancia mais rapido rotaciona
 
         if(distX > 0){
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse)));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse*0.4)));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse, 45)));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse*0.4, 10)));
         }else{
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse)));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse*0.4)));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse,45)));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse*0.4, 10)));
         }
 
         if(distY > 0){
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloX,-distY*sensibilidadeMouse*0.04)));
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloX,-distY*sensibilidadeMouse*0.04, 10)));
         }else{
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloX,-distY*sensibilidadeMouse*0.04)));
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloX,-distY*sensibilidadeMouse*0.04,10)));
         }
     } else {
         let quat = new THREE.Quaternion().setFromEuler(aviao.getOriginalRotation());
