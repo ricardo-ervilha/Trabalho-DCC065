@@ -36,16 +36,16 @@ renderer.setClearColor(new THREE.Color(color));
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("webgl-output").appendChild(renderer.domElement);
 renderer.setClearColor("rgb(30, 30, 42)");
-
-camera = initCamera(new THREE.Vector3(0, 30, 70));
+camera = initCamera(new THREE.Vector3(0, 45, 70));
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls( camera, renderer.domElement );
-// cameraControl.enablePan = false;
-// cameraControl.enableRotate = true;
-// cameraControl.enableZoom = false;
+cameraControl.enablePan = false;
+cameraControl.enableRotate = false;
+cameraControl.enableZoom = false;
+cameraControl.target.y = 15;
+cameraControl.update();
 material = setDefaultMaterial(); // create a basic material
-
 /*---------------------------------------------------------------------------------------------*/
 
 /* Luz Direcional e Ambiente*/

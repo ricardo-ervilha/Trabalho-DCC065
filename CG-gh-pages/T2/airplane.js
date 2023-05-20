@@ -1,91 +1,109 @@
 import * as THREE from "three";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
-import { airPlaneHeight, scale, invisiblePlanePosition} from './variables.js';
-import {getMaxSize} from "./util.js";
-import { AxesHelper, MathUtils, Scene } from '../build/three.module.js';
+import { airPlaneHeight, scale, invisiblePlanePosition } from "./variables.js";
+import { getMaxSize } from "./util.js";
+import { AxesHelper, MathUtils, Scene } from "../build/three.module.js";
 export class Airplane {
-  
   constructor() {
     this.airplane = null;
     this.originalRotation = null;
     this.target = null;
   }
 
-  getAirplane(){
+  getAirplane() {
     return this.airplane;
   }
 
-  getOriginalRotation(){
+  getOriginalRotation() {
     return this.originalRotation;
   }
 
   buildAirPlane(scene) {
-    var loader = new GLTFLoader( );
-    loader.load( 'airplane.glb', ( gltf ) => {
+    var loader = new GLTFLoader();
+    loader.load(
+      "airplane.glb",
+      (gltf) => {
         var obj = gltf.scene;
-        obj.traverse( function ( child ) {
-        if ( child ) {
+        obj.traverse(function (child) {
+          if (child) {
             child.castShadow = true;
-        }
+          }
         });
-        obj.traverse( function( node )
-        {
-        if( node.material ) node.material.side = THREE.DoubleSide;
+        obj.traverse(function (node) {
+          if (node.material) node.material.side = THREE.DoubleSide;
         });
 
         obj = this.normalizeAndRescale(obj, scale);
         //obj = this.fixPosition(obj);
-        
+
         obj.rotateY(MathUtils.degToRad(-90));
         this.originalRotation = obj.rotation.clone();
         this.airplane = obj;
-        
-        this.airplane.add(new THREE.AxesHelper( 12 ));
-                
-        this.buildTarget(scene);
-        
-        scene.add(obj);
 
-    },this.onProgress, this.onError);
+        this.airplane.add(new THREE.AxesHelper(12));
+
+        this.buildTarget(scene);
+
+        scene.add(obj);
+        obj.translateY(20);
+      },
+      this.onProgress,
+      this.onError
+    );
   }
 
-  buildTarget(scene){
+  buildTarget(scene) {
     const geometry = new THREE.BufferGeometry();
-    //   const vertices = new Float32Array( [
-    //   0, -2.0,  -2.0, 
-    //   0, -2.0,  2.0, 
+    const vertices = new Float32Array([
+      //linha superior esquerda
+      -2.0, 2.0, 0, 
+      -1.0, 2.0, 0,
 
-    //   .0, 2.0,  -2.0, 
-    //   0,  2.0,  2.0, 
+      //linha superior direita
+      1.0, 2.0, 0, 
+      2.0, 2.0, 0,
 
-    //   0, -2.0,  -2.0,
-    //   0,  2.0,  -2.0, 
+      //linha inferior esquerda
+      -2.0, -2.0, 0, 
+      -1.0, -2.0, 0,
 
-    //   0, -2.0,  2.0, 
-    //   0,  2.0,  2.0,
-    // ] );
+      //linha inferior direita
+      1.0, -2.0, 0, 
+      2.0, -2.0, 0,
 
-    const vertices = new Float32Array( [
-    -1.0, -1.0,  0,
-    1.0, -1.0,  0, 
+      // linha lateral superior esquerda
+      -2.0, 2.0, 0, 
+      -2.0, 1.0, 0,
 
-    -1.0, 1.0,  0, 
-    1.0,  1.0,  0, 
+      // linha lateral inferior esquerda
+      -2.0, -2.0, 0, 
+      -2.0, -1.0, 0,
 
-    -1.0, -1.0,  0, 
-    -1.0,  1.0,  0,
+      // linha lateral superior direita
+      2.0, 2.0, 0, 
+      2.0, 1.0, 0,
 
-    1.0, -1.0,  0, 
-    1.0,  1.0,  0
-    ] );
+      // linha lateral inferior direita
+      2.0, -2.0, 0, 
+      2.0, -1.0, 0,
+    ]);
+
+    const geometryCircle = new THREE.CircleGeometry(0.25, 32);
+    const materialCircle = new THREE.MeshBasicMaterial({ color: 'red' });
+    const circle = new THREE.Mesh(geometryCircle, materialCircle);
+    
 
     // itemSize = 3 because there are 3 values (components) per vertex
-    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const material = new THREE.LineBasicMaterial( { color: 0x008800 } );
-    this.target = new THREE.LineSegments( geometry, material );
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+    const material = new THREE.LineBasicMaterial({
+      color: "black",
+      linewidth: 2,
+    });
+    this.target = new THREE.LineSegments(geometry, material);
     this.target.position.z = invisiblePlanePosition.z;
-  
-    scene.add(this.target)
+    this.target.add(circle)
+
+    scene.add(this.target);
   }
 
   onError() {}
