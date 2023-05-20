@@ -352,6 +352,7 @@ function moveCamera() {
 
 function onMouseClick(event) {
     if(event.button == 0){
+        if (!boolSimulation) boolSimulation = true;
         let obj = {
             bullet: null,
             dir: null,
