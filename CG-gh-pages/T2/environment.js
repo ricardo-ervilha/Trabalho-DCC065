@@ -12,6 +12,10 @@ Além disso, nela associamos as "turrets" que serão gerados no ambiente.
 export class Environment{
 
     constructor(height, width){
+
+        //Controla a velocidade do plano
+        this.velocity = velocityPlan;
+
         this.turret = null;
         this.trees = [];
 
@@ -172,8 +176,12 @@ export class Environment{
         return this.grid;
     }
 
+    changeVelocity(velocity){
+        this.velocity = velocity;
+    }
+
     //Movimenta a posição do plano
     move(){
-        this.plane.position.z += velocityPlan;
+        this.plane.position.z += this.velocity;
     }
 }

@@ -1,3 +1,6 @@
+
+
+
 import * as THREE from  'three';
 import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
 import {initRenderer, 
@@ -12,7 +15,7 @@ import { LineSegmentsGeometry } from "https://unpkg.com/three@0.131.0/examples/j
 import { LineMaterial } from "https://unpkg.com/three@0.131.0/examples/jsm/lines/LineMaterial?module";
 import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js';
-        
+   
 let scene, renderer, camera, material, light, orbit; // Initial variables
 scene = new THREE.Scene();    // Create main scene
 renderer = initRenderer();    // Init a basic renderer
@@ -32,49 +35,20 @@ scene.add( axesHelper );
 let plane = createGroundPlaneXZ(20, 20)
 scene.add(plane);
 
+
 // create a cube
+let cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
+let cube = new THREE.Mesh(cubeGeometry, material);
+// position the cube
+cube.position.set(0.0, 2.0, 0.0);
+// add the cube to the scene
+scene.add(cube);
 
-const manager = new THREE.LoadingManager();
-manager.onStart = function ( ) {
-	console.log( 'Started loading file: ');
-};
-
-manager.onLoad = function ( ) {
-	console.log( 'Loading complete!');
-
-  torretaDoSatan.translateX(10);
-};
-
-manager.onProgress = function ( ) {
-	console.log( 'Loading file: ');
-  
-};
-
-manager.onError = function ( ) {
-	console.log( 'There was an error loading ' );
-};
-
-var torretaDoSatan = null;
-
-const loader = new OBJLoader( manager );
-loader.load( "./turret2.obj", (obj) => {
-
-    obj.visible = true;
-    obj.traverse(function (child) {
-        child.castShadow = true;
-    });
-
-    obj.traverse(function (node) {
-        if (node.material) node.material.side = THREE.DoubleSide;
-    });
-
-
-    obj.rotateX(THREE.MathUtils.degToRad(90));
-    obj.rotateY(THREE.MathUtils.degToRad(90));
-    torretaDoSatan = obj;
-    scene.add(obj);
-});
-
+// Configuração da animação
+const initialScale = cube.scale.clone();
+const targetScale = new THREE.Vector3(0, 0, 0);
+const animationDuration = 3000; // Duração da animação em milissegundos
+const animationStartTime = Date.now();
 
 // Use this to show information onscreen
 let controls = new InfoBox();
@@ -89,9 +63,103 @@ let controls = new InfoBox();
 render();
 function render()
 {
+  if(cube != null){
+    
+  // Calcula o tempo decorrido desde o início da animação
+  const elapsedTime = Date.now() - animationStartTime;
+
+  // Calcula a interpolação para a escala atual do cubo
+  const t = Math.min(elapsedTime / animationDuration, 1); // Limita o valor de t a 1
+  const currentScale = initialScale.clone().lerp(targetScale, t);
+
+  // Atualiza a escala do cubo
+  cube.scale.copy(currentScale);
+
+  }
+
   requestAnimationFrame(render);
   renderer.render(scene, camera) // Render scene
 }
+
+// let scene, renderer, camera, material, light, orbit; // Initial variables
+// scene = new THREE.Scene();    // Create main scene
+// renderer = initRenderer();    // Init a basic renderer
+// camera = initCamera(new THREE.Vector3(0, 15, 30)); // Init camera in this position
+// material = setDefaultMaterial(); // create a basic material
+// light = initDefaultBasicLight(scene); // Create a basic light to illuminate the scene
+// orbit = new OrbitControls( camera, renderer.domElement ); // Enable mouse rotation, pan, zoom etc.
+
+// // Listen window size changes
+// window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
+
+// // Show axes (parameter is size of each axis)
+// let axesHelper = new THREE.AxesHelper( 12 );
+// scene.add( axesHelper );
+
+// // create the ground plane
+// let plane = createGroundPlaneXZ(20, 20)
+// scene.add(plane);
+
+// // create a cube
+
+// const manager = new THREE.LoadingManager();
+// manager.onStart = function ( ) {
+// 	console.log( 'Started loading file: ');
+// };
+
+// manager.onLoad = function ( ) {
+// 	console.log( 'Loading complete!');
+
+//   torretaDoSatan.translateX(10);
+// };
+
+// manager.onProgress = function ( ) {
+// 	console.log( 'Loading file: ');
+  
+// };
+
+// manager.onError = function ( ) {
+// 	console.log( 'There was an error loading ' );
+// };
+
+// var torretaDoSatan = null;
+
+// const loader = new OBJLoader( manager );
+// loader.load( "./turret2.obj", (obj) => {
+
+//     obj.visible = true;
+//     obj.traverse(function (child) {
+//         child.castShadow = true;
+//     });
+
+//     obj.traverse(function (node) {
+//         if (node.material) node.material.side = THREE.DoubleSide;
+//     });
+
+
+//     obj.rotateX(THREE.MathUtils.degToRad(90));
+//     obj.rotateY(THREE.MathUtils.degToRad(90));
+//     torretaDoSatan = obj;
+//     scene.add(obj);
+// });
+
+
+// // Use this to show information onscreen
+// let controls = new InfoBox();
+//   controls.add("Basic Scene");
+//   controls.addParagraph();
+//   controls.add("Use mouse to interact:");
+//   controls.add("* Left button to rotate");
+//   controls.add("* Right button to translate (pan)");
+//   controls.add("* Scroll to zoom in/out.");
+//   controls.show();
+
+// render();
+// function render()
+// {
+//   requestAnimationFrame(render);
+//   renderer.render(scene, camera) // Render scene
+// }
 
 
 // import * as THREE from  'three';

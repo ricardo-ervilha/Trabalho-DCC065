@@ -13,6 +13,7 @@ import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
 import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
+import { velocityPlan } from './variables.js';
 let scene, renderer, camera, material, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
 let keyboard = new KeyboardState();
@@ -132,7 +133,10 @@ for(var i = 0; i < numPlans; i++){
     let conjunto = {
         torreta: null,
         bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
-        loaded: false
+        loaded: false,
+        animation: false,
+        initialScale: null,
+        animationStartTime: 0
     }
 
     torretas.push(conjunto);
@@ -152,8 +156,8 @@ function updatePositionPlanes(){
 
         //Se plano está no 5h/2 mover ele lá para frente
 
-        if(plane.position.z == (5*heightPlan)/2){
-            plane.position.z = (3*heightPlan)/2 - (numPlans-1) * heightPlan;
+        if(plane.position.z >= (5*heightPlan)/2){
+            plane.position.z = ((3*heightPlan)/2 - (numPlans-1) * heightPlan) - ((5*heightPlan)/2 - plane.position.z);
         }
 
         //Dados x(limite inferior), y(limite superior); com x < y e um n(posição do plano)
@@ -442,9 +446,27 @@ function keyboardUpdate() {
         }else{
             document.body.style.cursor = null;
         }
+    }else if ( keyboard.down("0") ){
+        for(var i = 0; i < queue.size(); i++){
+            queue.peek(i).changeVelocity(velocityPlan);
+        }
+    } 
+    else if ( keyboard.down("1") ){
+        for(var i = 0; i < queue.size(); i++){
+            queue.peek(i).changeVelocity(2.);
+        }
+    } else if ( keyboard.down("2") ){
+        for(var i = 0; i < queue.size(); i++){
+            queue.peek(i).changeVelocity(3.);
+        }
+    } else if( keyboard.down("3") ){
+        for(var i = 0; i < queue.size(); i++){
+            queue.peek(i).changeVelocity(4.);
+        }
     }
 
 }
+
 // Use this to show information onscreen
 let controls = new InfoBox();
 controls.add("Basic Scene");
@@ -460,16 +482,17 @@ function checkColisions(){
         torretas.forEach ( (torretaObj) => {
             if(torretaObj.torreta != null){
                 if(bulletObj.bb.intersectsBox(torretaObj.bb)){
-                    animation1(torretaObj.torreta);
+                    torretaObj.animation = true;
+                    torretaObj.initialScale = torretaObj.torreta.scale.clone();
+                    torretaObj.animationStartTime = Date.now();
                 }
             }
         })
     })
 }
 
-function animation1(obj){
-    obj.scale.set(0,0,0);
-}
+const targetScale = new THREE.Vector3(0, 0, 0);
+const animationDuration = 400; 
 
 render();
 function render() {
@@ -488,6 +511,23 @@ function render() {
 
                 } else if (conjunto.torreta != null && conjunto.loaded) {
                     conjunto.bb.setFromObject(conjunto.torreta);
+                } 
+                
+                if(conjunto.torreta != null && conjunto.animation == true){
+                    if(conjunto.torreta.scale == targetScale){
+                        console.log('Entrou');
+                        conjunto.animation = false;
+                    }else{
+                        // Calcula o tempo decorrido desde o início da animação
+                        const elapsedTime = Date.now() - conjunto.animationStartTime;
+
+                        // Calcula a interpolação para a escala atual do cubo
+                        const t = Math.min(elapsedTime / animationDuration, 1); // Limita o valor de t a 1
+                        const currentScale = conjunto.initialScale.clone().lerp(targetScale, t);
+                        console.log(currentScale);
+                        // Atualiza a escala da torreta
+                        conjunto.torreta.scale.copy(currentScale);
+                    }
                 }
             })
 
