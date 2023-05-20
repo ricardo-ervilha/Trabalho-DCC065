@@ -1,14 +1,13 @@
 import * as THREE from  'three';
-import {initRenderer, 
-    initCamera,
-    initDefaultBasicLight,
+import {initRenderer,
     setDefaultMaterial,
     InfoBox,
-    onWindowResize,
-    createLightSphere,
+    onWindowResize
 } from "../libs/util/util.js";
 
-import {  airPlaneHeight, heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition} from './variables.js';
+import {initCamera} from "./camera.js";
+
+import {  heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition} from './variables.js';
 import { Environment } from './environment.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
@@ -37,10 +36,13 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("webgl-output").appendChild(renderer.domElement);
 renderer.setClearColor("rgb(30, 30, 42)");
 
-camera = initCamera(new THREE.Vector3(0, 30, 100)); // Init camera in this position
-// // Enable mouse rotation, pan, zoom etc.
-var cameraControl = new OrbitControls( camera, renderer.domElement );
+camera = initCamera(new THREE.Vector3(0, 30, 70));
 
+// Enable mouse rotation, pan, zoom etc.
+var cameraControl = new OrbitControls( camera, renderer.domElement );
+// cameraControl.enablePan = false;
+// cameraControl.enableRotate = true;
+// cameraControl.enableZoom = false;
 material = setDefaultMaterial(); // create a basic material
 
 /*---------------------------------------------------------------------------------------------*/
@@ -100,7 +102,7 @@ planeGeometry = new THREE.PlaneGeometry(widthPlan, 60, 1, 1);
 planeMaterial = new THREE.MeshPhongMaterial();
 // planeMaterial.side = THREE.DoubleSide;
 planeMaterial.transparent = true;
-planeMaterial.opacity = 0.5;
+planeMaterial.opacity = 0.;
 invisiblePlane = new THREE.Mesh(planeGeometry, planeMaterial);
 invisiblePlane.position.set(invisiblePlanePosition.x, invisiblePlanePosition.y, invisiblePlanePosition.z)
 scene.add(invisiblePlane);
@@ -313,41 +315,40 @@ function moveAirPlane(){
 /*
     Função para fazer pequenos movimentos na camera quando o avião chegar próximo às bordas
 */
-function moveCamera(){
-    if(aviao.getAirplane().position.x < -25){
-        if(cameraControl.target.x > -5){
+function moveCamera() {
+    if (aviao.getAirplane().position.x < -25) {
+        if (cameraControl.target.x > -5) {
             cameraControl.update();
             cameraControl.target.x -= 0.1;
+            camera.position.x -= 0.1;
         }
     }
 
-    if(aviao.getAirplane().position.x > 25){
-        if(cameraControl.target.x < 5){
+    if (aviao.getAirplane().position.x > 25) {
+        if (cameraControl.target.x < 5) {
             cameraControl.update();
             cameraControl.target.x += 0.1;
+            camera.position.x += 0.1;
         }
     }
 
-    if(aviao.getAirplane().position.y > 30){
-        if(cameraControl.target.y < 15){
+    console.log("Avião y : "+aviao.getAirplane().position.y)
+    console.log("Camera Target y : "+cameraControl.target.y)
+    console.log("Camera position y : "+camera.position.y)
+    if (aviao.getAirplane().position.y > 25) {
+        if (cameraControl.target.y < 15) {
             cameraControl.update();
             cameraControl.target.y += 0.1;
+            camera.position.y += 0.1;
         }
-    }else {
-        if(cameraControl.target.y > 0){
+    } else {
+        if (cameraControl.target.y > 0) {
             cameraControl.update();
             cameraControl.target.y -= 0.1;
+            camera.position.y -= 0.1;
         }
     }
 }
-
-function moveCamera2(){
-    if(aviao.getAirplane().position.x < -25 || aviao.getAirplane().position.x > 25){
-        cameraControl.target.lerp(aviao.getAirplane().position, 0.01);
-        cameraControl.update();
-    }
-}
-
 
 function onMouseClick(event) {
     if(event.button == 0){
@@ -467,8 +468,7 @@ function animation1(obj){
 render();
 function render() {
 
-    console.log(boolSimulation)
-
+    //console.log(camera)
     if (boolSimulation) {
         if (aviao.getAirplane()) {
             bullets.forEach((bulletObj) => {
