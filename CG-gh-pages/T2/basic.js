@@ -36,16 +36,16 @@ renderer.setClearColor(new THREE.Color(color));
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("webgl-output").appendChild(renderer.domElement);
 renderer.setClearColor("rgb(30, 30, 42)");
-camera = initCamera(new THREE.Vector3(0, 45, 70));
+
+camera = initCamera(new THREE.Vector3(0, 30, 70));
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls( camera, renderer.domElement );
-cameraControl.enablePan = false;
-cameraControl.enableRotate = false;
-cameraControl.enableZoom = false;
-cameraControl.target.y = 15;
-cameraControl.update();
+// cameraControl.enablePan = false;
+// cameraControl.enableRotate = true;
+// cameraControl.enableZoom = false;
 material = setDefaultMaterial(); // create a basic material
+
 /*---------------------------------------------------------------------------------------------*/
 
 /* Luz Direcional e Ambiente*/
@@ -118,7 +118,12 @@ var queue = new Queue();
 var torretas = [];
 // O oitavo plano será o que estará na parte de reposição.
 for(var i = 0; i < numPlans; i++){
-    let environment = new Environment(heightPlan, widthPlan);
+    var environment;
+    if(i == 2 || i == 4 || i == 6 || i == 8){
+        environment = new Environment(heightPlan, widthPlan, true);
+    }else{
+        environment = new Environment(heightPlan, widthPlan, false);
+    }
 
     let plane = environment.getPlane();
     //O primeiro plano será renderizado SEMPRE na posição (3h)/2  em z.
@@ -158,6 +163,11 @@ function updatePositionPlanes(){
 
         if(plane.position.z >= (5*heightPlan)/2){
             plane.position.z = ((3*heightPlan)/2 - (numPlans-1) * heightPlan) - ((5*heightPlan)/2 - plane.position.z);
+            if(i == 2 || i == 4 || i == 6 || i == 8){
+                if(torretas[i/2 - 1].torreta){   
+                    console.log(torretas[i/2 - 1].torreta.scale);
+                }
+            }
         }
 
         //Dados x(limite inferior), y(limite superior); com x < y e um n(posição do plano)
@@ -472,19 +482,20 @@ let controls = new InfoBox();
 controls.add("Basic Scene");
 controls.addParagraph();
 controls.add("Use mouse to interact:");
-controls.add("* Left button to rotate");
-controls.add("* Right button to translate (pan)");
-controls.add("* Scroll to zoom in/out.");
+controls.add("* Left button to shoot");
 controls.show();
 
 function checkColisions(){
-    bullets.forEach( (bulletObj) => {
+    bullets.forEach( (bulletObj, indexBullet) => {
         torretas.forEach ( (torretaObj) => {
             if(torretaObj.torreta != null){
                 if(bulletObj.bb.intersectsBox(torretaObj.bb)){
                     torretaObj.animation = true;
                     torretaObj.initialScale = torretaObj.torreta.scale.clone();
                     torretaObj.animationStartTime = Date.now();
+                    bullets.splice(indexBullet, 1);
+                    scene.remove(bulletObj.bullet);
+                    
                 }
             }
         })
@@ -492,7 +503,14 @@ function checkColisions(){
 }
 
 const targetScale = new THREE.Vector3(0, 0, 0);
-const animationDuration = 400; 
+const animationDuration = 350; 
+
+function removeBullet(bullet, index){
+    if(bullet.position.y < 0 || bullet.position.y > heightPlan || bullet.position.x > widthPlan/2 || bullet.position.x < -widthPlan/2 || bullet.position.z < ((heightPlan)/2) - heightPlan *(numPlans-4) ) {
+        bullets.splice(index, 1);
+        scene.remove(bullet);
+    }
+}
 
 render();
 function render() {
@@ -500,23 +518,25 @@ function render() {
     //console.log(camera)
     if (boolSimulation) {
         if (aviao.getAirplane()) {
-            bullets.forEach((bulletObj) => {
+            bullets.forEach((bulletObj, index) => {
                 bulletObj.bb.setFromObject(bulletObj.bullet);
-            })
 
-            torretas.forEach((conjunto) => {
+                removeBullet(bulletObj.bullet, index);
+            })
+            torretas.forEach((conjunto, index) => {
+                
                 if (conjunto.torreta != null && !conjunto.loaded) {
                     conjunto.bb.setFromObject(conjunto.torreta);
                     conjunto.loaded = true;
-
                 } else if (conjunto.torreta != null && conjunto.loaded) {
                     conjunto.bb.setFromObject(conjunto.torreta);
                 } 
                 
                 if(conjunto.torreta != null && conjunto.animation == true){
                     if(conjunto.torreta.scale == targetScale){
-                        console.log('Entrou');
                         conjunto.animation = false;
+                        conjunto.torreta.scale.set(1,1,1);
+                        conjunto.torreta.scale.multiplyScalar(20);
                     }else{
                         // Calcula o tempo decorrido desde o início da animação
                         const elapsedTime = Date.now() - conjunto.animationStartTime;
@@ -524,14 +544,15 @@ function render() {
                         // Calcula a interpolação para a escala atual do cubo
                         const t = Math.min(elapsedTime / animationDuration, 1); // Limita o valor de t a 1
                         const currentScale = conjunto.initialScale.clone().lerp(targetScale, t);
-                        console.log(currentScale);
+                        
                         // Atualiza a escala da torreta
                         conjunto.torreta.scale.copy(currentScale);
                     }
                 }
             })
 
-            for (var i = 0; i < numPlans - 1; i++) {
+            //For que preenche as torretas do conjunto.torreta para eles deixarem de ser nulos
+            for (var i = 0; i < numPlans; i++) {
                 var teste = queue.peek(i).getTurrets();
                 if (teste != null && torretas[i].torreta == null) {
                     torretas[i].torreta = teste;

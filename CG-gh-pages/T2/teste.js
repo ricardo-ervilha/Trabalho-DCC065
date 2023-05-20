@@ -44,11 +44,8 @@ cube.position.set(0.0, 2.0, 0.0);
 // add the cube to the scene
 scene.add(cube);
 
-// Configuração da animação
-const initialScale = cube.scale.clone();
-const targetScale = new THREE.Vector3(0, 0, 0);
-const animationDuration = 3000; // Duração da animação em milissegundos
-const animationStartTime = Date.now();
+cube.scale.set(0., 0., 0.);
+cube.scale.set(1, 1, 1);
 
 // Use this to show information onscreen
 let controls = new InfoBox();
@@ -63,20 +60,6 @@ let controls = new InfoBox();
 render();
 function render()
 {
-  if(cube != null){
-    
-  // Calcula o tempo decorrido desde o início da animação
-  const elapsedTime = Date.now() - animationStartTime;
-
-  // Calcula a interpolação para a escala atual do cubo
-  const t = Math.min(elapsedTime / animationDuration, 1); // Limita o valor de t a 1
-  const currentScale = initialScale.clone().lerp(targetScale, t);
-
-  // Atualiza a escala do cubo
-  cube.scale.copy(currentScale);
-
-  }
-
   requestAnimationFrame(render);
   renderer.render(scene, camera) // Render scene
 }

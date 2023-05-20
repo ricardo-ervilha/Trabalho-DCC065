@@ -10,9 +10,16 @@ Classe responsável por modelar o ambiente com seus planos retangulares e cubos 
 Além disso, nela associamos as "turrets" que serão gerados no ambiente.
 */
 export class Environment{
+    static count = 0;
+    static TurretPositionsGeneration = [
+        [-widthPlan/2+15, heightPlan/2 - 15],
+        [40, 30],
+        [-10, -heightPlan/2 + 30],
+        [7, 13]
+    ];
 
-    constructor(height, width){
-
+    constructor(height, width, temTorreta){
+        
         //Controla a velocidade do plano
         this.velocity = velocityPlan;
 
@@ -40,9 +47,11 @@ export class Environment{
         this.rightCube = null;
         this.leftLine = null;
         this.rightLine = null;
-        // this.buildOneTurret();
+
         this.conectCubesPlane();
-        this.buildOneTurret();
+        if(temTorreta){
+            this.buildOneTurret();    
+        }
         this.buildTrees();
     }
 
@@ -77,27 +86,36 @@ export class Environment{
         return Math.random() * (max - min) + min;
     }
 
-    verificationDistance(x,y){
+    verificationDistanceTrees(x,y){
         let dist;
         for(var i = 0; i < this.trees.length; i++){
             dist = Math.sqrt(Math.pow(x-this.trees[i].position[0], 2) + Math.pow(y-this.trees[i].position[1], 2));
-            if(dist <= 14)
+            if(dist > 14)
                 return true;
         }
         return false;
     }
 
+    verificationDistanceTurret(x,y){
+        let dist;
+        for(var i = 0; i < Environment.count; i++){
+            dist = Math.sqrt(Math.pow(x - Environment.TurretPositionsGeneration[i][0], 2) + Math.pow(y - Environment.TurretPositionsGeneration[i][1], 2));
+            if(dist > 15)
+                return true;
+        }
+    }
+
     buildTrees(){
         let x, y;
-        for(var i = 0; i < 5; i++){
+        for(var i = 0; i < 3; i++){
             let treeInstance =  new Tree();
             let tree = treeInstance.getFoundation();
             tree.rotateX(THREE.MathUtils.degToRad(90));
-            x = this.getRandomArbitrary(-widthPlan/2 + 20, widthPlan/2 -20);
-            y = this.getRandomArbitrary(-heightPlan/2 + 20, heightPlan/2 - 20);
-            while(this.verificationDistance(x, y)){
-                x = this.getRandomArbitrary(-widthPlan/2 + 20, widthPlan/2 - 20);
-                y = this.getRandomArbitrary(-heightPlan/2 + 20, heightPlan/2 - 20);
+            x = this.getRandomArbitrary(-widthPlan/2 + 5, widthPlan/2 - 5);
+            y = this.getRandomArbitrary(-heightPlan/2 + 5, heightPlan/2 -5 );
+            while(this.verificationDistanceTrees(x, y) &&  this.verificationDistanceTurret(x,y)){
+                x = this.getRandomArbitrary(-widthPlan/2 + 5, widthPlan/2 - 5);
+                y = this.getRandomArbitrary(-heightPlan/2 + 5, heightPlan/2 - 5);
             }
             tree.position.set(x, y, 2.5);
             this.plane.add(tree);
@@ -129,6 +147,10 @@ export class Environment{
                 this.turret.rotateX(THREE.MathUtils.degToRad(90));
                 this.turret.rotateY(THREE.MathUtils.degToRad(90));
                 this.turret.transparent = true;
+
+                this.turret.position.set(Environment.TurretPositionsGeneration[Environment.count][0], Environment.TurretPositionsGeneration[Environment.count][1], this.turret.position.z);
+                Environment.count++;
+
                 this.plane.add(this.turret);
             });
     }
