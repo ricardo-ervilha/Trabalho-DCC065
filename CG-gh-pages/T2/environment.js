@@ -20,7 +20,7 @@ export class Environment{
 
         console.log('Construindo ambiente...');
         
-        let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(18, 80, 112)", "rgb(204, 204, 204)");
+        let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(209, 155, 109)", "rgb(204, 204, 204)");
         
         //Desempacoto obj e pego o plano, setando a opacidade para 0
         this.plane = obj.plane;
@@ -45,7 +45,7 @@ export class Environment{
     conectCubesPlane(){
         //Usar isso para criar os cubos com arestas.
         var geometry = new THREE.BoxGeometry( sizeCube, sizeCube, sizeCube ); 
-        var material = new THREE.MeshPhongMaterial( {color: 0x125070, transparent: true} ); 
+        var material = new THREE.MeshPhongMaterial( {color: 0x7A563D, transparent: true} ); 
         
         this.leftCube = new THREE.Mesh( geometry, material ); 
         this.leftCube.position.x = -widthPlan/2 - sizeCube/2;
@@ -127,14 +127,6 @@ export class Environment{
                 this.turret.transparent = true;
                 this.plane.add(this.turret);
             });
-
-            // var esferaGeom = new THREE.SphereGeometry(5, 20, 20);
-            // var material = new MeshBasicMaterial();
-            // this.turret = new THREE.Mesh(esferaGeom, material);
-            // this.plane.add(this.turret);
-            // this.turret.position.z = 5;
-            // this.turret.castShadow = true;
-        
     }
 
     setOpacityTrees(val){

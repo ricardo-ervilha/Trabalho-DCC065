@@ -54,27 +54,28 @@ scene.add( ambientLight );
 
 var light = new THREE.DirectionalLight(0xffffff, 1);
 
-light.position.set(50, 70, 30); //Luz no X e Y positivos, sombra está a esquerda do avião.
-light.shadow.mapSize.width = 2048;
+light.position.set(45, 65, 30); //Luz no X e Y positivos, sombra está a esquerda do avião.
+light.shadow.mapSize.width = 5096;
 light.shadow.mapSize.height = 2048;
 light.castShadow = true; // Permite que a luz projete sombras
 light.shadow.camera.left = -widthPlan/2;
 light.shadow.camera.right = widthPlan/2 * 19;
-light.shadow.camera.near = 1;
-light.shadow.camera.far = light.position.y + 100;
-light.shadow.camera.top = 100;
-light.shadow.camera.bottom = -100;
+light.shadow.camera.near = 0.1;
+light.shadow.camera.far = light.position.y + 150;
+light.shadow.camera.top = 120;
+light.shadow.camera.bottom = -120;
 light.shadow.radius = 2;
 
 light.target.position.set(-50,0,25);
 light.target.updateMatrixWorld();
 
-const helper = new THREE.DirectionalLightHelper( light, 3, 0xffff00 );
-const shadowHelper = new THREE.CameraHelper(light.shadow.camera);
+// --> HELPER DA LUZ
+// const helper = new THREE.DirectionalLightHelper( light, 3, 0xffff00 );
+// const shadowHelper = new THREE.CameraHelper(light.shadow.camera);
 
 scene.add(light);
-scene.add(helper);
-scene.add(shadowHelper);
+// scene.add(helper);
+// scene.add(shadowHelper);
 
 /*---------------------------------------------------------------------------------------------*/
 

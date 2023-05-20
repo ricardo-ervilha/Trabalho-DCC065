@@ -20,13 +20,13 @@ export class Tree{
 
     buildTree(){
         const foundationGeometry = new THREE.CylinderGeometry(3,3,5, 64);
-        const topGeometry = new THREE.ConeGeometry( 6, 6, 32 );
+        const topGeometry = new THREE.ConeGeometry( 6, 6, 64 );
 
         //{color: 0x8b4513, transparent: true, opacity: 0}
         //{color: Math.random() * 0xffffff, transparent: true, opacity: 0}
         //Math.random() * 0xffffff
-        const foundationMaterial = setDefaultMaterial(0x8b4513);
-        const topMaterial = setDefaultMaterial(0x056105);
+        const foundationMaterial = new THREE.MeshPhongMaterial({color: 0x592C0C});
+        const topMaterial = new THREE.MeshPhongMaterial({color: 0x056105});
         
         foundationMaterial.transparent = true;
         foundationMaterial.opacity = 1.0;
