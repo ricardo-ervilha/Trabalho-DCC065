@@ -1,5 +1,5 @@
 import * as THREE from  'three';
-import { createGroundPlaneWired, getMaxSize } from "../libs/util/util.js";
+import { createGroundPlaneWired, getMaxSize } from "./util.js";
 import { Tree } from './tree.js';
 import { heightPlan, sizeCube, velocityPlan, widthPlan } from './variables.js';
 import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';

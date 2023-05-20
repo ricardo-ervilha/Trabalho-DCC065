@@ -5,7 +5,7 @@ import {
     setDefaultMaterial,
     InfoBox,
     onWindowResize,
-} from "../libs/util/util.js";
+} from "./util.js";
 
 export class Tree{
     constructor(){

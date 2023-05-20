@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
 import { airPlaneHeight, scale, invisiblePlanePosition} from './variables.js';
-import {getMaxSize} from "../libs/util/util.js";
+import {getMaxSize} from "./util.js";
 import { AxesHelper, MathUtils, Scene } from '../build/three.module.js';
 export class Airplane {
   

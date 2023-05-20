@@ -3,7 +3,7 @@ import {initRenderer,
     setDefaultMaterial,
     InfoBox,
     onWindowResize
-} from "../libs/util/util.js";
+} from "./util.js";
 
 import {initCamera} from "./camera.js";
 

@@ -6,7 +6,7 @@ import {
   setDefaultMaterial,
   InfoBox,
   onWindowResize, getMaxSize
-} from "../libs/util/util.js";
+} from "./util.js";
 import {GLTFLoader} from '../build/jsm/loaders/GLTFLoader.js';
 import { airPlaneHeight, heightPlan, numPlans, scale} from './variables.js';
 import { Environment } from "./environment.js";
