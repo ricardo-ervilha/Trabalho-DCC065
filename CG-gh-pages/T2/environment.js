@@ -190,7 +190,7 @@ export class Environment{
         return this.plane;
     }
 
-    getTurrets(){
+    getTurret(){
         return this.turret;
     }
 

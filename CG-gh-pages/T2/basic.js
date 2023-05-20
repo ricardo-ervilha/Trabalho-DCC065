@@ -41,9 +41,9 @@ camera = initCamera(new THREE.Vector3(0, 30, 70));
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls( camera, renderer.domElement );
-// cameraControl.enablePan = false;
-// cameraControl.enableRotate = true;
-// cameraControl.enableZoom = false;
+cameraControl.enablePan = false;
+cameraControl.enableRotate = false;
+cameraControl.enableZoom = false;
 material = setDefaultMaterial(); // create a basic material
 
 /*---------------------------------------------------------------------------------------------*/
@@ -141,7 +141,8 @@ for(var i = 0; i < numPlans; i++){
         loaded: false,
         animation: false,
         initialScale: null,
-        animationStartTime: 0
+        animationStartTime: 0,
+        destroyed:false
     }
 
     torretas.push(conjunto);
@@ -164,8 +165,9 @@ function updatePositionPlanes(){
         if(plane.position.z >= (5*heightPlan)/2){
             plane.position.z = ((3*heightPlan)/2 - (numPlans-1) * heightPlan) - ((5*heightPlan)/2 - plane.position.z);
             if(i == 2 || i == 4 || i == 6 || i == 8){
-                if(torretas[i/2 - 1].torreta){   
-                    console.log(torretas[i/2 - 1].torreta.scale);
+                if(torretas[i/2-1] != null && torretas[i/2-1].destroyed){ 
+                    torretas[i/2-1].torreta.scale.set(5,5,5);
+                    torretas[i/2-1].destroyed = false;
                 }
             }
         }
@@ -184,8 +186,8 @@ function updatePositionPlanes(){
             env.setRightCubeOpacity(0);
             env.setPlaneOpacity(0);
             env.setOpacityTrees(0);
-            if(env.getTurrets() != null){
-                env.getTurrets().traverse( function( node ) {
+            if(env.getTurret() != null){
+                env.getTurret().traverse( function( node ) {
                     if( node.material ) {
                         node.material.opacity = 0.0;
                         node.material.transparent = true;
@@ -199,8 +201,8 @@ function updatePositionPlanes(){
             env.setRightCubeOpacity((n-y)/(heightPlan));
             env.setPlaneOpacity((n-y)/(heightPlan));
             env.setOpacityTrees((n-y)/(heightPlan));
-            if(env.getTurrets() != null){
-                env.getTurrets().traverse( function( node ) {
+            if(env.getTurret() != null){
+                env.getTurret().traverse( function( node ) {
                     if( node.material ) {
                         node.material.opacity = (n-y)/(heightPlan);
                         node.material.transparent = true;
@@ -212,8 +214,8 @@ function updatePositionPlanes(){
             env.setRightCubeOpacity(1);
             env.setPlaneOpacity(1);
             env.setOpacityTrees(1);
-            if(env.getTurrets() != null){
-                env.getTurrets().traverse( function( node ) {
+            if(env.getTurret() != null){
+                env.getTurret().traverse( function( node ) {
                     if( node.material ) {
                         node.material.opacity = 1.0;
                         node.material.transparent = true;
@@ -339,7 +341,7 @@ function moveCamera() {
         if (cameraControl.target.x > -5) {
             cameraControl.update();
             cameraControl.target.x -= 0.1;
-            camera.position.x -= 0.1;
+            // camera.position.x -= 0.1;
         }
     }
 
@@ -347,24 +349,29 @@ function moveCamera() {
         if (cameraControl.target.x < 5) {
             cameraControl.update();
             cameraControl.target.x += 0.1;
-            camera.position.x += 0.1;
+            // camera.position.x += 0.1;
         }
     }
 
-    // console.log("Avião y : "+aviao.getAirplane().position.y)
-    // console.log("Camera Target y : "+cameraControl.target.y)
+    //  console.log("Avião y : "+aviao.getAirplane().position.y)
+    //  console.log("Camera Target y : "+cameraControl.target.y)
     // console.log("Camera position y : "+camera.position.y)
-    if (aviao.getAirplane().position.y > 25) {
-        if (cameraControl.target.y < 15) {
+    
+    //se o avião está muito pra cima, movo o target da camera para cima até 18
+    if (aviao.getAirplane().position.y > 20) {
+        if (cameraControl.target.y < 10) {
             cameraControl.update();
             cameraControl.target.y += 0.1;
-            camera.position.y += 0.1;
+            // camera.position.y += 0.1;
         }
     } else {
-        if (cameraControl.target.y > 0) {
+        //c.c, movo o target para baixo até 15
+
+        if (cameraControl.target.y >5) {
+            
             cameraControl.update();
             cameraControl.target.y -= 0.1;
-            camera.position.y -= 0.1;
+            // camera.position.y -= 0.1;
         }
     }
 }
@@ -487,15 +494,16 @@ controls.show();
 
 function checkColisions(){
     bullets.forEach( (bulletObj, indexBullet) => {
-        torretas.forEach ( (torretaObj) => {
-            if(torretaObj.torreta != null){
-                if(bulletObj.bb.intersectsBox(torretaObj.bb)){
-                    torretaObj.animation = true;
-                    torretaObj.initialScale = torretaObj.torreta.scale.clone();
-                    torretaObj.animationStartTime = Date.now();
+        torretas.forEach ( (conjunto) => {
+            if(conjunto.torreta != null){
+                if(bulletObj.bb.intersectsBox(conjunto.bb)){
+                    conjunto.animation = true;
+                    conjunto.initialScale = conjunto.torreta.scale.clone();
+                    conjunto.animationStartTime = Date.now();
+                    conjunto.destroyed = true;
+
                     bullets.splice(indexBullet, 1);
                     scene.remove(bulletObj.bullet);
-                    
                 }
             }
         })
@@ -524,7 +532,7 @@ function render() {
                 removeBullet(bulletObj.bullet, index);
             })
             torretas.forEach((conjunto, index) => {
-                
+
                 if (conjunto.torreta != null && !conjunto.loaded) {
                     conjunto.bb.setFromObject(conjunto.torreta);
                     conjunto.loaded = true;
@@ -532,11 +540,11 @@ function render() {
                     conjunto.bb.setFromObject(conjunto.torreta);
                 } 
                 
+                
                 if(conjunto.torreta != null && conjunto.animation == true){
-                    if(conjunto.torreta.scale == targetScale){
+
+                    if(conjunto.torreta.scale.equals( targetScale)){
                         conjunto.animation = false;
-                        conjunto.torreta.scale.set(1,1,1);
-                        conjunto.torreta.scale.multiplyScalar(20);
                     }else{
                         // Calcula o tempo decorrido desde o início da animação
                         const elapsedTime = Date.now() - conjunto.animationStartTime;
@@ -553,9 +561,9 @@ function render() {
 
             //For que preenche as torretas do conjunto.torreta para eles deixarem de ser nulos
             for (var i = 0; i < numPlans; i++) {
-                var teste = queue.peek(i).getTurrets();
-                if (teste != null && torretas[i].torreta == null) {
-                    torretas[i].torreta = teste;
+                var torretaAdd = queue.peek(i).getTurret();
+                if (torretaAdd != null && torretas[i/2-1].torreta == null) {
+                    torretas[i/2-1].torreta = torretaAdd;
                 }
             }
 
@@ -569,7 +577,7 @@ function render() {
 
             moveCamera();
 
-            updatePositionPlanes();
+            updatePositionPlanes(); 
         }
 
         renderer.render(scene, camera) // Render scene
