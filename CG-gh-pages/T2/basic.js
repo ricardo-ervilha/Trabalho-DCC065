@@ -249,9 +249,9 @@ let anguloZ;
     Limitar angulo de rotação do avião
 */
 function limitAngleRotation(angleOld, angleNew){
-    return angleNew;
-    if(angleOld>45)
+    if(angleOld<-45 || angleOld>45){
         return 0;
+    }
     return angleNew;
 }
 
@@ -273,27 +273,31 @@ function rotateAirplane(){
     anguloZ =  Math.round(aviao.getAirplane().rotation.z * 180 / Math.PI);
 
     // console.log("Ângulo em graus em torno do eixo X: " + anguloX);
-    //console.log("Ângulo em graus em torno do eixo Y: " + anguloY);
+    // console.log("Ângulo em graus em torno do eixo Y: " + anguloY);
     // console.log("Ângulo em graus em torno do eixo Z: " + anguloZ);
 
-    // //Por algum motivo ainda não identificado, rotaciono em X mas o angulo modificado é o Y
+    //Por algum motivo ainda não identificado, rotaciono em X mas o angulo modificado é o Y
     // aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(1));
+
+    // //rotaciono em x muda em y
+    // //rotaciono em y muda em y
+    // //rotaciono em z muda em x
 
     if(aviao.getAirplane() && dist > 4){
         //Fazer rotação em função da distancia, quant maior a distancia mais rapido rotaciona
 
         if(distX > 0){
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse)));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse*0.4)));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse)));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse*0.4)));
         }else{
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse)));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY, -distX * sensibilidadeMouse*0.4)));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse)));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse*0.4)));
         }
 
         if(distY > 0){
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloZ,-distY*sensibilidadeMouse*0.04)));
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloX,-distY*sensibilidadeMouse*0.04)));
         }else{
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloZ,-distY*sensibilidadeMouse*0.04)));
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloX,-distY*sensibilidadeMouse*0.04)));
         }
     } else {
         let quat = new THREE.Quaternion().setFromEuler(aviao.getOriginalRotation());
@@ -332,9 +336,9 @@ function moveCamera() {
         }
     }
 
-    console.log("Avião y : "+aviao.getAirplane().position.y)
-    console.log("Camera Target y : "+cameraControl.target.y)
-    console.log("Camera position y : "+camera.position.y)
+    // console.log("Avião y : "+aviao.getAirplane().position.y)
+    // console.log("Camera Target y : "+cameraControl.target.y)
+    // console.log("Camera position y : "+camera.position.y)
     if (aviao.getAirplane().position.y > 25) {
         if (cameraControl.target.y < 15) {
             cameraControl.update();
