@@ -90,7 +90,7 @@ export class Environment{
         let dist;
         for(var i = 0; i < this.trees.length; i++){
             dist = Math.sqrt(Math.pow(x-this.trees[i].position[0], 2) + Math.pow(y-this.trees[i].position[1], 2));
-            if(dist > 14)
+            if(dist <= 14)
                 return true;
         }
         return false;
@@ -98,11 +98,12 @@ export class Environment{
 
     verificationDistanceTurret(x,y){
         let dist;
-        for(var i = 0; i < Environment.count; i++){
+        for(var i = 0; i < Environment.TurretPositionsGeneration.length; i++){
             dist = Math.sqrt(Math.pow(x - Environment.TurretPositionsGeneration[i][0], 2) + Math.pow(y - Environment.TurretPositionsGeneration[i][1], 2));
-            if(dist > 15)
+            if(dist <= 16)
                 return true;
         }
+        return false;
     }
 
     buildTrees(){
@@ -113,7 +114,7 @@ export class Environment{
             tree.rotateX(THREE.MathUtils.degToRad(90));
             x = this.getRandomArbitrary(-widthPlan/2 + 5, widthPlan/2 - 5);
             y = this.getRandomArbitrary(-heightPlan/2 + 5, heightPlan/2 -5 );
-            while(this.verificationDistanceTrees(x, y) &&  this.verificationDistanceTurret(x,y)){
+            while(this.verificationDistanceTrees(x, y) || this.verificationDistanceTurret(x,y)){
                 x = this.getRandomArbitrary(-widthPlan/2 + 5, widthPlan/2 - 5);
                 y = this.getRandomArbitrary(-heightPlan/2 + 5, heightPlan/2 - 5);
             }
@@ -142,7 +143,7 @@ export class Environment{
                     if (node.material) node.material.side = THREE.DoubleSide;
                 });
 
-                var obj = this.normalizeAndRescale(obj, 20);
+                var obj = this.normalizeAndRescale(obj, 25);
                 this.turret = obj;
                 this.turret.rotateX(THREE.MathUtils.degToRad(90));
                 this.turret.rotateY(THREE.MathUtils.degToRad(90));

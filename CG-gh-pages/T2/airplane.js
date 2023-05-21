@@ -100,6 +100,7 @@ export class Airplane {
       linewidth: 2,
     });
     this.target = new THREE.LineSegments(geometry, material);
+
     this.target.position.z = invisiblePlanePosition.z;
     this.target.add(circle)
 

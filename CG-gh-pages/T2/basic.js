@@ -14,6 +14,7 @@ import { Airplane } from "./airplane.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
 import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
 import { velocityPlan } from './variables.js';
+
 let scene, renderer, camera, material, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
 let keyboard = new KeyboardState();
@@ -21,7 +22,7 @@ let boolSimulation = true;//simulação está rodando
 let clock = new THREE.Clock();
 let delta = 0;//segundos entre cada iteraçao do render
 let bullets = [];
-const lerpConfig = { destination: new THREE.Vector3(0.0, 0.0, 0.0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
+const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 0.0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
 scene = new THREE.Scene();    // Create main scene
 
@@ -37,14 +38,14 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("webgl-output").appendChild(renderer.domElement);
 renderer.setClearColor("rgb(30, 30, 42)");
 
-camera = initCamera(new THREE.Vector3(0, 30, 70));
+camera = initCamera(new THREE.Vector3(0, 30, 80));
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls( camera, renderer.domElement );
 cameraControl.enablePan = false;
 cameraControl.enableRotate = false;
 cameraControl.enableZoom = false;
-material = setDefaultMaterial(); // create a basic material
+
 
 /*---------------------------------------------------------------------------------------------*/
 
@@ -166,7 +167,7 @@ function updatePositionPlanes(){
             plane.position.z = ((3*heightPlan)/2 - (numPlans-1) * heightPlan) - ((5*heightPlan)/2 - plane.position.z);
             if(i == 2 || i == 4 || i == 6 || i == 8){
                 if(torretas[i/2-1] != null && torretas[i/2-1].destroyed){ 
-                    torretas[i/2-1].torreta.scale.set(5,5,5);
+                    torretas[i/2-1].torreta.scale.set(6.72,6.72,6.72);
                     torretas[i/2-1].destroyed = false;
                 }
             }
@@ -312,9 +313,10 @@ function rotateAirplane(){
         }
 
         if(distY > 0){
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloX,-distY*sensibilidadeMouse*0.04, 10)));
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(-distY*sensibilidadeMouse*0.6));
         }else{
-            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(limitAngleRotation(anguloX,-distY*sensibilidadeMouse*0.04,10)));
+            //limitAngleRotation(anguloX,-distY*sensibilidadeMouse*5,10)
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(-distY*sensibilidadeMouse*0.6));
         }
     } else {
         let quat = new THREE.Quaternion().setFromEuler(aviao.getOriginalRotation());
@@ -385,9 +387,10 @@ function onMouseClick(event) {
             bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
         }
 
-        let bullet = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 4), new THREE.MeshPhongMaterial({
+        let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
             color: "red"
         }));
+        bullet.rotateX(THREE.MathUtils.degToRad(90));
 
         obj.bullet = bullet;
         obj.bb.setFromObject(obj.bullet);

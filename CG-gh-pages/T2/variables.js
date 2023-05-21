@@ -1,6 +1,6 @@
 
 //Variável para controlar a escala de, por enquanto, o avião -> Usado na gameController
-export const scale = 12.0;
+export const scale = 15.0;
 
 //Altura que o avião ficará do plano -> Usado na gameController
 export const airPlaneHeight = 50;
@@ -28,6 +28,6 @@ export const sizeCube = heightPlan;
 export const bulletVelocity = 500;
 
 //posição do plano invisível
-export const invisiblePlanePosition = {x:0, y:30, z: -60};
+export const invisiblePlanePosition = {x:0, y:30, z: -45};
 
 //angulo maximo de rotação do avião
