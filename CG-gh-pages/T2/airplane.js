@@ -40,7 +40,7 @@ export class Airplane {
         this.originalRotation = obj.rotation.clone();
         this.airplane = obj;
 
-        this.airplane.add(new THREE.AxesHelper(12));
+        // this.airplane.add(new THREE.AxesHelper(12));
 
         this.buildTarget(scene);
 

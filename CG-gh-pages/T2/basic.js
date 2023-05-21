@@ -111,9 +111,9 @@ invisiblePlane.position.set(invisiblePlanePosition.x, invisiblePlanePosition.y, 
 scene.add(invisiblePlane);
 
 // Show axes (parameter is size of each axis)
-let axesHelper = new THREE.AxesHelper( 12 );
-axesHelper.translateY(10)
-scene.add(axesHelper);
+// let axesHelper = new THREE.AxesHelper( 12 );
+// axesHelper.translateY(10)
+// scene.add(axesHelper);
 
 var queue = new Queue();
 var torretas = [];
