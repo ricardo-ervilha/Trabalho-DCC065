@@ -98,16 +98,22 @@ document.body.style.cursor = "none";
 // -- Cria o raycaster que será usado para fazer interseção entre o plano e a posição do mouse
 let raycaster = new THREE.Raycaster();
 
+// Enable layers to raycaster and camera (layer 0 is enabled by default)
+raycaster.layers.enable( 1 );//apenas os objetos que estão na camada 1 serão considerados como possíveis interseções
+
 // Cria o plano que será usado para fazer interseção com o mouse
 let invisiblePlane, planeGeometry, planeMaterial;
 
 planeGeometry = new THREE.PlaneGeometry(widthPlan, 60, 1, 1);
 planeMaterial = new THREE.MeshPhongMaterial();
-// planeMaterial.side = THREE.DoubleSide;
+planeMaterial.side = THREE.DoubleSide;
 planeMaterial.transparent = true;
 planeMaterial.opacity = 0.;
 invisiblePlane = new THREE.Mesh(planeGeometry, planeMaterial);
-invisiblePlane.position.set(invisiblePlanePosition.x, invisiblePlanePosition.y, invisiblePlanePosition.z)
+invisiblePlane.position.set(invisiblePlanePosition.x, invisiblePlanePosition.y, invisiblePlanePosition.z);
+
+invisiblePlane.layers.set(1);  // change layer
+
 scene.add(invisiblePlane);
 
 // Show axes (parameter is size of each axis)

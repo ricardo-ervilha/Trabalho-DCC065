@@ -1,4 +1,4 @@
-import * as THREE from '../../build/three.module.js';
+import * as THREE from  'three';
 
 export default class Grid extends THREE.LineSegments {
 	constructor(width = 10, height = 10, divWidth = 10, divHeight = 10, color = "white", lineWidth = 1) {
