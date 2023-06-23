@@ -46,6 +46,41 @@ cameraControl.enablePan = false;
 cameraControl.enableRotate = false;
 cameraControl.enableZoom = false;
 
+/* Parte do áudio do jogo */
+
+const listener = new THREE.AudioListener();
+camera.add( listener );
+
+// create a global audio source
+const sound = new THREE.Audio( listener );
+
+// Som ambiente
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load( './sounds/environmentSound.mp3', function( buffer ) {
+	sound.setBuffer( buffer );
+	sound.setLoop( true );
+	sound.setVolume( 0.4 );
+	sound.play();
+});
+
+//Som de tiro do avião
+const soundAirship = new THREE.PositionalAudio( listener );
+const audioLoaderAirship = new THREE.AudioLoader();
+audioLoaderAirship.load( './sounds/blasterAirship.mp3', function( buffer ) {
+	soundAirship.setBuffer( buffer );
+	soundAirship.setRefDistance( 20 );
+    soundAirship.setVolume(0.5);
+	// soundAirship.play();
+});
+
+//Som de colisão da turret
+const soundHitTurret = new THREE.PositionalAudio( listener );
+const audioLoaderHitTurret = new THREE.AudioLoader();
+audioLoaderHitTurret.load( './sounds/hitAirship.mp3', function( buffer ) {
+	soundHitTurret.setBuffer( buffer );
+	soundHitTurret.setRefDistance( 20 );
+    soundHitTurret.setVolume(0.9);
+});
 
 /*---------------------------------------------------------------------------------------------*/
 
@@ -440,7 +475,8 @@ function onMouseClick(event) {
         var directionBullet = new THREE.Vector3(x,y,z);
 
         obj.dir = directionBullet;
-
+        soundAirship.stop();
+        soundAirship.play();
         bullets.push(obj);
     }
 }
@@ -530,6 +566,9 @@ function checkColisions(){
 
                     bullets.splice(indexBullet, 1);
                     scene.remove(bulletObj.bullet);
+
+                    soundHitTurret.stop();
+                    soundHitTurret.play();
                 }
             }
         })
