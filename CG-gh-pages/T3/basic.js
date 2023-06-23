@@ -42,9 +42,9 @@ camera = initCamera(new THREE.Vector3(0, 30, 80));
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls( camera, renderer.domElement );
-cameraControl.enablePan = false;
-cameraControl.enableRotate = false;
-cameraControl.enableZoom = false;
+cameraControl.enablePan = true;
+cameraControl.enableRotate = true;
+cameraControl.enableZoom = true;
 
 
 /*---------------------------------------------------------------------------------------------*/
@@ -92,6 +92,7 @@ aviao.buildAirPlane(scene);
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
 window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
 window.addEventListener("click", onMouseClick);
+window.addEventListener("contextmenu", rightClick);
 document.body.style.cursor = "none";
 
 
@@ -117,9 +118,9 @@ invisiblePlane.layers.set(1);  // change layer
 scene.add(invisiblePlane);
 
 // Show axes (parameter is size of each axis)
-// let axesHelper = new THREE.AxesHelper( 12 );
-// axesHelper.translateY(10)
-// scene.add(axesHelper);
+let axesHelper = new THREE.AxesHelper( 12 );
+axesHelper.translateY(10)
+scene.add(axesHelper);
 
 var queue = new Queue();
 var torretas = [];
@@ -407,7 +408,8 @@ function onMouseClick(event) {
         let obj = {
             bullet: null,
             dir: null,
-            bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
+            bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
+            type:'a'
         }
 
         let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
@@ -445,37 +447,74 @@ function onMouseClick(event) {
     }
 }
 
-const raycasterB = new THREE.Raycaster();
-const raycasterOrigin = new THREE.Vector3();
-const raycasterDirection = new THREE.Vector3();
+function rightClick(event) {
+    if(event.button == 2){
+        if (!boolSimulation) boolSimulation = true;
+        
+        //Bullet recebe a posição do avião
+        //aviao.getAirplane().getWorldPosition(bullet.position);
+        //cria um projetil para cada torreta
+        torretas.forEach(conjunto => {
 
+            if(conjunto.torreta != null){
+                console.log("TORRETA OK")
+                let obj = {
+                    bullet: null,
+                    dir: null,
+                    bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
+                    type:'t'
+                }
+        
+                let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
+                    color: "yellow"
+                }));
+                bullet.rotateX(THREE.MathUtils.degToRad(90));
+        
+                obj.bullet = bullet;
+                obj.bb.setFromObject(obj.bullet);
+                conjunto.torreta.getWorldPosition(bullet.position);
+
+                //Pego a diferença entre as coordenadas da torreta e do avião
+                var x = aviao.target.position.x - conjunto.torreta.position.x;
+                var y =  aviao.target.position.y - conjunto.torreta.position.y;
+                var z = aviao.target.position.z - conjunto.torreta.position.z;
+
+                //Extraio o módulo
+                var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
+
+                //Normalizo
+                x = x / moduloDirectBullet;
+                y = y / moduloDirectBullet;
+                z = z / moduloDirectBullet;
+
+                // var directionBullet = new THREE.Vector3(x,y,z);
+                var directionBullet = new THREE.Vector3(0,-1,1);
+
+                obj.dir = directionBullet;
+                bullets.push(obj);
+
+                scene.add(bullet);
+            }
+        })
+
+    }
+}
+
+/*
+    Realizar movimento das balas
+*/
 function updateBullets () {
-    [...bullets].forEach(bulletObj => {
-        // NOTE Raycast from each bullet and see if it hit any target compatible with the idea of being hit by a bullet
-        bulletObj.bullet.getWorldPosition(raycasterOrigin);
-        bulletObj.bullet.getWorldDirection(raycasterDirection);
-
-        raycasterB.set(raycasterOrigin, raycasterDirection);
-
-        const hits = raycasterB.intersectObjects([], true);//possivelmente a lista de objetos da cena
-
-        if (hits.length>0) {
-            const firstHitTarget = hits[0];
-
-            // NOTE React to being hit by the bullet in some way, for example:
-            // firstHitTarget.onHit();
-
-            // NOTE Remove bullet from the world
-            bulletObj.bullet.removeFromParent();
-
-            bullets.splice(bullets.indexOf(bulletObj.bullet), 1);
+    bullets.forEach(bulletObj => {
+        if(bulletObj.type=='a'){
+            bulletObj.bullet.position.x -= bulletObj.dir.getComponent(0) * bulletVelocity * delta;
+            bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta;
+            bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta;
+        }else{
+            bulletObj.bullet.position.x -= bulletObj.dir.getComponent(0) * bulletVelocity * delta*0.1;
+            bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta*0.1;
+            bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta*0.1;
         }
-
-        // NOTE If no target was hit, just travel further, apply gravity to the bullet etc.
-        bulletObj.bullet.position.x -= bulletObj.dir.getComponent(0) * bulletVelocity * delta;
-        bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta;
-        bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta;
-        //bullet.translateX(-delta*speed)
+        
     });
 };
 
@@ -520,19 +559,22 @@ controls.show();
 
 function checkColisions(){
     bullets.forEach( (bulletObj, indexBullet) => {
-        torretas.forEach ( (conjunto) => {
-            if(conjunto.torreta != null){
-                if(bulletObj.bb.intersectsBox(conjunto.bb)){
-                    conjunto.animation = true;
-                    conjunto.initialScale = conjunto.torreta.scale.clone();
-                    conjunto.animationStartTime = Date.now();
-                    conjunto.destroyed = true;
-
-                    bullets.splice(indexBullet, 1);
-                    scene.remove(bulletObj.bullet);
+        if(bulletObj.type=='a'){
+            torretas.forEach ( (conjunto) => {
+                if(conjunto.torreta != null){
+                    if(bulletObj.bb.intersectsBox(conjunto.bb)){
+                        conjunto.animation = true;
+                        conjunto.initialScale = conjunto.torreta.scale.clone();
+                        conjunto.animationStartTime = Date.now();
+                        conjunto.destroyed = true;
+    
+                        bullets.splice(indexBullet, 1);
+                        scene.remove(bulletObj.bullet);
+                    }
                 }
-            }
-        })
+            })
+        }
+        
     })
 }
 
