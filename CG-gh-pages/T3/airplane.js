@@ -39,8 +39,9 @@ export class Airplane {
         obj.rotateY(MathUtils.degToRad(-180));
         this.originalRotation = obj.rotation.clone();
         this.airplane = obj;
+        //this.airplane.rotateZ(THREE.MathUtils.degToRad(-45));
 
-        // this.airplane.add(new THREE.AxesHelper(12));
+         this.airplane.add(new THREE.AxesHelper(12));
 
         this.buildTarget(scene);
 

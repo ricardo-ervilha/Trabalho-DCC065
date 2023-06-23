@@ -292,25 +292,25 @@ function rotateAirplane(){
     let distY = lerpConfig.destination.y - aviao.getAirplane().position.y;
     let distZ = lerpConfig.destination.z - aviao.getAirplane().position.z;
 
+    //Para pegar o angulo atual do avião em cada eixo
     anguloX =  Math.round(aviao.getAirplane().rotation.x * 180 / Math.PI);
     anguloY =  Math.round(aviao.getAirplane().rotation.y * 180 / Math.PI);
     anguloZ =  Math.round(aviao.getAirplane().rotation.z * 180 / Math.PI);
 
-    // console.log("Ângulo em graus em torno do eixo X: " + anguloX);
+    // console.log("Ângulo em graus em torno do eixo X: " + (anguloX));
     // console.log("Ângulo em graus em torno do eixo Y: " + anguloY);
-    // console.log("Ângulo em graus em torno do eixo Z: " + anguloZ);
+    // console.log("Ângulo em graus em torno do eixo Z: " + (anguloZ));
 
-    //Por algum motivo ainda não identificado, rotaciono em X mas o angulo modificado é o Y
-    // aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(1));
+    // aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(1));
 
-    // //rotaciono em x muda em y
-    // //rotaciono em y muda em y
-    // //rotaciono em z muda em x
+    //rotaciono em x muda em x
+    //rotaciono em y muda em y
+    //rotaciono em z muda em z
 
     if(aviao.getAirplane() && dist > 4){
         //Fazer rotação em função da distancia, quant maior a distancia mais rapido rotaciona
 
-        if(distX > 0){
+        /*if(distX > 0){
             aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse, 45)));
             aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(limitAngleRotation(anguloY+90, -distX * sensibilidadeMouse*0.4, 10)));
         }else{
@@ -323,10 +323,26 @@ function rotateAirplane(){
         }else{
             //limitAngleRotation(anguloX,-distY*sensibilidadeMouse*5,10)
             aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(-distY*sensibilidadeMouse*0.6));
+        }*/
+
+        //Rotação no eixo Z (quando o avião se move para esq/dir)
+        if(distX > 0){//indo para a direita
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(distX * sensibilidadeMouse*0.4));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.4));
+        }else {
+            aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(distX * sensibilidadeMouse*0.4));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.4));
         }
+
+        if(distY > 0){//indo para a direita
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.6));
+        }else {
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.6));
+        }
+
     } else {
         let quat = new THREE.Quaternion().setFromEuler(aviao.getOriginalRotation());
-        aviao.getAirplane().quaternion.slerp(quat, velocidadeRetorno);
+       aviao.getAirplane().quaternion.slerp(quat, velocidadeRetorno);
     }
 }
 
@@ -338,6 +354,7 @@ function moveAirPlane(){
         aviao.getAirplane().position.lerp(lerpConfig.destination, lerpConfig.alpha);
         aviao.target.position.set(lerpConfig.destination.x, lerpConfig.destination.y, invisiblePlanePosition.z);
         rotateAirplane();
+        //aviao.getAirplane().rotateZ(0.1);
     }
 }
 
