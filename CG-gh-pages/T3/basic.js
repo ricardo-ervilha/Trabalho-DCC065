@@ -493,7 +493,6 @@ function rightClick(event) {
         torretas.forEach(conjunto => {
 
             if(conjunto.torreta != null){
-                console.log("TORRETA OK")
                 let obj = {
                     bullet: null,
                     dir: null,
@@ -510,23 +509,22 @@ function rightClick(event) {
                 obj.bb.setFromObject(obj.bullet);
                 conjunto.torreta.getWorldPosition(bullet.position);
 
-                //Pego a diferença entre as coordenadas da torreta e do avião
-                var x = aviao.target.position.x - conjunto.torreta.position.x;
-                var y =  aviao.target.position.y - conjunto.torreta.position.y;
-                var z = aviao.target.position.z - conjunto.torreta.position.z;
+                var directionBullet = new THREE.Vector3();
+                var posicaoTorreta = new THREE.Vector3();
+                var posicaoAviao = new THREE.Vector3();
 
-                //Extraio o módulo
-                var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
+                // conjunto.torreta.position.getWorldPosition(posicaoTorreta);
+                // aviao.getAirplane().position.getWorldPosition(posicaoAviao);
 
-                //Normalizo
-                x = x / moduloDirectBullet;
-                y = y / moduloDirectBullet;
-                z = z / moduloDirectBullet;
+                posicaoTorreta = conjunto.torreta.position;
+                posicaoAviao = aviao.getAirplane().position;
 
-                // var directionBullet = new THREE.Vector3(x,y,z);
-                var directionBullet = new THREE.Vector3(0,-1,1);
+                directionBullet.subVectors(posicaoTorreta, posicaoAviao ).normalize();
 
-                obj.dir = directionBullet;
+                // const arrowHelper = new THREE.ArrowHelper( directionBullet, conjunto.torreta.position, 10, 0xffff00 );
+                // scene.add( arrowHelper );
+
+                obj.dir = aviao.getAirplane().position.clone();
                 bullets.push(obj);
 
                 scene.add(bullet);
@@ -546,9 +544,7 @@ function updateBullets () {
             bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta;
             bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta;
         }else{
-            bulletObj.bullet.position.x -= bulletObj.dir.getComponent(0) * bulletVelocity * delta*0.1;
-            bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta*0.1;
-            bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta*0.1;
+            bulletObj.bullet.position.lerp(bulletObj.dir, bulletVelocity * delta*0.01)
         }
         
     });
