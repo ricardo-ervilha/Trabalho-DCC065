@@ -29,7 +29,7 @@ export class Environment{
         this.height = height;
         this.width = width;
 
-        console.log('Construindo ambiente...');
+        // console.log('Construindo ambiente...');
         
         let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(209, 155, 109)", "rgb(204, 204, 204)");
         
