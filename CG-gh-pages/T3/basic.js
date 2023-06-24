@@ -46,6 +46,8 @@ cameraControl.enablePan = true;
 cameraControl.enableRotate = true;
 cameraControl.enableZoom = true;
 
+/*---------------------------------------------------------------------------------------------------- */
+
 /* Parte do áudio do jogo */
 
 const listener = new THREE.AudioListener();
@@ -81,6 +83,17 @@ audioLoaderHitTurret.load( './sounds/hitAirship.mp3', function( buffer ) {
 	soundHitTurret.setRefDistance( 20 );
     soundHitTurret.setVolume(0.9);
 });
+
+/*---------------------------------------------------------------------------------------------*/
+
+//-- CREATING THE EQUIRECTANGULAR MAP   ----------------------------------------------------------------------
+
+const textureLoader = new THREE.TextureLoader();
+let textureEquirec = textureLoader.load( '../assets/textures/panorama4.jpg' );
+	textureEquirec.mapping = THREE.EquirectangularReflectionMapping; // Reflection as default
+	textureEquirec.encoding = THREE.sRGBEncoding;
+// Set scene's background as a equirectangular map
+scene.background = textureEquirec;
 
 /*---------------------------------------------------------------------------------------------*/
 
