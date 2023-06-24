@@ -57,6 +57,7 @@ camera.add( listener );
 const sound = new THREE.Audio( listener );
 
 // Som ambiente
+var isPlaying = true; //Variável para ajudar a controlar o som ambiente!
 const audioLoader = new THREE.AudioLoader();
 audioLoader.load( './sounds/environmentSound.mp3', function( buffer ) {
 	sound.setBuffer( buffer );
@@ -78,7 +79,7 @@ audioLoaderAirship.load( './sounds/blasterAirship.mp3', function( buffer ) {
 //Som de colisão da turret
 const soundHitTurret = new THREE.PositionalAudio( listener );
 const audioLoaderHitTurret = new THREE.AudioLoader();
-audioLoaderHitTurret.load( './sounds/hitAirship.mp3', function( buffer ) {
+audioLoaderHitTurret.load( './sounds/explosionTurret.mp3', function( buffer ) {
 	soundHitTurret.setBuffer( buffer );
 	soundHitTurret.setRefDistance( 20 );
     soundHitTurret.setVolume(0.9);
@@ -241,7 +242,7 @@ function updatePositionPlanes(){
             env.setLeftCubeOpacity(0);
             env.setRightCubeOpacity(0);
             env.setPlaneOpacity(0);
-            env.setOpacityTrees(0);
+            // env.setOpacityTrees(0); //-> Não tem mais árvores
             if(env.getTurret() != null){
                 env.getTurret().traverse( function( node ) {
                     if( node.material ) {
@@ -256,7 +257,7 @@ function updatePositionPlanes(){
             env.setLeftCubeOpacity((n-y)/(heightPlan));
             env.setRightCubeOpacity((n-y)/(heightPlan));
             env.setPlaneOpacity((n-y)/(heightPlan));
-            env.setOpacityTrees((n-y)/(heightPlan));
+            // env.setOpacityTrees((n-y)/(heightPlan)); //-> Não tem mais árvores
             if(env.getTurret() != null){
                 env.getTurret().traverse( function( node ) {
                     if( node.material ) {
@@ -269,7 +270,7 @@ function updatePositionPlanes(){
             env.setLeftCubeOpacity(1);
             env.setRightCubeOpacity(1);
             env.setPlaneOpacity(1);
-            env.setOpacityTrees(1);
+            // env.setOpacityTrees(1); //-> Não tem mais árvores
             if(env.getTurret() != null){
                 env.getTurret().traverse( function( node ) {
                     if( node.material ) {
@@ -589,6 +590,14 @@ function keyboardUpdate() {
     } else if( keyboard.down("3") ){
         for(var i = 0; i < queue.size(); i++){
             queue.peek(i).changeVelocity(4.);
+        }
+    } else if( keyboard.down("S")){
+        if(isPlaying){
+            sound.stop();
+            isPlaying = false;
+        }else{
+            sound.play();
+            isPlaying = true;
         }
     }
 

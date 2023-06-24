@@ -24,12 +24,11 @@ export class Environment{
         this.velocity = velocityPlan;
 
         this.turret = null;
-        this.trees = [];
+
+        // this.trees = []; -> Não tem mais árvores
 
         this.height = height;
         this.width = width;
-
-        // console.log('Construindo ambiente...');
         
         let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(209, 155, 109)", "rgb(204, 204, 204)");
         
@@ -52,7 +51,8 @@ export class Environment{
         if(temTorreta){
             this.buildOneTurret();    
         }
-        this.buildTrees();
+
+        // this.buildTrees(); //-> Não tem mais árvores
     }
 
     conectCubesPlane(){
@@ -82,51 +82,55 @@ export class Environment{
 
     }
 
-    getRandomArbitrary(min, max) {
-        return Math.random() * (max - min) + min;
-    }
+    //-> Não tem mais árvores
+    // getRandomArbitrary(min, max) {
+    //     return Math.random() * (max - min) + min;
+    // }
 
-    verificationDistanceTrees(x,y){
-        let dist;
-        for(var i = 0; i < this.trees.length; i++){
-            dist = Math.sqrt(Math.pow(x-this.trees[i].position[0], 2) + Math.pow(y-this.trees[i].position[1], 2));
-            if(dist <= 14)
-                return true;
-        }
-        return false;
-    }
+    //-> Não tem mais árvores
+    // verificationDistanceTrees(x,y){
+    //     let dist;
+    //     for(var i = 0; i < this.trees.length; i++){
+    //         dist = Math.sqrt(Math.pow(x-this.trees[i].position[0], 2) + Math.pow(y-this.trees[i].position[1], 2));
+    //         if(dist <= 14)
+    //             return true;
+    //     }
+    //     return false;
+    // }
 
-    verificationDistanceTurret(x,y){
-        let dist;
-        for(var i = 0; i < Environment.TurretPositionsGeneration.length; i++){
-            dist = Math.sqrt(Math.pow(x - Environment.TurretPositionsGeneration[i][0], 2) + Math.pow(y - Environment.TurretPositionsGeneration[i][1], 2));
-            if(dist <= 16)
-                return true;
-        }
-        return false;
-    }
+    //-> Não tem mais árvores
+    // verificationDistanceTurret(x,y){
+    //     let dist;
+    //     for(var i = 0; i < Environment.TurretPositionsGeneration.length; i++){
+    //         dist = Math.sqrt(Math.pow(x - Environment.TurretPositionsGeneration[i][0], 2) + Math.pow(y - Environment.TurretPositionsGeneration[i][1], 2));
+    //         if(dist <= 16)
+    //             return true;
+    //     }
+    //     return false;
+    // }
 
-    buildTrees(){
-        let x, y;
-        for(var i = 0; i < 3; i++){
-            let treeInstance =  new Tree();
-            let tree = treeInstance.getFoundation();
-            tree.rotateX(THREE.MathUtils.degToRad(90));
-            x = this.getRandomArbitrary(-widthPlan/2 + 5, widthPlan/2 - 5);
-            y = this.getRandomArbitrary(-heightPlan/2 + 5, heightPlan/2 -5 );
-            while(this.verificationDistanceTrees(x, y) || this.verificationDistanceTurret(x,y)){
-                x = this.getRandomArbitrary(-widthPlan/2 + 5, widthPlan/2 - 5);
-                y = this.getRandomArbitrary(-heightPlan/2 + 5, heightPlan/2 - 5);
-            }
-            tree.position.set(x, y, 2.5);
-            this.plane.add(tree);
-            let obj = {
-                treeObj: treeInstance,
-                position: [x,y]
-            }
-            this.trees.push(obj);
-        }
-    }
+    //-> Não tem mais árvores
+    // buildTrees(){
+    //     let x, y;
+    //     for(var i = 0; i < 3; i++){
+    //         let treeInstance =  new Tree();
+    //         let tree = treeInstance.getFoundation();
+    //         tree.rotateX(THREE.MathUtils.degToRad(90));
+    //         x = this.getRandomArbitrary(-widthPlan/2 + 5, widthPlan/2 - 5);
+    //         y = this.getRandomArbitrary(-heightPlan/2 + 5, heightPlan/2 -5 );
+    //         while(this.verificationDistanceTrees(x, y) || this.verificationDistanceTurret(x,y)){
+    //             x = this.getRandomArbitrary(-widthPlan/2 + 5, widthPlan/2 - 5);
+    //             y = this.getRandomArbitrary(-heightPlan/2 + 5, heightPlan/2 - 5);
+    //         }
+    //         tree.position.set(x, y, 2.5);
+    //         this.plane.add(tree);
+    //         let obj = {
+    //             treeObj: treeInstance,
+    //             position: [x,y]
+    //         }
+    //         this.trees.push(obj);
+    //     }
+    // }
 
     buildOneTurret() {
             var objLoader = new OBJLoader();
@@ -156,11 +160,12 @@ export class Environment{
             });
     }
 
-    setOpacityTrees(val){
-        this.trees.forEach(element => {
-            element.treeObj.setOpacity(val);
-        });
-    }
+    //-> Não tem mais árvores
+    // setOpacityTrees(val){
+    //     this.trees.forEach(element => {
+    //         element.treeObj.setOpacity(val);
+    //     });
+    // }
 
     normalizeAndRescale(obj, newScale) {
     
