@@ -535,7 +535,7 @@ export function createGroundPlaneWired(width, height, widthSegments = 10, height
    plane.receiveShadow = true;
    plane.rotateX(-Math.PI / 2);
 
-   plane.add(grid); // Add the grid to the plane
+   // plane.add(grid); // Add the grid to the plane
 
    let obj = {
       plane: plane,

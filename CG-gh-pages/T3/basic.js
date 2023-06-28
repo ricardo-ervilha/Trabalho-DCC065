@@ -90,7 +90,7 @@ audioLoaderHitTurret.load( './sounds/explosionTurret.mp3', function( buffer ) {
 //-- CREATING THE EQUIRECTANGULAR MAP   ----------------------------------------------------------------------
 
 const textureLoader = new THREE.TextureLoader();
-let textureEquirec = textureLoader.load( './textures/space.jpeg' );
+let textureEquirec = textureLoader.load( './textures/space.jpg' );
 	textureEquirec.mapping = THREE.EquirectangularReflectionMapping; // Reflection as default
 	textureEquirec.encoding = THREE.sRGBEncoding;
 // Set scene's background as a equirectangular map
@@ -385,9 +385,9 @@ function rotateAirplane(){
         }
 
         if(distY > 0){//indo para a direita
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.6));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.6));
         }else {
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.6));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.6));
         }
 
     } else {

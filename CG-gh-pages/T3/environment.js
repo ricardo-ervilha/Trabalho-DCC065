@@ -19,6 +19,14 @@ export class Environment{
     ];
 
     constructor(height, width, temTorreta){
+        const textureLoader = new THREE.TextureLoader();
+        //-- Carregando as texturas da trench run
+        this.texture1 = textureLoader.load('./textures/texture-1.jpg');
+        this.texture2 = textureLoader.load('./textures/texture-2.jpg');
+        this.texture3 = textureLoader.load('./textures/texture-3.jpg');
+        this.texture4 = textureLoader.load('./textures/texture-4.jpg');
+        this.texture5 = textureLoader.load('./textures/texture-5.jpg');
+        this.texture6 = textureLoader.load('./textures/texture-6.png');
         
         //Controla a velocidade do plano
         this.velocity = velocityPlan;
@@ -30,11 +38,12 @@ export class Environment{
         this.height = height;
         this.width = width;
         
-        let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(209, 155, 109)", "rgb(204, 204, 204)");
+        let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(80, 80, 80)", "rgb(204, 204, 204)");
         
         //Desempacoto obj e pego o plano, setando a opacidade para 0
         this.plane = obj.plane;
         this.plane.material.transparent = true;
+        this.plane.material.map = this.texture4;
         this.plane.material.opacity = 0;
 
         //Desempacoto obj e pego o grid, setando a opacidade para 0
@@ -58,7 +67,7 @@ export class Environment{
     conectCubesPlane(){
         //Usar isso para criar os cubos com arestas.
         var geometry = new THREE.BoxGeometry( sizeCube, sizeCube, sizeCube ); 
-        var material = new THREE.MeshPhongMaterial( {color: 0x7A563D, transparent: true} ); 
+        var material = new THREE.MeshPhongMaterial( {color: 0xdddddd, transparent: true} ); 
         
         this.leftCube = new THREE.Mesh( geometry, material ); 
         this.leftCube.position.x = -widthPlan/2 - sizeCube/2;
@@ -77,6 +86,9 @@ export class Environment{
         this.plane.add(this.rightCube);
         
         this.rightLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 5 }));
+
+        this.leftCube.material.map = this.texture2;
+        this.rightCube.material.map = this.texture2;
         
         this.rightCube.add( this.rightLine );
 
@@ -188,7 +200,7 @@ export class Environment{
 
     setPlaneOpacity(opacity){
         this.plane.material.opacity = opacity;
-        this.grid.material.opacity = opacity;
+        // this.grid.material.opacity = opacity;
     }
 
     //Retorna o plano
