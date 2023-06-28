@@ -135,7 +135,7 @@ export class Environment{
     buildOneTurret() {
             var objLoader = new OBJLoader();
 
-            objLoader.load("./turret2.obj", (obj) => {
+            objLoader.load("./assets/turret2.obj", (obj) => {
 
                 obj.visible = true;
                 obj.traverse(function (child) {

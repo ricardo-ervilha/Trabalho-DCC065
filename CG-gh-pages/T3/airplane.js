@@ -21,7 +21,7 @@ export class Airplane {
   buildAirPlane(scene) {
     var loader = new GLTFLoader();
     loader.load(
-      "xwing.glb",
+      "./assets/xwing.glb",
       (gltf) => {
         var obj = gltf.scene;
         obj.traverse(function (child) {
