@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
-import { airPlaneHeight, scale, invisiblePlanePosition } from "./variables.js";
+import { airPlaneHeight, scale, invisiblePlanePosition, redColors } from "./variables.js";
 import { getMaxSize } from "./util.js";
 import { AxesHelper, MathUtils, Scene } from "../build/three.module.js";
 export class Airplane {
@@ -8,6 +8,7 @@ export class Airplane {
     this.airplane = null;
     this.originalRotation = null;
     this.target = null;
+    this.indexCurrentColor = -1;
   }
 
   getAirplane() {
@@ -47,6 +48,7 @@ export class Airplane {
 
         scene.add(obj);
         obj.translateY(20);
+        this.airplane.bb = new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
       },
       this.onProgress,
       this.onError
@@ -129,5 +131,25 @@ export class Airplane {
     if (box.min.y > 0) obj.translateY(-box.min.y);
     else obj.translateY(-1 * box.min.y);
     return obj;
+  }
+
+  airplaneHit(){
+    this.indexCurrentColor++;
+    if(this.indexCurrentColor < 5){
+      this.airplane.traverse((child) => {
+        if (child && child.isMesh) {
+          console.log("INDEX COR ATUAL: "+this.indexCurrentColor);
+          console.log("COR ATUAL: "+redColors[this.indexCurrentColor]);
+          child.material.color.set(redColors[this.indexCurrentColor]);
+
+          // if(this.indexCurrentColor==0)  child.material.color.set("#ffbaba");
+          // if(this.indexCurrentColor==1)  child.material.color.set("#ff7b7b");
+          // if(this.indexCurrentColor==2)  child.material.color.set("#ff5252");
+          // if(this.indexCurrentColor==3)  child.material.color.set("#ff0000");
+          // if(this.indexCurrentColor==4)  child.material.color.set("#a70000");
+          //if(this.indexCurrentColor==4)  child.material.color.set(redColors[this.indexCurrentColor]);
+        }
+      });
+    }
   }
 }
