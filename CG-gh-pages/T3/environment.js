@@ -18,7 +18,10 @@ export class Environment{
         [7, 13]
     ];
 
-    constructor(height, width, temTorreta){
+    //Struct 1 -> Ter um cilindro dentro do outro semelhante ao que está no canto inferior esquerdo da imagem
+    //Struct 2 -> Ter um Paralelepípedo com outros paralelepipedos do lado conectando a cubos. Meio e direita da imagem
+    //Struct 3 -> Ter um paralelepípedo atravessando as paredes semelhante ao meio superior da imagem.
+    constructor(height, width, temTorreta, numCubos, struct3, numCalotas, numCilindros, numParalelepipedos, struct1, struct2){
         const textureLoader = new THREE.TextureLoader();
         //-- Carregando as texturas da trench run
         this.texture1 = textureLoader.load('./textures/texture-1.jpg');
@@ -27,6 +30,17 @@ export class Environment{
         this.texture4 = textureLoader.load('./textures/texture-4.jpg');
         this.texture5 = textureLoader.load('./textures/texture-5.jpg');
         this.texture6 = textureLoader.load('./textures/texture-6.png');
+        this.texture7 = textureLoader.load('./textures/teste2.jpg');
+
+        this.auxObjectsTrenchRun = {
+            numCubos: numCubos,
+            numCalotas: numCalotas,
+            numCilindros: numCilindros,
+            numParalelepipedos: numParalelepipedos,
+            struct1: struct1,
+            struct2: struct2,
+            struct3: struct3
+        }
         
         //Controla a velocidade do plano
         this.velocity = velocityPlan;
@@ -44,6 +58,9 @@ export class Environment{
         this.plane = obj.plane;
         this.plane.material.transparent = true;
         this.plane.material.map = this.texture4;
+        this.plane.material.map.minFilter = THREE.LinearFilter;
+        this.plane.material.map.magFilter = THREE.NearestFilter;
+        
         this.plane.material.opacity = 0;
 
         //Desempacoto obj e pego o grid, setando a opacidade para 0
@@ -61,6 +78,7 @@ export class Environment{
             this.buildOneTurret();    
         }
 
+        this.buildObjectsTrenchRun();
         // this.buildTrees(); //-> Não tem mais árvores
     }
 
@@ -89,6 +107,10 @@ export class Environment{
 
         this.leftCube.material.map = this.texture2;
         this.rightCube.material.map = this.texture2;
+        this.leftCube.material.map.minFilter = THREE.LinearFilter;
+        this.leftCube.material.map.magFilter = THREE.NearestFilter;
+        this.rightCube.material.map.minFilter = THREE.LinearFilter;
+        this.rightCube.material.map.magFilter = THREE.NearestFilter;
         
         this.rightCube.add( this.rightLine );
 
@@ -143,6 +165,32 @@ export class Environment{
     //         this.trees.push(obj);
     //     }
     // }
+
+    buildObjectsTrenchRun(){
+        let x, y;
+        var geometry;
+
+        if(this.auxObjectsTrenchRun.numCubos){
+            geometry = new THREE.BoxGeometry(25,25,25);
+            var material = new THREE.MeshLambertMaterial();
+            const cube = new THREE.Mesh(geometry, material);
+            this.leftCube.add(cube);
+            cube.position.z += heightPlan/2 + 30/2;
+            cube.material.map = this.texture1;
+            cube.material.map.minFilter = THREE.LinearFilter;
+            cube.material.map.magFilter = THREE.NearestFilter;
+        }if(this.auxObjectsTrenchRun.struct3){
+            geometry = new THREE.BoxGeometry(widthPlan,10,10);
+            var material2 = new THREE.MeshLambertMaterial();
+            const paralelepipedoAtravessado = new THREE.Mesh(geometry, material2);
+            this.leftCube.add(paralelepipedoAtravessado);
+            paralelepipedoAtravessado.position.z += heightPlan/2 - 30;
+            paralelepipedoAtravessado.position.x += 3*widthPlan/2;
+            paralelepipedoAtravessado.material.map = this.texture7;
+            paralelepipedoAtravessado.material.map.minFilter = THREE.LinearFilter;
+            paralelepipedoAtravessado.material.map.magFilter = THREE.NearestFilter;
+        }
+    }
 
     buildOneTurret() {
             var objLoader = new OBJLoader();

@@ -38,7 +38,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("webgl-output").appendChild(renderer.domElement);
 renderer.setClearColor("rgb(30, 30, 42)");
 
-camera = initCamera(new THREE.Vector3(0, 30, 80));
+camera = initCamera(new THREE.Vector3(0, 180, 600)); //Voltar isso para o normal
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls( camera, renderer.domElement );
@@ -63,7 +63,7 @@ audioLoader.load( './sounds/environmentSound.mp3', function( buffer ) {
 	sound.setBuffer( buffer );
 	sound.setLoop( true );
 	sound.setVolume( 0.4 );
-	sound.play();
+	sound.pause(); //Voltar para PLAY depois
 });
 
 //Som de tiro do avião
@@ -177,7 +177,7 @@ var torretas = [];
 for(var i = 0; i < numPlans; i++){
     var environment;
     if(i == 2 || i == 4 || i == 6 || i == 8){
-        environment = new Environment(heightPlan, widthPlan, true);
+        environment = new Environment(heightPlan, widthPlan, true, true, true);
     }else{
         environment = new Environment(heightPlan, widthPlan, false);
     }
