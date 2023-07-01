@@ -13,7 +13,7 @@ import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
 import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
-import { velocityPlan } from './variables.js';
+import { velocityPlan, cadenciaTirosTorreta } from './variables.js';
 
 let scene, renderer, camera, material, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
@@ -21,6 +21,7 @@ let keyboard = new KeyboardState();
 let boolSimulation = true;//simulação está rodando
 let clock = new THREE.Clock();
 let delta = 0;//segundos entre cada iteraçao do render
+let cadenciaTime = 0;
 let bullets = [];
 const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 0.0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
@@ -83,6 +84,16 @@ audioLoaderHitTurret.load( './sounds/explosionTurret.mp3', function( buffer ) {
 	soundHitTurret.setBuffer( buffer );
 	soundHitTurret.setRefDistance( 20 );
     soundHitTurret.setVolume(0.9);
+});
+
+
+//Som de colisão do avião
+const soundHitAirplane = new THREE.PositionalAudio( listener );
+const audioLoaderHitAirplane = new THREE.AudioLoader();
+audioLoaderHitAirplane.load( './sounds/hitAirship.mp3', function( buffer ) {
+	soundHitAirplane.setBuffer( buffer );
+	soundHitAirplane.setRefDistance( 20 );
+    soundHitAirplane.setVolume(0.9);
 });
 
 /*---------------------------------------------------------------------------------------------*/
@@ -499,53 +510,63 @@ function onMouseClick(event) {
 
 function rightClick(event) {
     if(event.button == 2){
-        if (!boolSimulation) boolSimulation = true;
-        
-        //Bullet recebe a posição do avião
-        //aviao.getAirplane().getWorldPosition(bullet.position);
-        //cria um projetil para cada torreta
-        torretas.forEach(conjunto => {
-
-            if(conjunto.torreta != null){
-                let obj = {
-                    bullet: null,
-                    dir: null,
-                    bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
-                    type:'t'
-                }
-        
-                let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
-                    color: "yellow"
-                }));
-                bullet.rotateX(THREE.MathUtils.degToRad(90));
-        
-                obj.bullet = bullet;
-                obj.bb.setFromObject(obj.bullet);
-                conjunto.torreta.getWorldPosition(bullet.position);
-
-                var directionBullet = new THREE.Vector3();
-                var posicaoTorreta = new THREE.Vector3();
-                var posicaoAviao = new THREE.Vector3();
-
-                // conjunto.torreta.position.getWorldPosition(posicaoTorreta);
-                // aviao.getAirplane().position.getWorldPosition(posicaoAviao);
-
-                posicaoTorreta = conjunto.torreta.position;
-                posicaoAviao = aviao.getAirplane().position;
-
-                directionBullet.subVectors(posicaoTorreta, posicaoAviao ).normalize();
-
-                // const arrowHelper = new THREE.ArrowHelper( directionBullet, conjunto.torreta.position, 10, 0xffff00 );
-                // scene.add( arrowHelper );
-
-                obj.dir = aviao.getAirplane().position.clone();
-                bullets.push(obj);
-
-                scene.add(bullet);
-            }
-        })
-
+        turretShoot();
     }
+}
+
+/*
+    Função para disparar tiros da torreta a cada cadenciaTime segundos
+*/
+function turretShoot(){
+    
+    cadenciaTime += delta;
+
+    //se não tiver passado os 3 segundos (cadenciaTime) a torreta não atira
+    if(cadenciaTime < cadenciaTirosTorreta){
+        return;
+    }
+    cadenciaTime = 0;
+    torretas.forEach(conjunto => {
+
+        if(conjunto.torreta != null){
+            let obj = {
+                bullet: null,
+                dir: null,
+                bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
+                type:'t'
+            }
+
+            let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
+                color: "yellow"
+            }));
+            bullet.rotateX(THREE.MathUtils.degToRad(90));
+
+            obj.bullet = bullet;
+            obj.bb.setFromObject(obj.bullet);
+            conjunto.torreta.getWorldPosition(bullet.position);
+
+            var directionBullet = new THREE.Vector3();
+            var posicaoTorreta = new THREE.Vector3();
+            var posicaoAviao = new THREE.Vector3();
+
+            conjunto.torreta.getWorldPosition(posicaoTorreta);
+            aviao.getAirplane().getWorldPosition(posicaoAviao);
+
+            // posicaoTorreta = conjunto.torreta.position;
+            // posicaoAviao = aviao.getAirplane().position;
+
+            directionBullet.subVectors(posicaoTorreta, posicaoAviao ).normalize();
+
+            // const arrowHelper = new THREE.ArrowHelper( directionBullet, posicaoTorreta, 10, 0xffff00 );
+            // scene.add( arrowHelper );
+
+            //obj.dir = aviao.getAirplane().position.clone();
+            obj.dir = directionBullet;
+            bullets.push(obj);
+
+            scene.add(bullet);
+        }
+    })
 }
 
 /*
@@ -558,7 +579,10 @@ function updateBullets () {
             bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta;
             bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta;
         }else{
-            bulletObj.bullet.position.lerp(bulletObj.dir, bulletVelocity * delta*0.01)
+            //bulletObj.bullet.position.lerp(bulletObj.dir, bulletVelocity * delta*0.01)
+            bulletObj.bullet.position.x -= bulletObj.dir.getComponent(0) * bulletVelocity * delta;
+            bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta;
+            bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta;
         }
         
     });
@@ -613,7 +637,7 @@ controls.show();
 
 function checkColisions(){
     bullets.forEach( (bulletObj, indexBullet) => {
-        if(bulletObj.type=='a'){
+        if(bulletObj.type=='a'){// projétil do avião
             torretas.forEach ( (conjunto) => {
                 if(conjunto.torreta != null){
                     if(bulletObj.bb.intersectsBox(conjunto.bb)){
@@ -628,6 +652,12 @@ function checkColisions(){
                     }
                 }
             })
+        }else{ // projétil da torreta
+            if(bulletObj.bb.intersectsBox(aviao.getAirplane().bb)){
+                soundHitAirplane.stop();
+                soundHitAirplane.play();
+                aviao.airplaneHit();
+            }
         }
         
     })
@@ -693,6 +723,7 @@ function render() {
             checkColisions();
 
             delta = clock.getDelta();
+            turretShoot();
             updateBullets();
 
             moveAirPlane();
