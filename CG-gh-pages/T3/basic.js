@@ -90,7 +90,7 @@ audioLoaderHitTurret.load( './sounds/explosionTurret.mp3', function( buffer ) {
 //-- CREATING THE EQUIRECTANGULAR MAP   ----------------------------------------------------------------------
 
 const textureLoader = new THREE.TextureLoader();
-let textureEquirec = textureLoader.load( './textures/space.jpg' );
+let textureEquirec = textureLoader.load( './textures/space.jpeg' );
 	textureEquirec.mapping = THREE.EquirectangularReflectionMapping; // Reflection as default
 	textureEquirec.encoding = THREE.sRGBEncoding;
 // Set scene's background as a equirectangular map
