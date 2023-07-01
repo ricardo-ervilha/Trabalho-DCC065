@@ -36,3 +36,4 @@ export const cadenciaTirosTorreta = 3
 
 
 export const redColors = ["#ffbaba", "#ff7b7b", "#ff5252", "#ff0000", "#a70000"]
+

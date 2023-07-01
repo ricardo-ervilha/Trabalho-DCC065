@@ -18,29 +18,29 @@ export class Environment{
         [7, 13]
     ];
 
-    //Struct 1 -> Ter um cilindro dentro do outro semelhante ao que está no canto inferior esquerdo da imagem
-    //Struct 2 -> Ter um Paralelepípedo com outros paralelepipedos do lado conectando a cubos. Meio e direita da imagem
-    //Struct 3 -> Ter um paralelepípedo atravessando as paredes semelhante ao meio superior da imagem.
-    constructor(height, width, temTorreta, numCubos, struct3, numCalotas, numCilindros, numParalelepipedos, struct1, struct2){
+    constructor(height, width, temTorreta, texturasVar){
+
+        this.texturasVar = texturasVar;
+
         const textureLoader = new THREE.TextureLoader();
         //-- Carregando as texturas da trench run
-        this.texture1 = textureLoader.load('./textures/texture-1.jpg');
-        this.texture2 = textureLoader.load('./textures/texture-2.jpg');
-        this.texture3 = textureLoader.load('./textures/texture-3.jpg');
-        this.texture4 = textureLoader.load('./textures/texture-4.jpg');
-        this.texture5 = textureLoader.load('./textures/texture-5.jpg');
-        this.texture6 = textureLoader.load('./textures/texture-6.png');
-        this.texture7 = textureLoader.load('./textures/teste2.jpg');
+        this.map1 = textureLoader.load('./textures/map_1.jpeg');
+        this.map2 = textureLoader.load('./textures/map_2.jpeg');
+        this.map3 = textureLoader.load('./textures/map_3.jpeg');
+        this.map4 = textureLoader.load('./textures/map_4.jpeg');
+        this.map5 = textureLoader.load('./textures/map_5.jpeg');
+        this.map6 = textureLoader.load('./textures/map_6.jpeg');
+        this.map7 = textureLoader.load('./textures/map_7.jpeg');
+        this.map8 = textureLoader.load('./textures/map_8.jpeg');
+        this.map9 = textureLoader.load('./textures/map_9.jpeg');
+        this.map10 = textureLoader.load('./textures/map_10.jpeg');
+        this.map11 = textureLoader.load('./textures/map_11.jpeg');
+        this.map12 = textureLoader.load('./textures/map_12.jpeg');
+        this.map13 = textureLoader.load('./textures/map_13.jpeg');
 
-        this.auxObjectsTrenchRun = {
-            numCubos: numCubos,
-            numCalotas: numCalotas,
-            numCilindros: numCilindros,
-            numParalelepipedos: numParalelepipedos,
-            struct1: struct1,
-            struct2: struct2,
-            struct3: struct3
-        }
+        this.texture2 = textureLoader.load('./textures/texture2.jpg');
+        this.texture8 = textureLoader.load('./textures/texture8.png');
+        this.texture9 = textureLoader.load('./textures/texture9.png');
         
         //Controla a velocidade do plano
         this.velocity = velocityPlan;
@@ -57,7 +57,7 @@ export class Environment{
         //Desempacoto obj e pego o plano, setando a opacidade para 0
         this.plane = obj.plane;
         this.plane.material.transparent = true;
-        this.plane.material.map = this.texture4;
+        this.plane.material.map = this.texture2;
         this.plane.material.map.minFilter = THREE.LinearFilter;
         this.plane.material.map.magFilter = THREE.NearestFilter;
         
@@ -85,9 +85,10 @@ export class Environment{
     conectCubesPlane(){
         //Usar isso para criar os cubos com arestas.
         var geometry = new THREE.BoxGeometry( sizeCube, sizeCube, sizeCube ); 
-        var material = new THREE.MeshPhongMaterial( {color: 0xdddddd, transparent: true} ); 
+        var material1 = new THREE.MeshPhongMaterial( {color: 0xdddddd, transparent: true} ); 
+        var material2 = new THREE.MeshPhongMaterial( {color: 0xdddddd, transparent: true}) ;
         
-        this.leftCube = new THREE.Mesh( geometry, material ); 
+        this.leftCube = new THREE.Mesh( geometry, material1 ); 
         this.leftCube.position.x = -widthPlan/2 - sizeCube/2;
         this.leftCube.receiveShadow = true;
         this.plane.add(this.leftCube);
@@ -97,7 +98,7 @@ export class Environment{
         this.leftLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 5} ) ); 
         this.leftCube.add( this.leftLine );
 
-        this.rightCube = new THREE.Mesh( geometry, material);
+        this.rightCube = new THREE.Mesh( geometry, material2);
         this.rightCube.receiveShadow = true;
         this.rightCube.position.x = widthPlan/2 + sizeCube/2;
         
@@ -105,16 +106,161 @@ export class Environment{
         
         this.rightLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 5 }));
 
-        this.leftCube.material.map = this.texture2;
-        this.rightCube.material.map = this.texture2;
+
+        //Parte das texturas
+        if(this.texturasVar == 0){
+            this.leftCube.material.map = this.texture9;
+            this.rightCube.material.map = this.texture9;
+        }else if(this.texturasVar == 1){
+            this.leftCube.material.map = this.texture9;
+            this.rightCube.material.map = this.texture9;
+        }else if(this.texturasVar == 2){
+            this.leftCube.material.map = this.map5;
+            this.rightCube.material.map = this.map9;
+        }else if(this.texturasVar == 3){
+            this.leftCube.material.map = this.map10;
+            this.rightCube.material.map = this.map13;
+        }else if(this.texturasVar == 4){
+            this.leftCube.material.map = this.map11;
+            this.rightCube.material.map = this.map4;
+        }else if(this.texturasVar == 5){
+            this.leftCube.material.map = this.map13;
+            this.rightCube.material.map = this.map6;
+        }else if(this.texturasVar == 6){
+            this.leftCube.material.map = this.map1;
+            this.rightCube.material.map = this.map7;
+        }else if(this.texturasVar == 7){
+            this.leftCube.material.map = this.map5;
+            this.rightCube.material.map = this.map3;
+        }else if(this.texturasVar == 8){
+            this.leftCube.material.map = this.map4;
+            this.rightCube.material.map = this.map9;
+        }
+
         this.leftCube.material.map.minFilter = THREE.LinearFilter;
-        this.leftCube.material.map.magFilter = THREE.NearestFilter;
+        this.leftCube.material.map.magFilter = THREE.LinearFilter;
         this.rightCube.material.map.minFilter = THREE.LinearFilter;
-        this.rightCube.material.map.magFilter = THREE.NearestFilter;
+        this.rightCube.material.map.magFilter = THREE.LinearFilter;
         
         this.rightCube.add( this.rightLine );
-
+        
     }
+    
+    buildObjectsTrenchRun(){
+        if(this.texturasVar == 0){
+
+            //Coluna cilindrica vertical da esquerda
+            var material1 = new THREE.MeshPhongMaterial();
+            material1.map = this.texture2;
+            material1.map.magFilter = THREE.LinearFilter;
+            material1.map.minFilter = THREE.LinearFilter;
+            var geometry = new THREE.CylinderGeometry(10, 10, sizeCube, 64, 64, undefined, undefined, Math.PI);
+            var cilindro1 = new THREE.Mesh(geometry, material1);
+            cilindro1.position.x += sizeCube/2;
+            cilindro1.position.y -= 25;
+            cilindro1.rotateX(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(cilindro1);
+
+            //Coluna cilindrica vertical da direita
+            var material2 = new THREE.MeshPhongMaterial();
+            material2.map = this.texture9;
+            material2.map.magFilter = THREE.LinearFilter;
+            material2.map.minFilter = THREE.LinearFilter;
+            var cilindro2 = new THREE.Mesh(geometry, material2);
+            cilindro2.rotateX(THREE.MathUtils.degToRad(90));
+            cilindro2.position.y -= 25;
+            cilindro2.rotateY(THREE.MathUtils.degToRad(180));
+            cilindro2.position.x -= sizeCube/2;
+            this.rightCube.add(cilindro2);
+
+        }else if(this.texturasVar == 1){
+
+        }else if(this.texturasVar == 2){
+
+        }else if(this.texturasVar == 3){
+            //Coluna cilindrica vertical da esquerda
+            var material1 = new THREE.MeshPhongMaterial();
+            material1.map = this.texture2;
+            material1.map.magFilter = THREE.LinearFilter;
+            material1.map.minFilter = THREE.LinearFilter;
+            var geometry = new THREE.CylinderGeometry(10, 10, sizeCube, 64, 64, undefined, undefined, Math.PI);
+            var cilindro1 = new THREE.Mesh(geometry, material1);
+            cilindro1.position.x += sizeCube/2;
+            cilindro1.position.y -= 25;
+            cilindro1.rotateX(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(cilindro1);
+
+            //Coluna cilindrica vertical da direita
+            var material2 = new THREE.MeshPhongMaterial();
+            material2.map = this.texture9;
+            material2.map.magFilter = THREE.LinearFilter;
+            material2.map.minFilter = THREE.LinearFilter;
+            var cilindro2 = new THREE.Mesh(geometry, material2);
+            cilindro2.rotateX(THREE.MathUtils.degToRad(90));
+            cilindro2.position.y -= 25;
+            cilindro2.rotateY(THREE.MathUtils.degToRad(180));
+            cilindro2.position.x -= sizeCube/2;
+            this.rightCube.add(cilindro2);
+
+        }else if(this.texturasVar == 4){
+
+        }else if(this.texturasVar == 5){
+
+        }else if(this.texturasVar == 6){
+            //Coluna cilindrica vertical da esquerda
+            var material1 = new THREE.MeshPhongMaterial();
+            material1.map = this.texture2;
+            material1.map.magFilter = THREE.LinearFilter;
+            material1.map.minFilter = THREE.LinearFilter;
+            var geometry = new THREE.CylinderGeometry(10, 10, sizeCube, 64, 64, undefined, undefined, Math.PI);
+            var cilindro1 = new THREE.Mesh(geometry, material1);
+            cilindro1.position.x += sizeCube/2;
+            cilindro1.position.y -= 25;
+            cilindro1.rotateX(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(cilindro1);
+
+            //Coluna cilindrica vertical da direita
+            var material2 = new THREE.MeshPhongMaterial();
+            material2.map = this.texture9;
+            material2.map.magFilter = THREE.LinearFilter;
+            material2.map.minFilter = THREE.LinearFilter;
+            var cilindro2 = new THREE.Mesh(geometry, material2);
+            cilindro2.rotateX(THREE.MathUtils.degToRad(90));
+            cilindro2.position.y -= 25;
+            cilindro2.rotateY(THREE.MathUtils.degToRad(180));
+            cilindro2.position.x -= sizeCube/2;
+            this.rightCube.add(cilindro2);
+
+            //Coluna cilindrica vertical da direita
+            var material3 = new THREE.MeshPhongMaterial();
+            material3.map = this.texture2;
+            material3.map.magFilter = THREE.LinearFilter;
+            material3.map.minFilter = THREE.LinearFilter;
+            var geometry2 = new THREE.CylinderGeometry(26, 35, 4, 4, 1, undefined, undefined, undefined);
+            var cilindro3 = new THREE.Mesh(geometry2, material3);
+            cilindro3.rotateX(THREE.MathUtils.degToRad(90));
+            cilindro3.position.z += sizeCube/2;
+            cilindro3.rotateY(THREE.MathUtils.degToRad(45));
+            this.rightCube.add(cilindro3);
+
+        }else if(this.texturasVar == 7){
+
+            //Disco em cima do cubo da esquerda
+            var material1 = new THREE.MeshPhongMaterial();
+            material1.map = this.texture9;
+            material1.map.magFilter = THREE.LinearFilter;
+            material1.map.minFilter = THREE.LinearFilter;
+            var geometry = new THREE.CylinderGeometry(40, 40, 10, 64, 64);
+            var cilindro1 = new THREE.Mesh(geometry, material1);
+            cilindro1.position.z += sizeCube/2;
+            cilindro1.rotateX(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(cilindro1);
+
+        }else if(this.texturasVar == 8){
+
+        }
+    }
+
 
     //-> Não tem mais árvores
     // getRandomArbitrary(min, max) {
@@ -166,31 +312,6 @@ export class Environment{
     //     }
     // }
 
-    buildObjectsTrenchRun(){
-        let x, y;
-        var geometry;
-
-        if(this.auxObjectsTrenchRun.numCubos){
-            geometry = new THREE.BoxGeometry(25,25,25);
-            var material = new THREE.MeshLambertMaterial();
-            const cube = new THREE.Mesh(geometry, material);
-            this.leftCube.add(cube);
-            cube.position.z += heightPlan/2 + 30/2;
-            cube.material.map = this.texture1;
-            cube.material.map.minFilter = THREE.LinearFilter;
-            cube.material.map.magFilter = THREE.NearestFilter;
-        }if(this.auxObjectsTrenchRun.struct3){
-            geometry = new THREE.BoxGeometry(widthPlan,10,10);
-            var material2 = new THREE.MeshLambertMaterial();
-            const paralelepipedoAtravessado = new THREE.Mesh(geometry, material2);
-            this.leftCube.add(paralelepipedoAtravessado);
-            paralelepipedoAtravessado.position.z += heightPlan/2 - 30;
-            paralelepipedoAtravessado.position.x += 3*widthPlan/2;
-            paralelepipedoAtravessado.material.map = this.texture7;
-            paralelepipedoAtravessado.material.map.minFilter = THREE.LinearFilter;
-            paralelepipedoAtravessado.material.map.magFilter = THREE.NearestFilter;
-        }
-    }
 
     buildOneTurret() {
             var objLoader = new OBJLoader();

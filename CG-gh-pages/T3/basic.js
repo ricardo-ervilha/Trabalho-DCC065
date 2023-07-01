@@ -101,7 +101,7 @@ audioLoaderHitAirplane.load( './sounds/hitAirship.mp3', function( buffer ) {
 //-- CREATING THE EQUIRECTANGULAR MAP   ----------------------------------------------------------------------
 
 const textureLoader = new THREE.TextureLoader();
-let textureEquirec = textureLoader.load( './textures/space.jpeg' );
+let textureEquirec = textureLoader.load( './textures/space_skybox.jpeg' );
 	textureEquirec.mapping = THREE.EquirectangularReflectionMapping; // Reflection as default
 	textureEquirec.encoding = THREE.sRGBEncoding;
 // Set scene's background as a equirectangular map
@@ -188,9 +188,9 @@ var torretas = [];
 for(var i = 0; i < numPlans; i++){
     var environment;
     if(i == 2 || i == 4 || i == 6 || i == 8){
-        environment = new Environment(heightPlan, widthPlan, true, true, true);
+        environment = new Environment(heightPlan, widthPlan, true, i);
     }else{
-        environment = new Environment(heightPlan, widthPlan, false);
+        environment = new Environment(heightPlan, widthPlan, false, i);
     }
 
     let plane = environment.getPlane();
