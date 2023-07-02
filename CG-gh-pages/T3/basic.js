@@ -210,7 +210,8 @@ for(var i = 0; i < numPlans; i++){
         animation: false,
         initialScale: null,
         animationStartTime: 0,
-        destroyed:false
+        destroyed:false,
+        plane: plane
     }
 
     torretas.push(conjunto);
@@ -527,8 +528,8 @@ function turretShoot(){
     }
     cadenciaTime = 0;
     torretas.forEach(conjunto => {
-
-        if(conjunto.torreta != null){
+        //Adicionei esse conjunto.plane.position.z para verificar se a posição do negócio não está depois do avião.
+        if(conjunto.torreta != null && conjunto.plane.position.z > 0){
             let obj = {
                 bullet: null,
                 dir: null,
