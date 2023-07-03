@@ -14,6 +14,7 @@ import { Airplane } from "./airplane.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
 import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
 import { velocityPlan, cadenciaTirosTorreta, sizeCube } from './variables.js';
+import {addJoysticks} from './lib/mobile.js';
 
 let scene, renderer, camera, material, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
@@ -674,6 +675,9 @@ function removeBullet(bullet, index){
         scene.remove(bullet);
     }
 }
+// Add joysticks to the scene
+addJoysticks();
+
 
 render();
 function render() {
@@ -746,3 +750,4 @@ function render() {
     requestAnimationFrame(render);
 
 }
+

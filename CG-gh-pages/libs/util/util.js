@@ -513,7 +513,7 @@ export function createGroundPlane(width, height, widthSegments = 10, heightSegme
  * Create a ground plane that has a grid over it
  */
 export function createGroundPlaneWired(width, height, widthSegments = 10, heightSegments = 10, lineWidth = 3, gcolor = null, wcolor = null) {
-   if (!gcolor) gcolor = "rgb(0, 204, 0)";
+   if (!gcolor) gcolor = "rgb(60, 30, 150)";
    if (!wcolor) wcolor = "rgb(150, 150, 150)"
 
    //---------------------------------------------------------------------------------------
@@ -527,7 +527,6 @@ export function createGroundPlaneWired(width, height, widthSegments = 10, height
       polygonOffsetUnits: 1
    });
 
-
    // Create the grid object
    let grid = new Grid(width, height, widthSegments, heightSegments, wcolor, lineWidth);
 
@@ -536,13 +535,7 @@ export function createGroundPlaneWired(width, height, widthSegments = 10, height
    plane.rotateX(-Math.PI / 2);
 
    plane.add(grid); // Add the grid to the plane
-
-   let obj = {
-      plane: plane,
-      grid: grid
-   }
-   
-   return obj;
+   return plane;
 }
 
 /**
