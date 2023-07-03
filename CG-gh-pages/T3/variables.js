@@ -25,7 +25,7 @@ export const velocityReturn = 0.9;
 export const sizeCube = heightPlan;
 
 //velocidade das balas
-export const bulletVelocity = 500;
+export const bulletVelocity = 600;
 
 //posição do plano invisível
 export const invisiblePlanePosition = {x:0, y:30, z: -45};
@@ -36,4 +36,5 @@ export const cadenciaTirosTorreta = 3;
 
 
 export const redColors = ["#ffbaba", "#ff7b7b", "#ff5252", "#ff0000", "#a70000"]
+// export const redColors = ["#00ff00", "#ffff00", "#0000ff", "#000000", "#ff69b4"];
 

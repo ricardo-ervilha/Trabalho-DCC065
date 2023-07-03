@@ -38,6 +38,7 @@ export class Environment{
         this.map12 = textureLoader.load('./textures/map_12.jpeg');
         this.map13 = textureLoader.load('./textures/map_13.jpeg');
 
+        this.texture1 = textureLoader.load('./textures/texture1.jpg');
         this.texture2 = textureLoader.load('./textures/texture2.jpg');
         this.texture8 = textureLoader.load('./textures/texture8.png');
         this.texture9 = textureLoader.load('./textures/texture9.png');
@@ -277,7 +278,7 @@ export class Environment{
             cilindro2.rotateX(THREE.MathUtils.degToRad(90));
             this.plane.add(cilindro2);
 
-            //Paralelepípedo que fica em cima da parede direita.
+            //Paralelepípedo que fica em cima do cubo da direita.
             var material5 = new THREE.MeshPhongMaterial();
             material5.map = this.texture2;
             material5.map.magFilter = THREE.LinearFilter;

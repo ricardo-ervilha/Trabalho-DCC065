@@ -135,11 +135,12 @@ export class Airplane {
 
   airplaneHit(){
     this.indexCurrentColor++;
+    console.log(this.indexCurrentColor);
     if(this.indexCurrentColor < 5){
+      console.log("INDEX COR ATUAL: "+this.indexCurrentColor);
+      console.log("COR ATUAL: "+redColors[this.indexCurrentColor]);
       this.airplane.traverse((child) => {
         if (child && child.isMesh) {
-          console.log("INDEX COR ATUAL: "+this.indexCurrentColor);
-          console.log("COR ATUAL: "+redColors[this.indexCurrentColor]);
           child.material.color.set(redColors[this.indexCurrentColor]);
 
           // if(this.indexCurrentColor==0)  child.material.color.set("#ffbaba");
@@ -147,7 +148,7 @@ export class Airplane {
           // if(this.indexCurrentColor==2)  child.material.color.set("#ff5252");
           // if(this.indexCurrentColor==3)  child.material.color.set("#ff0000");
           // if(this.indexCurrentColor==4)  child.material.color.set("#a70000");
-          //if(this.indexCurrentColor==4)  child.material.color.set(redColors[this.indexCurrentColor]);
+          // if(this.indexCurrentColor==4)  child.material.color.set(redColors[this.indexCurrentColor]);
         }
       });
     }

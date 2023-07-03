@@ -22,6 +22,7 @@ let boolSimulation = true;//simulação está rodando
 let clock = new THREE.Clock();
 let delta = 0;//segundos entre cada iteraçao do render
 let cadenciaTime = 0;
+let cadenciaTime2 = 0;
 let bullets = [];
 const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 0.0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
@@ -637,6 +638,7 @@ controls.add("* Left button to shoot");
 controls.show();
 
 function checkColisions(){
+    cadenciaTime2 += delta;
     bullets.forEach( (bulletObj, indexBullet) => {
         if(bulletObj.type=='a'){// projétil do avião
             torretas.forEach ( (conjunto) => {
@@ -654,7 +656,14 @@ function checkColisions(){
                 }
             })
         }else{ // projétil da torreta
+            
             if(bulletObj.bb.intersectsBox(aviao.getAirplane().bb)){
+                //se não tiver passado os 3 segundos (cadenciaTime) a torreta não atira
+                if(cadenciaTime2 < 0.1){
+                    return;
+                }
+                cadenciaTime2 = 0;
+                console.log('Chegou até aqui');
                 soundHitAirplane.stop();
                 soundHitAirplane.play();
                 aviao.airplaneHit();
@@ -680,6 +689,7 @@ function render() {
     //console.log(camera)
     if (boolSimulation) {
         if (aviao.getAirplane()) {
+            aviao.getAirplane().bb.setFromObject(aviao.getAirplane());
             bullets.forEach((bulletObj, index) => {
                 bulletObj.bb.setFromObject(bulletObj.bullet);
 
