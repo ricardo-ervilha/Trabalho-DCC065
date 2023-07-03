@@ -135,10 +135,10 @@ export class Airplane {
 
   airplaneHit(){
     this.indexCurrentColor++;
-    console.log(this.indexCurrentColor);
+    // console.log(this.indexCurrentColor);
     if(this.indexCurrentColor < 5){
-      console.log("INDEX COR ATUAL: "+this.indexCurrentColor);
-      console.log("COR ATUAL: "+redColors[this.indexCurrentColor]);
+      // console.log("INDEX COR ATUAL: "+this.indexCurrentColor);
+      // console.log("COR ATUAL: "+redColors[this.indexCurrentColor]);
       this.airplane.traverse((child) => {
         if (child && child.isMesh) {
           child.material.color.set(redColors[this.indexCurrentColor]);

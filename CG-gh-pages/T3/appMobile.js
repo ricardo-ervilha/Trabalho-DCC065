@@ -7,7 +7,7 @@ import {initRenderer,
 
 import {initCamera} from "./camera.js";
 
-import {  heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition} from './variables.js';
+import {  heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition, cadenciaApertarBotoes} from './variables.js';
 import { Environment } from './environment.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
@@ -15,6 +15,12 @@ import KeyboardState from '../libs/util/KeyboardState.js';
 import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
 import { velocityPlan, cadenciaTirosTorreta, sizeCube } from './variables.js';
 import {addJoysticks} from './lib/mobile.js';
+import { Buttons } from "../libs/other/buttons.js";
+
+var buttons = new Buttons(onButtonDown, onButtonUp);
+
+var pressedA = false;        
+var pressedB = false;   
 
 let scene, renderer, camera, material, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
@@ -24,6 +30,7 @@ let clock = new THREE.Clock();
 let delta = 0;//segundos entre cada iteraçao do render
 let cadenciaTime = 0;
 let cadenciaTime2 = 0;
+let cadenciaTime3 = 0;
 let bullets = [];
 const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 0.0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
@@ -153,7 +160,7 @@ aviao.buildAirPlane(scene);
 // Listen window size changes
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
 window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
-window.addEventListener("click", onMouseClick);
+// window.addEventListener("click", onMouseClick);
 window.addEventListener("contextmenu", rightClick);
 document.body.style.cursor = "none";
 
@@ -465,51 +472,51 @@ function moveCamera() {
     }
 }
 
-function onMouseClick(event) {
-    if(event.button == 0){
-        if (!boolSimulation) boolSimulation = true;
-        let obj = {
-            bullet: null,
-            dir: null,
-            bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
-            type:'a'
-        }
+// function onMouseClick(event) {
+//     if(event.button == 0){
+//         if (!boolSimulation) boolSimulation = true;
+//         let obj = {
+//             bullet: null,
+//             dir: null,
+//             bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
+//             type:'a'
+//         }
 
-        let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
-            color: "red"
-        }));
-        bullet.rotateX(THREE.MathUtils.degToRad(90));
+//         let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
+//             color: "red"
+//         }));
+//         bullet.rotateX(THREE.MathUtils.degToRad(90));
 
-        obj.bullet = bullet;
-        obj.bb.setFromObject(obj.bullet);
+//         obj.bullet = bullet;
+//         obj.bb.setFromObject(obj.bullet);
 
-        scene.add(bullet);
+//         scene.add(bullet);
 
-        //Bullet recebe a posição do avião
-        aviao.getAirplane().getWorldPosition(bullet.position);
-        //aviao.getAirplane().getWorldQuaternion(bullet.quaternion);
+//         //Bullet recebe a posição do avião
+//         aviao.getAirplane().getWorldPosition(bullet.position);
+//         //aviao.getAirplane().getWorldQuaternion(bullet.quaternion);
 
-        //Pego a diferença entre as coordenadas da câmera e do target
-        var x = camera.position.x - aviao.target.position.x;
-        var y =  camera.position.y - aviao.target.position.y;
-        var z = camera.position.z - aviao.target.position.z;
+//         //Pego a diferença entre as coordenadas da câmera e do target
+//         var x = camera.position.x - aviao.target.position.x;
+//         var y =  camera.position.y - aviao.target.position.y;
+//         var z = camera.position.z - aviao.target.position.z;
 
-        //Extraio o módulo
-        var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
+//         //Extraio o módulo
+//         var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
 
-        //Normalizo
-        x = x / moduloDirectBullet;
-        y = y / moduloDirectBullet;
-        z = z / moduloDirectBullet;
+//         //Normalizo
+//         x = x / moduloDirectBullet;
+//         y = y / moduloDirectBullet;
+//         z = z / moduloDirectBullet;
 
-        var directionBullet = new THREE.Vector3(x,y,z);
+//         var directionBullet = new THREE.Vector3(x,y,z);
 
-        obj.dir = directionBullet;
-        soundAirship.stop();
-        soundAirship.play();
-        bullets.push(obj);
-    }
-}
+//         obj.dir = directionBullet;
+//         soundAirship.stop();
+//         soundAirship.play();
+//         bullets.push(obj);
+//     }
+// }
 
 function rightClick(event) {
     if(event.button == 2){
@@ -620,9 +627,10 @@ function keyboardUpdate() {
         }
     } else if( keyboard.down("S")){
         if(isPlaying){
-            sound.stop();
+            sound.pause();
             isPlaying = false;
-        }else{
+        }   
+        else{
             sound.play();
             isPlaying = true;
         }
@@ -656,7 +664,7 @@ function checkColisions(){
                     return;
                 }
                 cadenciaTime2 = 0;
-                console.log('Chegou até aqui');
+                // console.log('Chegou até aqui');
                 soundHitAirplane.stop();
                 soundHitAirplane.play();
                 aviao.airplaneHit();
@@ -744,10 +752,97 @@ function render() {
         renderer.render(scene, camera) // Render scene
     }
 
-
+    executeIfKeyPressed();
     keyboardUpdate();
 
     requestAnimationFrame(render);
 
 }
+
+function onButtonDown(event) {
+    switch(event.target.id)
+    {
+      case "A":
+        pressedA = true;
+       break;
+      case "B":
+        pressedB = true;
+      break;    
+      case "full":
+        buttons.setFullScreen();
+      break;    
+    }
+  }
+
+function onButtonUp(event) {
+pressedA = pressedB = false;
+}
+
+function executeIfKeyPressed()
+{
+    cadenciaTime3 += delta;
+    if(pressedA && cadenciaTime3 > cadenciaApertarBotoes)
+    {
+        //Botão do tiro
+
+        if (!boolSimulation) boolSimulation = true;
+        let obj = {
+            bullet: null,
+            dir: null,
+            bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
+            type:'a'
+        }
+
+        let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
+            color: "red"
+        }));
+        bullet.rotateX(THREE.MathUtils.degToRad(90));
+
+        obj.bullet = bullet;
+        obj.bb.setFromObject(obj.bullet);
+
+        scene.add(bullet);
+
+        //Bullet recebe a posição do avião
+        aviao.getAirplane().getWorldPosition(bullet.position);
+        //aviao.getAirplane().getWorldQuaternion(bullet.quaternion);
+
+        //Pego a diferença entre as coordenadas da câmera e do target
+        var x = camera.position.x - aviao.target.position.x;
+        var y =  camera.position.y - aviao.target.position.y;
+        var z = camera.position.z - aviao.target.position.z;
+
+        //Extraio o módulo
+        var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
+
+        //Normalizo
+        x = x / moduloDirectBullet;
+        y = y / moduloDirectBullet;
+        z = z / moduloDirectBullet;
+
+        var directionBullet = new THREE.Vector3(x,y,z);
+
+        obj.dir = directionBullet;
+        soundAirship.stop();
+        soundAirship.play();
+        bullets.push(obj);
+
+        cadenciaTime3 = 0;
+    }
+    if(pressedB && cadenciaTime3 > cadenciaApertarBotoes )
+    {
+        //Trilha Sonora  
+        if(isPlaying){
+            sound.pause();
+            isPlaying = false;
+        }   
+        else{
+            sound.play();
+            isPlaying = true;
+        }
+            
+        cadenciaTime3 = 0;
+    }
+}
+
 

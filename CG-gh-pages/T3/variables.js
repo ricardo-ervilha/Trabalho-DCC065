@@ -34,6 +34,7 @@ export const invisiblePlanePosition = {x:0, y:30, z: -45};
 
 export const cadenciaTirosTorreta = 3;
 
+export const cadenciaApertarBotoes = 0.5;
 
 export const redColors = ["#ffbaba", "#ff7b7b", "#ff5252", "#ff0000", "#a70000"]
 // export const redColors = ["#00ff00", "#ffff00", "#0000ff", "#000000", "#ff69b4"];
