@@ -4,7 +4,7 @@ import { Tree } from './tree.js';
 import { heightPlan, sizeCube, velocityPlan, widthPlan } from './variables.js';
 import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js';
-import { MeshBasicMaterial } from '../build/three.module.js';
+import { MathUtils, MeshBasicMaterial } from '../build/three.module.js';
 /*
 Classe responsável por modelar o ambiente com seus planos retangulares e cubos nas bordas.
 Além disso, nela associamos as "turrets" que serão gerados no ambiente.
@@ -186,6 +186,18 @@ export class Environment{
             placa1.position.x -= 25;
             this.rightCube.add(placa1);
 
+            //Paralelepípedo que fica em cima da parede esquerda.
+            var material4 = new THREE.MeshPhongMaterial();
+            material4.map = this.texture2;
+            material4.map.magFilter = THREE.LinearFilter;
+            material4.map.minFilter = THREE.LinearFilter;
+            var geometry3 = new THREE.BoxGeometry(100,20,5);
+            var placa2 = new THREE.Mesh(geometry3, material3);
+            placa2.position.z += sizeCube/2;
+            placa2.position.y += 10;
+            placa2.position.x -= 25;
+            this.leftCube.add(placa2);
+
         }else if(this.texturasVar == 1){
             //Cubo que fica em cima do plano.
             var material1 = new THREE.MeshPhongMaterial();
@@ -221,6 +233,99 @@ export class Environment{
             placa1.position.x += 35;
             this.rightCube.add(placa1);
 
+            //Paralelepípedo que fica em cima da parede esquerda.
+            var material3 = new THREE.MeshPhongMaterial();
+            material3.map = this.texture2;
+            material3.map.magFilter = THREE.LinearFilter;
+            material3.map.minFilter = THREE.LinearFilter;
+            var geometry4 = new THREE.BoxGeometry(100,20,5);
+            var placa2 = new THREE.Mesh(geometry4, material3);
+            placa2.position.z += sizeCube/2;
+            placa2.position.y += 10;
+            placa2.position.x -= 25;
+            placa2.rotateZ(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(placa2);
+
+            //Estrutura que fica na parede da esquerda
+            var material4 = new THREE.MeshPhongMaterial();
+            material4.map = this.texture2;
+            material4.map.magFilter = THREE.LinearFilter;
+            material4.map.minFilter = THREE.LinearFilter;
+
+            var geometry5 = new THREE.BoxGeometry(20,20,3);
+            var placa2 = new THREE.Mesh(geometry5, material4);
+            var placa3 = new THREE.Mesh(geometry5, material4);
+            placa2.position.z += 30;
+            placa2.position.y -= 30;
+            placa2.position.x += sizeCube/2;
+            placa2.rotateX(THREE.MathUtils.degToRad(90));
+            placa3.position.z += 30;
+            placa3.position.y += 30;
+            placa3.position.x += sizeCube/2;
+            placa3.rotateX(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(placa2);
+            this.leftCube.add(placa3);
+
+            var geometry6 = new THREE.BoxGeometry(60, 5, 5);
+            var ligamento1 = new THREE.Mesh(geometry6, material4);
+            var ligamento2 = new THREE.Mesh(geometry6, material4);
+            ligamento1.position.z += 25;
+            ligamento1.position.y -= 0;
+            ligamento1.position.x += sizeCube/2 + 5;
+            ligamento1.rotateZ(THREE.MathUtils.degToRad(90));
+            ligamento2.position.z += 35;
+            ligamento2.position.y -= 0;
+            ligamento2.position.x += sizeCube/2 + 5;
+            ligamento2.rotateZ(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(ligamento1);
+            this.leftCube.add(ligamento2);
+
+            var material5 = new THREE.MeshPhongMaterial();
+            material5.map = this.texture9;
+            material5.map.magFilter = THREE.LinearFilter;
+            material5.map.minFilter = THREE.LinearFilter;
+            var geometry7 = new THREE.CylinderGeometry(3, 3, 1, 64, 64);
+            var pino1 = new THREE.Mesh(geometry7, material5);
+            pino1.position.z += 30;
+            pino1.position.y -= 34;
+            pino1.position.x += sizeCube/2 + 5;
+            this.leftCube.add(pino1);
+
+            //Estrutura que fica na parede direita.
+            var material6 = new THREE.MeshPhongMaterial();
+            material6.map = this.texture2;
+            material6.map.magFilter = THREE.LinearFilter;
+            material6.map.minFilter = THREE.LinearFilter;
+            var geometry8 = new THREE.BoxGeometry(80,40,5);
+            var placa4 = new THREE.Mesh(geometry8, material6);
+            placa4.position.x -= sizeCube/2;
+            placa4.position.z += 40;
+            placa4.rotateY(THREE.MathUtils.degToRad(90));
+            this.rightCube.add(placa4);
+
+            var material7 = new THREE.MeshPhongMaterial();
+            material7.map = this.texture2;
+            material7.map.magFilter = THREE.LinearFilter;
+            material7.map.minFilter = THREE.LinearFilter;
+            var geometry9 = new THREE.CylinderGeometry(5, 5, 10, 64, 64);
+            var cilindro1 = new THREE.Mesh(geometry9, material7);
+            var cilindro2 = new THREE.Mesh(geometry9, material7);
+            var cilindro3 = new THREE.Mesh(geometry9, material7);
+            cilindro1.position.x -= sizeCube/2 + 5;
+            cilindro2.position.x -= sizeCube/2 + 5
+            cilindro1.position.z += 10;
+            cilindro2.position.z += 40;
+            cilindro3.position.z += 60;
+            cilindro3.position.x -= sizeCube/2 + 5
+            // cilindro1.position.z += 70;
+            cilindro1.rotateZ(THREE.MathUtils.degToRad(90));
+            cilindro2.rotateZ(THREE.MathUtils.degToRad(90));
+            cilindro3.rotateZ(THREE.MathUtils.degToRad(90));
+            this.rightCube.add(cilindro1);
+            this.rightCube.add(cilindro2);
+            this.rightCube.add(cilindro3);
+
+            
         }else if(this.texturasVar == 2){
 
             //Cubo que fica em cima do plano.
@@ -290,6 +395,18 @@ export class Environment{
             placa1.position.x -= sizeCube/2-20;
             this.rightCube.add(placa1);
 
+            //Paralelepípedo que fica em cima da parede esquerda.
+            var material6 = new THREE.MeshPhongMaterial();
+            material6.map = this.texture2;
+            material6.map.magFilter = THREE.LinearFilter;
+            material6.map.minFilter = THREE.LinearFilter;
+            var geometry7 = new THREE.BoxGeometry(100,20,5);
+            var placa2 = new THREE.Mesh(geometry7, material6);
+            placa2.position.z += sizeCube/2;
+            placa2.position.y += 30;
+            placa2.position.x -= 25;
+            this.leftCube.add(placa2);
+
         }else if(this.texturasVar == 3){
             //Coluna cilindrica vertical da esquerda
             var material1 = new THREE.MeshPhongMaterial();
@@ -338,6 +455,19 @@ export class Environment{
             placa1.position.y -= 0;
             placa1.position.x -= 0;
             this.rightCube.add(placa1);
+
+            //Paralelepípedo que fica em cima da parede esquerda.
+            var material5 = new THREE.MeshPhongMaterial();
+            material5.map = this.texture2;
+            material5.map.magFilter = THREE.LinearFilter;
+            material5.map.minFilter = THREE.LinearFilter;
+            var geometry4 = new THREE.BoxGeometry(100,20,5);
+            var placa2 = new THREE.Mesh(geometry4, material5);
+            placa2.position.z += sizeCube/2;
+            placa2.position.y += 10;
+            placa2.position.x -= 35;
+            placa2.rotateZ(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(placa2);
 
         }else if(this.texturasVar == 4){
             //Cubo que fica em cima do plano.
@@ -435,6 +565,19 @@ export class Environment{
             placa1.position.x -= sizeCube/2-20;
             this.rightCube.add(placa1);
 
+            //Cubo que fica em cima da parede esquerda.
+            var material6 = new THREE.MeshPhongMaterial();
+            material6.map = this.texture2;
+            material6.map.magFilter = THREE.LinearFilter;
+            material6.map.minFilter = THREE.LinearFilter;
+            var geometry7 = new THREE.BoxGeometry(30,30,30);
+            var cubo5 = new THREE.Mesh(geometry7, material6);
+            cubo5.position.z += sizeCube/2 + 15;
+            cubo5.position.y += 10;
+            cubo5.position.x -= 35;
+            cubo5.rotateZ(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(cubo5);
+
 
         }else if(this.texturasVar == 5){
             //Cilindro deitado na parede da esquerda (Mais externo)
@@ -472,6 +615,19 @@ export class Environment{
             placa1.position.y += 30;
             placa1.position.x += sizeCube/2-20;
             this.rightCube.add(placa1);
+
+             //Cilindro que fica em cima da parede esquerda.
+             var material4 = new THREE.MeshPhongMaterial();
+             material4.map = this.texture2;
+             material4.map.magFilter = THREE.LinearFilter;
+             material4.map.minFilter = THREE.LinearFilter;
+             var geometry4 = new THREE.CylinderGeometry(30,30,30);
+             var cilindro3 = new THREE.Mesh(geometry4, material4);
+             cilindro3.position.z += sizeCube/2 + 15;
+             cilindro3.position.y += 10;
+             cilindro3.position.x -= 35;
+             cilindro3.rotateX(THREE.MathUtils.degToRad(90));
+             this.leftCube.add(cilindro3);
 
 
         }else if(this.texturasVar == 6){
@@ -523,6 +679,19 @@ export class Environment{
             cilindro3.rotateY(THREE.MathUtils.degToRad(45));
             this.rightCube.add(cilindro3);
 
+            //Paralelepipedo vertical que fica em cima da parede esquerda.
+            var material4 = new THREE.MeshPhongMaterial();
+            material4.map = this.texture2;
+            material4.map.magFilter = THREE.LinearFilter;
+            material4.map.minFilter = THREE.LinearFilter;
+            var geometry3= new THREE.BoxGeometry(60,20,30);
+            var paralelepipedo1 = new THREE.Mesh(geometry3, material4);
+            paralelepipedo1.position.z += sizeCube/2 + 15;
+            paralelepipedo1.position.y += 10;
+            paralelepipedo1.position.x -= 35;
+            paralelepipedo1.rotateY(THREE.MathUtils.degToRad(90));
+            this.leftCube.add(paralelepipedo1);
+
         }else if(this.texturasVar == 7){
 
             //Disco em cima do cubo da esquerda
@@ -530,6 +699,9 @@ export class Environment{
             material1.map = this.texture9;
             material1.map.magFilter = THREE.LinearFilter;
             material1.map.minFilter = THREE.LinearFilter;
+            material1.map.wrapS = THREE.RepeatWrapping;
+            material1.map.wrapT = THREE.RepeatWrapping;
+            material1.map.repeat.set(0.5, 0.5);
             var geometry = new THREE.CylinderGeometry(40, 40, 10, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry, material1);
             cilindro1.position.z += sizeCube/2;
@@ -596,6 +768,32 @@ export class Environment{
             placa1.position.y -= 0;
             placa1.position.x -= sizeCube/2-20;
             this.rightCube.add(placa1);
+
+            //Cubo que fica em cima da parede esquerda.
+            var material5 = new THREE.MeshPhongMaterial();
+            material5.map = this.texture2;
+            material5.map.magFilter = THREE.LinearFilter;
+            material5.map.minFilter = THREE.LinearFilter;
+            var geometry5 = new THREE.BoxGeometry(20,20,20);
+            var placa2 = new THREE.Mesh(geometry5, material5);
+            placa2.position.z += sizeCube/2 + 15;
+            placa2.position.y += 10;
+            placa2.position.x -= 35;
+            this.leftCube.add(placa2);
+
+            //Cubo que fica em cima da parede esquerda.
+            var placa3 = new THREE.Mesh(geometry5, material5);
+            placa3.position.z += sizeCube/2 + 15;
+            placa3.position.y += 90;
+            placa3.position.x -= 35;
+            this.leftCube.add(placa3);
+
+            //Cubo que fica em cima da parede esquerda.;
+            var placa4 = new THREE.Mesh(geometry5, material5);
+            placa4.position.z += sizeCube/2 + 15;
+            placa4.position.y += 50;
+            placa4.position.x -= 35;
+            this.leftCube.add(placa4);
         }
     }
 
