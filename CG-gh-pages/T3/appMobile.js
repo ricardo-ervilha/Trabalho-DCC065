@@ -14,7 +14,6 @@ import { Airplane } from "./airplane.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
 import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
 import { velocityPlan, cadenciaTirosTorreta, sizeCube } from './variables.js';
-import {addJoysticks} from './lib/mobile.js';
 import { Buttons } from "../libs/other/buttons.js";
 
 var buttons = new Buttons(onButtonDown, onButtonUp);
@@ -32,7 +31,7 @@ let cadenciaTime = 0;
 let cadenciaTime2 = 0;
 let cadenciaTime3 = 0;
 let bullets = [];
-const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 0.0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
+const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 200), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
 scene = new THREE.Scene();    // Create main scene
 
@@ -159,11 +158,16 @@ aviao.buildAirPlane(scene);
 
 // Listen window size changes
 window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
-window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
+// window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
 // window.addEventListener("click", onMouseClick);
 window.addEventListener("contextmenu", rightClick);
-document.body.style.cursor = "none";
+// document.body.style.cursor = "none";
 
+// botões da versão mobile
+let fwdValue = 0;
+let bkdValue = 0;
+let rgtValue = 0;
+let lftValue = 0;
 
 // -- Cria o raycaster que será usado para fazer interseção entre o plano e a posição do mouse
 let raycaster = new THREE.Raycaster();
@@ -309,30 +313,30 @@ function updatePositionPlanes(){
  * @param {*} event 
  */
 
-function onMouseMove(event){
-    if(aviao.getAirplane()){
-        // calculate pointer position in normalized device coordinates
-        // (-1 to +1) for both components
-        pointer.x =  (event.clientX / window.innerWidth) * 2 - 1;
-        pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+// function onMouseMove(event){
+//     if(aviao.getAirplane()){
+//         // calculate pointer position in normalized device coordinates
+//         // (-1 to +1) for both components
+//         pointer.x =  (event.clientX / window.innerWidth) * 2 - 1;
+//         pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        // update the picking ray with the camera and pointer position
-        raycaster.setFromCamera(pointer, camera);
+//         // update the picking ray with the camera and pointer position
+//         raycaster.setFromCamera(pointer, camera);
 
-        // calculate plane intersecting the picking ray
-        let intersects = raycaster.intersectObject(invisiblePlane);
+//         // calculate plane intersecting the picking ray
+//         let intersects = raycaster.intersectObject(invisiblePlane);
 
-        if (intersects.length > 0) // Check if there is a intersection
-        {
-            let point = intersects[0].point; // Pick the point where interception occurrs
+//         if (intersects.length > 0) // Check if there is a intersection
+//         {
+//             let point = intersects[0].point; // Pick the point where interception occurrs
 
-            if(point.x>-45 && point.x<45 && invisiblePlane == intersects[0].object ) {
-                lerpConfig.destination.x = point.x;
-                lerpConfig.destination.y = point.y;
-            }
-        }
-    }
-};
+//             if(point.x>-45 && point.x<45 && invisiblePlane == intersects[0].object ) {
+//                 lerpConfig.destination.x = point.x;
+//                 lerpConfig.destination.y = point.y;
+//             }
+//         }
+//     }
+// };
 
 let sensibilidadeMouse = 0.05;
 let velocidadeRetorno = 0.05;
@@ -846,3 +850,73 @@ function executeIfKeyPressed()
 }
 
 
+function addJoysticks(){
+   
+    // Details in the link bellow:
+    // https://yoannmoi.net/nipplejs/
+  
+    let joystickL = nipplejs.create({
+      zone: document.getElementById('joystickWrapper1'),
+      mode: 'static',
+      position: { top: '-80px', left: '80px' }
+    });
+    
+    joystickL.on('move', function (evt, data) {
+        const forward = data.vector.y
+        const turn = data.vector.x
+        fwdValue = bkdValue = lftValue = rgtValue = 0;
+
+
+        if(aviao.getAirplane()){
+            if (forward > 0){
+                fwdValue = Math.abs(forward);
+                pointer.y = pointer.y+fwdValue;
+            }else if (forward < 0){
+                bkdValue = Math.abs(forward);
+                pointer.y = pointer.y-bkdValue;
+            }
+                
+            if (turn > 0){
+                rgtValue = Math.abs(turn);
+                pointer.x = pointer.x+rgtValue;
+            }
+                
+            else if (turn < 0){
+                lftValue = Math.abs(turn);
+                pointer.x = pointer.x-lftValue;
+            }
+                
+            if(pointer.x>-45 && pointer.x<45 ) {
+                lerpConfig.destination.x = pointer.x;
+                lerpConfig.destination.y = pointer.y;
+            }
+        }
+    })
+
+    
+    joystickL.on('end', function (evt) {
+      bkdValue = 0
+      fwdValue = 0
+      lftValue = 0
+      rgtValue = 0
+    })
+  
+    // let joystickR = nipplejs.create({
+    //   zone: document.getElementById('joystickWrapper2'),
+    //   mode: 'static',
+    //   lockY: true, // only move on the Y axis
+    //   position: { top: '-80px', right: '80px' },
+    // });
+  
+    // joystickR.on('move', function (evt, data) {
+    //   const changeScale = data.vector.y;
+  
+    //   if(changeScale > previousScale) scale+=0.1;
+    //   if(changeScale < previousScale) scale-=0.1;
+    //   if(scale > 4.0) scale = 4.0;
+    //   if(scale < 0.5) scale = 0.5;
+  
+    //   previousScale = changeScale;
+    // })
+  }
+  

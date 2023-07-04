@@ -391,16 +391,16 @@ function rotateAirplane(){
         //Rotação no eixo Z (quando o avião se move para esq/dir)
         if(distX > 0){//indo para a direita
             aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(distX * sensibilidadeMouse*0.4));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.4));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.1));
         }else {
             aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(distX * sensibilidadeMouse*0.4));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.4));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.1));
         }
 
         if(distY > 0){//indo para a direita
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.6));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.3));
         }else {
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.6));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.3));
         }
 
     } else {
