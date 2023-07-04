@@ -149,7 +149,6 @@ export class Environment{
     
     buildObjectsTrenchRun(){
         if(this.texturasVar == 0){
-
             //Coluna cilindrica vertical da esquerda
             var material1 = new THREE.MeshPhongMaterial();
             material1.map = this.texture2;
@@ -199,6 +198,7 @@ export class Environment{
             this.leftCube.add(placa2);
 
         }else if(this.texturasVar == 1){
+            this.addObjectsToPlan();
             //Cubo que fica em cima do plano.
             var material1 = new THREE.MeshPhongMaterial();
             material1.map = this.texture2;
@@ -327,7 +327,7 @@ export class Environment{
 
             
         }else if(this.texturasVar == 2){
-
+            this.addObjectsToPlan();
             //Cubo que fica em cima do plano.
             var material3 = new THREE.MeshPhongMaterial();
             material3.map = this.texture2;
@@ -408,6 +408,7 @@ export class Environment{
             this.leftCube.add(placa2);
 
         }else if(this.texturasVar == 3){
+            this.addObjectsToPlan();
             //Coluna cilindrica vertical da esquerda
             var material1 = new THREE.MeshPhongMaterial();
             material1.map = this.texture2;
@@ -470,6 +471,7 @@ export class Environment{
             this.leftCube.add(placa2);
 
         }else if(this.texturasVar == 4){
+            this.addObjectsToPlan();
             //Cubo que fica em cima do plano.
             var material6 = new THREE.MeshPhongMaterial();
             material6.map = this.texture2;
@@ -580,6 +582,7 @@ export class Environment{
 
 
         }else if(this.texturasVar == 5){
+            this.addObjectsToPlan();
             //Cilindro deitado na parede da esquerda (Mais externo)
             var material1 = new THREE.MeshPhongMaterial();
             material1.map = this.texture2;
@@ -631,6 +634,7 @@ export class Environment{
 
 
         }else if(this.texturasVar == 6){
+            this.addObjectsToPlan();
             //Cubo que fica em cima do plano.
             var material4 = new THREE.MeshPhongMaterial();
             material4.map = this.texture2;
@@ -693,7 +697,7 @@ export class Environment{
             this.leftCube.add(paralelepipedo1);
 
         }else if(this.texturasVar == 7){
-
+            this.addObjectsToPlan();
             //Disco em cima do cubo da esquerda
             var material1 = new THREE.MeshPhongMaterial();
             material1.map = this.texture9;
@@ -721,7 +725,7 @@ export class Environment{
             this.rightCube.add(placa1);
 
         }else if(this.texturasVar == 8){
-
+            this.addObjectsToPlan();
             //Cubo que fica em cima do plano.
             var material3 = new THREE.MeshPhongMaterial();
             material3.map = this.texture2;
@@ -795,6 +799,7 @@ export class Environment{
             placa4.position.x -= 35;
             this.leftCube.add(placa4);
         }
+        this.addObjectsToPlan();
     }
 
 
@@ -929,5 +934,69 @@ export class Environment{
     //Movimenta a posição do plano
     move(){
         this.plane.position.z += this.velocity;
+    }
+
+    addObjectsToPlan(){
+        //Dodecaedro
+        var material = new THREE.MeshPhongMaterial();
+        material.map = this.texture2;
+        material.map.magFilter = THREE.LinearFilter;
+        material.map.minFilter = THREE.LinearFilter;
+        var geometry = new THREE.DodecahedronGeometry(20,20,21);
+        var dodecahed = new THREE.Mesh(geometry, material);
+        dodecahed.position.x = 60;
+        dodecahed.position.y = 30;
+        this.plane.add(dodecahed);
+
+        // Paralelepípedo
+        var material = new THREE.MeshPhongMaterial();
+        material.map = this.texture2;
+        material.map.magFilter = THREE.LinearFilter;
+        material.map.minFilter = THREE.LinearFilter;
+        var geometry = new THREE.BoxGeometry(10,10,30);
+        var objMesh = new THREE.Mesh(geometry, material);
+        objMesh.position.z =-10;
+        objMesh.position.y = 50;
+        objMesh.position.x = 0;
+        this.plane.add(objMesh);
+
+        // Paralelepípedo
+        var material = new THREE.MeshPhongMaterial();
+        material.map = this.texture2;
+        material.map.magFilter = THREE.LinearFilter;
+        material.map.minFilter = THREE.LinearFilter;
+        var geometry = new THREE.BoxGeometry(10,10,30);
+        var objMesh = new THREE.Mesh(geometry, material);
+        objMesh.position.z = 0;
+        objMesh.position.y = 60;
+        objMesh.position.x = -15;
+        this.plane.add(objMesh);
+
+        // Cilindro
+        var material = new THREE.MeshPhongMaterial();
+        material.map = this.texture2;
+        material.map.magFilter = THREE.LinearFilter;
+        material.map.minFilter = THREE.LinearFilter;
+        var geometry = new THREE.CylinderGeometry(10,10,30);
+        var objMesh = new THREE.Mesh(geometry, material);
+        objMesh.position.z = 0;
+        objMesh.position.y = 60;
+        objMesh.position.x = 30;
+        objMesh.rotateX(THREE.MathUtils.degToRad(90));
+        this.plane.add(objMesh);
+
+
+        // IcosahedronGeometry
+        var material = new THREE.MeshPhongMaterial();
+        material.map = this.texture2;
+        material.map.magFilter = THREE.LinearFilter;
+        material.map.minFilter = THREE.LinearFilter;
+        var geometry = new THREE.IcosahedronGeometry(10,0);
+        var objMesh = new THREE.Mesh(geometry, material);
+        objMesh.position.z = 0;
+        objMesh.position.y = 100;
+        objMesh.position.x = 30;
+        objMesh.rotateX(THREE.MathUtils.degToRad(90));
+        this.plane.add(objMesh);
     }
 }

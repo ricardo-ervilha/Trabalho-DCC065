@@ -7,7 +7,7 @@ import {initRenderer,
 
 import {initCamera} from "./camera.js";
 
-import {  heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition} from './variables.js';
+import {  heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition,cameraPosition} from './variables.js';
 import { Environment } from './environment.js';
 import {Queue} from './queue.js';
 import { Airplane } from "./airplane.js";
@@ -24,7 +24,7 @@ let delta = 0;//segundos entre cada iteraçao do render
 let cadenciaTime = 0;
 let cadenciaTime2 = 0;
 let bullets = [];
-const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 0.0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
+const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
 scene = new THREE.Scene();    // Create main scene
 
@@ -40,13 +40,13 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("webgl-output").appendChild(renderer.domElement);
 renderer.setClearColor("rgb(30, 30, 42)");
 
-camera = initCamera(new THREE.Vector3(0, 180, 600)); //Voltar isso para o normal
+camera = initCamera(new THREE.Vector3(cameraPosition.x, cameraPosition.y, cameraPosition.z)); //Voltar isso para o normal
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls( camera, renderer.domElement );
-cameraControl.enablePan = true;
-cameraControl.enableRotate = true;
-cameraControl.enableZoom = true;
+cameraControl.enablePan = false;
+cameraControl.enableRotate = false;
+cameraControl.enableZoom = false;
 
 /*---------------------------------------------------------------------------------------------------- */
 
@@ -318,7 +318,7 @@ function onMouseMove(event){
         {
             let point = intersects[0].point; // Pick the point where interception occurrs
 
-            if(point.x>-45 && point.x<45 && invisiblePlane == intersects[0].object ) {
+            if(point.x>-45 && point.x<45 && point.y>5 && invisiblePlane == intersects[0].object ) {
                 lerpConfig.destination.x = point.x;
                 lerpConfig.destination.y = point.y;
             }
@@ -391,16 +391,16 @@ function rotateAirplane(){
         //Rotação no eixo Z (quando o avião se move para esq/dir)
         if(distX > 0){//indo para a direita
             aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(distX * sensibilidadeMouse*0.4));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.1));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.01));
         }else {
             aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(distX * sensibilidadeMouse*0.4));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.1));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.01));
         }
 
         if(distY > 0){//indo para a direita
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.3));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.1));
         }else {
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.3));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.1));
         }
 
     } else {
@@ -738,6 +738,8 @@ function render() {
         }
 
         renderer.render(scene, camera) // Render scene
+    }else{
+        console.log(camera.position)
     }
 
 

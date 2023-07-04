@@ -1,15 +1,16 @@
-import * as THREE from  'three';
-import {initRenderer,
+import * as THREE from 'three';
+import {
+    initRenderer,
     setDefaultMaterial,
     InfoBox,
     onWindowResize
 } from "./util.js";
 
-import {initCamera} from "./camera.js";
+import { initCamera } from "./camera.js";
 
-import {  heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition, cadenciaApertarBotoes} from './variables.js';
+import { heightPlan, numPlans, widthPlan, bulletVelocity, invisiblePlanePosition, cadenciaApertarBotoes, cameraPosition } from './variables.js';
 import { Environment } from './environment.js';
-import {Queue} from './queue.js';
+import { Queue } from './queue.js';
 import { Airplane } from "./airplane.js";
 import KeyboardState from '../libs/util/KeyboardState.js';
 import { OrbitControls } from '../build/jsm/controls/OrbitControls.js';
@@ -18,8 +19,8 @@ import { Buttons } from "../libs/other/buttons.js";
 
 var buttons = new Buttons(onButtonDown, onButtonUp);
 
-var pressedA = false;        
-var pressedB = false;   
+var pressedA = false;
+var pressedB = false;
 
 let scene, renderer, camera, material, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
@@ -31,7 +32,7 @@ let cadenciaTime = 0;
 let cadenciaTime2 = 0;
 let cadenciaTime3 = 0;
 let bullets = [];
-const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 200), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
+const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 60), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
 scene = new THREE.Scene();    // Create main scene
 
@@ -47,60 +48,60 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("webgl-output").appendChild(renderer.domElement);
 renderer.setClearColor("rgb(30, 30, 42)");
 
-camera = initCamera(new THREE.Vector3(0, 180, 600)); //Voltar isso para o normal
+camera = initCamera(new THREE.Vector3(cameraPosition.x, cameraPosition.y, cameraPosition.z)); //Voltar isso para o normal
 
 // Enable mouse rotation, pan, zoom etc.
-var cameraControl = new OrbitControls( camera, renderer.domElement );
-cameraControl.enablePan = true;
-cameraControl.enableRotate = true;
-cameraControl.enableZoom = true;
+var cameraControl = new OrbitControls(camera, renderer.domElement);
+cameraControl.enablePan = false;
+cameraControl.enableRotate = false;
+cameraControl.enableZoom = false;
 
 /*---------------------------------------------------------------------------------------------------- */
 
 /* Parte do áudio do jogo */
 
 const listener = new THREE.AudioListener();
-camera.add( listener );
+camera.add(listener);
 
 // create a global audio source
-const sound = new THREE.Audio( listener );
+const sound = new THREE.Audio(listener);
 
 // Som ambiente
 var isPlaying = true; //Variável para ajudar a controlar o som ambiente!
 const audioLoader = new THREE.AudioLoader();
-audioLoader.load( './sounds/environmentSound.mp3', function( buffer ) {
-	sound.setBuffer( buffer );
-	sound.setLoop( true );
-	sound.setVolume( 0.4 );
-	sound.pause(); //Voltar para PLAY depois
+audioLoader.load('./sounds/environmentSound.mp3', function (buffer) {
+    sound.setBuffer(buffer);
+    sound.setLoop(true);
+    sound.setVolume(0.4);
+    sound.pause(); //Voltar para PLAY depois
 });
 
 //Som de tiro do avião
-const soundAirship = new THREE.PositionalAudio( listener );
+const soundAirship = new THREE.PositionalAudio(listener);
 const audioLoaderAirship = new THREE.AudioLoader();
-audioLoaderAirship.load( './sounds/blasterAirship.mp3', function( buffer ) {
-	soundAirship.setBuffer( buffer );
-	soundAirship.setRefDistance( 20 );
+audioLoaderAirship.load('./sounds/blasterAirship.mp3', function (buffer) {
+    soundAirship.setBuffer(buffer);
+    soundAirship.setRefDistance(20);
     soundAirship.setVolume(0.5);
-	// soundAirship.play();
+    // soundAirship.play();
 });
 
 //Som de colisão da turret
-const soundHitTurret = new THREE.PositionalAudio( listener );
+const soundHitTurret = new THREE.PositionalAudio(listener);
 const audioLoaderHitTurret = new THREE.AudioLoader();
-audioLoaderHitTurret.load( './sounds/explosionTurret.mp3', function( buffer ) {
-	soundHitTurret.setBuffer( buffer );
-	soundHitTurret.setRefDistance( 20 );
+audioLoaderHitTurret.load('./sounds/explosionTurret.mp3', function (buffer) {
+    soundHitTurret.setBuffer(buffer);
+    soundHitTurret.setRefDistance(20);
     soundHitTurret.setVolume(0.9);
 });
 
 
 //Som de colisão do avião
-const soundHitAirplane = new THREE.PositionalAudio( listener );
+const soundHitAirplane = new THREE.PositionalAudio(listener);
 const audioLoaderHitAirplane = new THREE.AudioLoader();
-audioLoaderHitAirplane.load( './sounds/hitAirship.mp3', function( buffer ) {
-	soundHitAirplane.setBuffer( buffer );
-	soundHitAirplane.setRefDistance( 20 );
+audioLoaderHitAirplane.load('./sounds/hitAirship.mp3', function (buffer) {
+    soundHitAirplane.setBuffer(buffer);
+    soundHitAirplane.setRefDistance(20);
     soundHitAirplane.setVolume(0.9);
 });
 
@@ -109,9 +110,9 @@ audioLoaderHitAirplane.load( './sounds/hitAirship.mp3', function( buffer ) {
 //-- CREATING THE EQUIRECTANGULAR MAP   ----------------------------------------------------------------------
 
 const textureLoader = new THREE.TextureLoader();
-let textureEquirec = textureLoader.load( './textures/space_skybox.jpeg' );
-	textureEquirec.mapping = THREE.EquirectangularReflectionMapping; // Reflection as default
-	textureEquirec.encoding = THREE.sRGBEncoding;
+let textureEquirec = textureLoader.load('./textures/space_skybox.jpeg');
+textureEquirec.mapping = THREE.EquirectangularReflectionMapping; // Reflection as default
+textureEquirec.encoding = THREE.sRGBEncoding;
 // Set scene's background as a equirectangular map
 scene.background = textureEquirec;
 
@@ -120,7 +121,7 @@ scene.background = textureEquirec;
 /* Luz Direcional e Ambiente*/
 let ambientColor = "rgb(100,100,100)";
 let ambientLight = new THREE.AmbientLight(ambientColor);
-scene.add( ambientLight );
+scene.add(ambientLight);
 
 var light = new THREE.DirectionalLight(0xffffff, 1);
 
@@ -128,15 +129,15 @@ light.position.set(45, 65, 30); //Luz no X e Y positivos, sombra está a esquerd
 light.shadow.mapSize.width = 5096;
 light.shadow.mapSize.height = 2048;
 light.castShadow = true; // Permite que a luz projete sombras
-light.shadow.camera.left = -widthPlan/2;
-light.shadow.camera.right = widthPlan/2 * 19;
+light.shadow.camera.left = -widthPlan / 2;
+light.shadow.camera.right = widthPlan / 2 * 19;
 light.shadow.camera.near = 0.1;
 light.shadow.camera.far = light.position.y + 150;
 light.shadow.camera.top = 120;
 light.shadow.camera.bottom = -120;
 light.shadow.radius = 2;
 
-light.target.position.set(-50,0,25);
+light.target.position.set(-50, 0, 25);
 light.target.updateMatrixWorld();
 
 // --> HELPER DA LUZ
@@ -157,7 +158,7 @@ aviao.buildAirPlane(scene);
 /********************************************************************************************** */
 
 // Listen window size changes
-window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)}, false );
+window.addEventListener('resize', function () { onWindowResize(camera, renderer) }, false);
 // window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
 // window.addEventListener("click", onMouseClick);
 window.addEventListener("contextmenu", rightClick);
@@ -173,7 +174,7 @@ let lftValue = 0;
 let raycaster = new THREE.Raycaster();
 
 // Enable layers to raycaster and camera (layer 0 is enabled by default)
-raycaster.layers.enable( 1 );//apenas os objetos que estão na camada 1 serão considerados como possíveis interseções
+raycaster.layers.enable(1);//apenas os objetos que estão na camada 1 serão considerados como possíveis interseções
 
 // Cria o plano que será usado para fazer interseção com o mouse
 let invisiblePlane, planeGeometry, planeMaterial;
@@ -191,24 +192,24 @@ invisiblePlane.layers.set(1);  // change layer
 scene.add(invisiblePlane);
 
 // Show axes (parameter is size of each axis)
-let axesHelper = new THREE.AxesHelper( 12 );
+let axesHelper = new THREE.AxesHelper(12);
 axesHelper.translateY(10)
 scene.add(axesHelper);
 
 var queue = new Queue();
 var torretas = [];
 // O oitavo plano será o que estará na parte de reposição.
-for(var i = 0; i < numPlans; i++){
+for (var i = 0; i < numPlans; i++) {
     var environment;
-    if(i == 2 || i == 4 || i == 6 || i == 8){
+    if (i == 2 || i == 4 || i == 6 || i == 8) {
         environment = new Environment(heightPlan, widthPlan, true, i);
-    }else{
+    } else {
         environment = new Environment(heightPlan, widthPlan, false, i);
     }
 
     let plane = environment.getPlane();
     //O primeiro plano será renderizado SEMPRE na posição (3h)/2  em z.
-    plane.position.z = ((3*heightPlan)/2) - heightPlan * i;
+    plane.position.z = ((3 * heightPlan) / 2) - heightPlan * i;
     plane.material.opacity = 1;
 
     let grid = environment.getGrid();
@@ -223,7 +224,7 @@ for(var i = 0; i < numPlans; i++){
         animation: false,
         initialScale: null,
         animationStartTime: 0,
-        destroyed:false,
+        destroyed: false,
         plane: plane
     }
 
@@ -235,21 +236,21 @@ for(var i = 0; i < numPlans; i++){
     Parte do fade
 */
 
-function updatePositionPlanes(){
+function updatePositionPlanes() {
 
-    for(var i = 0; i < numPlans; i++){
+    for (var i = 0; i < numPlans; i++) {
         let env = queue.peek(i);
         env.move();
         let plane = env.getPlane();
 
         //Se plano está no 5h/2 mover ele lá para frente
 
-        if(plane.position.z >= (5*heightPlan)/2){
-            plane.position.z = ((3*heightPlan)/2 - (numPlans-1) * heightPlan) - ((5*heightPlan)/2 - plane.position.z);
-            if(i == 2 || i == 4 || i == 6 || i == 8){
-                if(torretas[i/2-1] != null && torretas[i/2-1].destroyed){ 
-                    torretas[i/2-1].torreta.scale.set(6.72,6.72,6.72);
-                    torretas[i/2-1].destroyed = false;
+        if (plane.position.z >= (5 * heightPlan) / 2) {
+            plane.position.z = ((3 * heightPlan) / 2 - (numPlans - 1) * heightPlan) - ((5 * heightPlan) / 2 - plane.position.z);
+            if (i == 2 || i == 4 || i == 6 || i == 8) {
+                if (torretas[i / 2 - 1] != null && torretas[i / 2 - 1].destroyed) {
+                    torretas[i / 2 - 1].torreta.scale.set(6.72, 6.72, 6.72);
+                    torretas[i / 2 - 1].destroyed = false;
                 }
             }
         }
@@ -258,47 +259,46 @@ function updatePositionPlanes(){
         //O fade é dado por m(opacidade) == 1 + [(y-n)/(x-y)]
 
         //Se plano está muito na frente, fazer ele ficar invisível
-        var y = ((3*heightPlan)/2) - heightPlan * 6
+        var y = ((3 * heightPlan) / 2) - heightPlan * 6
         var x = y + heightPlan;
         var n = plane.position.z;
 
 
-        if(n < y){
+        if (n < y) {
             env.setLeftCubeOpacity(0);
             env.setRightCubeOpacity(0);
             env.setPlaneOpacity(0);
             // env.setOpacityTrees(0); //-> Não tem mais árvores
-            if(env.getTurret() != null){
-                env.getTurret().traverse( function( node ) {
-                    if( node.material ) {
+            if (env.getTurret() != null) {
+                env.getTurret().traverse(function (node) {
+                    if (node.material) {
                         node.material.opacity = 0.0;
                         node.material.transparent = true;
                     }
                 });
             }
         }
-        if(n <= x && n >= y )
-        {   
-            env.setLeftCubeOpacity((n-y)/(heightPlan));
-            env.setRightCubeOpacity((n-y)/(heightPlan));
-            env.setPlaneOpacity((n-y)/(heightPlan));
+        if (n <= x && n >= y) {
+            env.setLeftCubeOpacity((n - y) / (heightPlan));
+            env.setRightCubeOpacity((n - y) / (heightPlan));
+            env.setPlaneOpacity((n - y) / (heightPlan));
             // env.setOpacityTrees((n-y)/(heightPlan)); //-> Não tem mais árvores
-            if(env.getTurret() != null){
-                env.getTurret().traverse( function( node ) {
-                    if( node.material ) {
-                        node.material.opacity = (n-y)/(heightPlan);
+            if (env.getTurret() != null) {
+                env.getTurret().traverse(function (node) {
+                    if (node.material) {
+                        node.material.opacity = (n - y) / (heightPlan);
                         node.material.transparent = true;
                     }
                 });
             }
-        } else if (n > x){
+        } else if (n > x) {
             env.setLeftCubeOpacity(1);
             env.setRightCubeOpacity(1);
             env.setPlaneOpacity(1);
             // env.setOpacityTrees(1); //-> Não tem mais árvores
-            if(env.getTurret() != null){
-                env.getTurret().traverse( function( node ) {
-                    if( node.material ) {
+            if (env.getTurret() != null) {
+                env.getTurret().traverse(function (node) {
+                    if (node.material) {
                         node.material.opacity = 1.0;
                         node.material.transparent = true;
                     }
@@ -347,8 +347,8 @@ let anguloZ;
 /*
     Limitar angulo de rotação do avião
 */
-function limitAngleRotation(angleOld, angleNew, maxAngle){
-    if(angleOld<-maxAngle || angleOld>maxAngle){
+function limitAngleRotation(angleOld, angleNew, maxAngle) {
+    if (angleOld < -maxAngle || angleOld > maxAngle) {
         return 0;
     }
     return angleNew;
@@ -358,7 +358,7 @@ function limitAngleRotation(angleOld, angleNew, maxAngle){
 /**
  * Função para fazer a rotação do avião
  */
-function rotateAirplane(){
+function rotateAirplane() {
 
     // Distância entre a posição do avião e do mouse
     let dist = Math.round(lerpConfig.destination.distanceTo(aviao.getAirplane().position));
@@ -368,9 +368,9 @@ function rotateAirplane(){
     let distZ = lerpConfig.destination.z - aviao.getAirplane().position.z;
 
     //Para pegar o angulo atual do avião em cada eixo
-    anguloX =  Math.round(aviao.getAirplane().rotation.x * 180 / Math.PI);
-    anguloY =  Math.round(aviao.getAirplane().rotation.y * 180 / Math.PI);
-    anguloZ =  Math.round(aviao.getAirplane().rotation.z * 180 / Math.PI);
+    anguloX = Math.round(aviao.getAirplane().rotation.x * 180 / Math.PI);
+    anguloY = Math.round(aviao.getAirplane().rotation.y * 180 / Math.PI);
+    anguloZ = Math.round(aviao.getAirplane().rotation.z * 180 / Math.PI);
 
     // console.log("Ângulo em graus em torno do eixo X: " + (anguloX));
     // console.log("Ângulo em graus em torno do eixo Y: " + anguloY);
@@ -382,7 +382,7 @@ function rotateAirplane(){
     //rotaciono em y muda em y
     //rotaciono em z muda em z
 
-    if(aviao.getAirplane() && dist > 4){
+    if (aviao.getAirplane() && dist > 4) {
         //Fazer rotação em função da distancia, quant maior a distancia mais rapido rotaciona
 
         /*if(distX > 0){
@@ -403,29 +403,29 @@ function rotateAirplane(){
         //Rotação no eixo Z (quando o avião se move para esq/dir)
         if(distX > 0){//indo para a direita
             aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(distX * sensibilidadeMouse*0.4));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.4));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.01));
         }else {
             aviao.getAirplane().rotateZ(THREE.MathUtils.degToRad(distX * sensibilidadeMouse*0.4));
-            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.4));
+            aviao.getAirplane().rotateY(THREE.MathUtils.degToRad(distY * sensibilidadeMouse*0.01));
         }
 
         if(distY > 0){//indo para a direita
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.6));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.1));
         }else {
-            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.6));
+            aviao.getAirplane().rotateX(THREE.MathUtils.degToRad(-distY * sensibilidadeMouse*0.1));
         }
 
     } else {
         let quat = new THREE.Quaternion().setFromEuler(aviao.getOriginalRotation());
-       aviao.getAirplane().quaternion.slerp(quat, velocidadeRetorno);
+        aviao.getAirplane().quaternion.slerp(quat, velocidadeRetorno);
     }
 }
 
 /**
  * Função para mover o avião para  a posição do mouse
  */
-function moveAirPlane(){
-    if(aviao.getAirplane()){
+function moveAirPlane() {
+    if (aviao.getAirplane()) {
         aviao.getAirplane().position.lerp(lerpConfig.destination, lerpConfig.alpha);
         aviao.target.position.set(lerpConfig.destination.x, lerpConfig.destination.y, invisiblePlanePosition.z);
         rotateAirplane();
@@ -456,7 +456,7 @@ function moveCamera() {
     //  console.log("Avião y : "+aviao.getAirplane().position.y)
     //  console.log("Camera Target y : "+cameraControl.target.y)
     // console.log("Camera position y : "+camera.position.y)
-    
+
     //se o avião está muito pra cima, movo o target da camera para cima até 18
     if (aviao.getAirplane().position.y > 20) {
         if (cameraControl.target.y < 10) {
@@ -467,8 +467,8 @@ function moveCamera() {
     } else {
         //c.c, movo o target para baixo até 15
 
-        if (cameraControl.target.y >5) {
-            
+        if (cameraControl.target.y > 5) {
+
             cameraControl.update();
             cameraControl.target.y -= 0.1;
             // camera.position.y -= 0.1;
@@ -523,7 +523,7 @@ function moveCamera() {
 // }
 
 function rightClick(event) {
-    if(event.button == 2){
+    if (event.button == 2) {
         turretShoot();
     }
 }
@@ -531,23 +531,23 @@ function rightClick(event) {
 /*
     Função para disparar tiros da torreta a cada cadenciaTime segundos
 */
-function turretShoot(){
-    
+function turretShoot() {
+
     cadenciaTime += delta;
 
     //se não tiver passado os 3 segundos (cadenciaTime) a torreta não atira
-    if(cadenciaTime < cadenciaTirosTorreta){
+    if (cadenciaTime < cadenciaTirosTorreta) {
         return;
     }
     cadenciaTime = 0;
     torretas.forEach(conjunto => {
         //Adicionei esse conjunto.plane.position.z para verificar se a posição do negócio não está depois do avião.
-        if(conjunto.torreta != null && conjunto.plane.position.z > 0){
+        if (conjunto.torreta != null && conjunto.plane.position.z > 0) {
             let obj = {
                 bullet: null,
                 dir: null,
                 bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
-                type:'t'
+                type: 't'
             }
 
             let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
@@ -569,7 +569,7 @@ function turretShoot(){
             // posicaoTorreta = conjunto.torreta.position;
             // posicaoAviao = aviao.getAirplane().position;
 
-            directionBullet.subVectors(posicaoTorreta, posicaoAviao ).normalize();
+            directionBullet.subVectors(posicaoTorreta, posicaoAviao).normalize();
 
             // const arrowHelper = new THREE.ArrowHelper( directionBullet, posicaoTorreta, 10, 0xffff00 );
             // scene.add( arrowHelper );
@@ -586,55 +586,55 @@ function turretShoot(){
 /*
     Realizar movimento das balas
 */
-function updateBullets () {
+function updateBullets() {
     bullets.forEach(bulletObj => {
-        if(bulletObj.type=='a'){
+        if (bulletObj.type == 'a') {
             bulletObj.bullet.position.x -= bulletObj.dir.getComponent(0) * bulletVelocity * delta;
             bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta;
             bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta;
-        }else{
+        } else {
             //bulletObj.bullet.position.lerp(bulletObj.dir, bulletVelocity * delta*0.01)
             bulletObj.bullet.position.x -= bulletObj.dir.getComponent(0) * bulletVelocity * delta;
             bulletObj.bullet.position.y -= bulletObj.dir.getComponent(1) * bulletVelocity * delta;
             bulletObj.bullet.position.z -= bulletObj.dir.getComponent(2) * bulletVelocity * delta;
         }
-        
+
     });
 };
 
 function keyboardUpdate() {
     keyboard.update();
 
-    if ( keyboard.down("esc") ){
+    if (keyboard.down("esc")) {
         boolSimulation = !boolSimulation;
-        if(boolSimulation){            
+        if (boolSimulation) {
             document.body.style.cursor = "none";
-        }else{
+        } else {
             document.body.style.cursor = null;
         }
-    }else if ( keyboard.down("0") ){
-        for(var i = 0; i < queue.size(); i++){
+    } else if (keyboard.down("0")) {
+        for (var i = 0; i < queue.size(); i++) {
             queue.peek(i).changeVelocity(velocityPlan);
         }
-    } 
-    else if ( keyboard.down("1") ){
-        for(var i = 0; i < queue.size(); i++){
+    }
+    else if (keyboard.down("1")) {
+        for (var i = 0; i < queue.size(); i++) {
             queue.peek(i).changeVelocity(2.);
         }
-    } else if ( keyboard.down("2") ){
-        for(var i = 0; i < queue.size(); i++){
+    } else if (keyboard.down("2")) {
+        for (var i = 0; i < queue.size(); i++) {
             queue.peek(i).changeVelocity(3.);
         }
-    } else if( keyboard.down("3") ){
-        for(var i = 0; i < queue.size(); i++){
+    } else if (keyboard.down("3")) {
+        for (var i = 0; i < queue.size(); i++) {
             queue.peek(i).changeVelocity(4.);
         }
-    } else if( keyboard.down("S")){
-        if(isPlaying){
+    } else if (keyboard.down("S")) {
+        if (isPlaying) {
             sound.pause();
             isPlaying = false;
-        }   
-        else{
+        }
+        else {
             sound.play();
             isPlaying = true;
         }
@@ -642,13 +642,13 @@ function keyboardUpdate() {
 
 }
 
-function checkColisions(){
+function checkColisions() {
     cadenciaTime2 += delta;
-    bullets.forEach( (bulletObj, indexBullet) => {
-        if(bulletObj.type=='a'){// projétil do avião
-            torretas.forEach ( (conjunto) => {
-                if(conjunto.torreta != null){
-                    if(bulletObj.bb.intersectsBox(conjunto.bb)){
+    bullets.forEach((bulletObj, indexBullet) => {
+        if (bulletObj.type == 'a') {// projétil do avião
+            torretas.forEach((conjunto) => {
+                if (conjunto.torreta != null) {
+                    if (bulletObj.bb.intersectsBox(conjunto.bb)) {
                         conjunto.animation = true;
                         conjunto.initialScale = conjunto.torreta.scale.clone();
                         conjunto.animationStartTime = Date.now();
@@ -660,11 +660,11 @@ function checkColisions(){
                     }
                 }
             })
-        }else{ // projétil da torreta
-            
-            if(bulletObj.bb.intersectsBox(aviao.getAirplane().bb)){
+        } else { // projétil da torreta
+
+            if (bulletObj.bb.intersectsBox(aviao.getAirplane().bb)) {
                 //se não tiver passado os 3 segundos (cadenciaTime) a torreta não atira
-                if(cadenciaTime2 < 0.1){
+                if (cadenciaTime2 < 0.1) {
                     return;
                 }
                 cadenciaTime2 = 0;
@@ -674,15 +674,15 @@ function checkColisions(){
                 aviao.airplaneHit();
             }
         }
-        
+
     })
 }
 
 const targetScale = new THREE.Vector3(0, 0, 0);
-const animationDuration = 350; 
+const animationDuration = 350;
 
-function removeBullet(bullet, index){
-    if(bullet.position.y < 0 || bullet.position.y > heightPlan || bullet.position.x > widthPlan/2 || bullet.position.x < -widthPlan/2 || bullet.position.z < ((heightPlan)/2) - heightPlan *(numPlans-4) ) {
+function removeBullet(bullet, index) {
+    if (bullet.position.y < 0 || bullet.position.y > heightPlan || bullet.position.x > widthPlan / 2 || bullet.position.x < -widthPlan / 2 || bullet.position.z < ((heightPlan) / 2) - heightPlan * (numPlans - 4)) {
         bullets.splice(index, 1);
         scene.remove(bullet);
     }
@@ -710,21 +710,21 @@ function render() {
                     conjunto.loaded = true;
                 } else if (conjunto.torreta != null && conjunto.loaded) {
                     conjunto.bb.setFromObject(conjunto.torreta);
-                } 
-                
-                
-                if(conjunto.torreta != null && conjunto.animation == true){
+                }
 
-                    if(conjunto.torreta.scale.equals( targetScale)){
+
+                if (conjunto.torreta != null && conjunto.animation == true) {
+
+                    if (conjunto.torreta.scale.equals(targetScale)) {
                         conjunto.animation = false;
-                    }else{
+                    } else {
                         // Calcula o tempo decorrido desde o início da animação
                         const elapsedTime = Date.now() - conjunto.animationStartTime;
 
                         // Calcula a interpolação para a escala atual do cubo
                         const t = Math.min(elapsedTime / animationDuration, 1); // Limita o valor de t a 1
                         const currentScale = conjunto.initialScale.clone().lerp(targetScale, t);
-                        
+
                         // Atualiza a escala da torreta
                         conjunto.torreta.scale.copy(currentScale);
                     }
@@ -734,8 +734,8 @@ function render() {
             //For que preenche as torretas do conjunto.torreta para eles deixarem de ser nulos
             for (var i = 0; i < numPlans; i++) {
                 var torretaAdd = queue.peek(i).getTurret();
-                if (torretaAdd != null && torretas[i/2-1].torreta == null) {
-                    torretas[i/2-1].torreta = torretaAdd;
+                if (torretaAdd != null && torretas[i / 2 - 1].torreta == null) {
+                    torretas[i / 2 - 1].torreta = torretaAdd;
                 }
             }
 
@@ -750,7 +750,7 @@ function render() {
 
             moveCamera();
 
-            updatePositionPlanes(); 
+            updatePositionPlanes();
         }
 
         renderer.render(scene, camera) // Render scene
@@ -764,29 +764,26 @@ function render() {
 }
 
 function onButtonDown(event) {
-    switch(event.target.id)
-    {
-      case "A":
-        pressedA = true;
-       break;
-      case "B":
-        pressedB = true;
-      break;    
-      case "full":
-        buttons.setFullScreen();
-      break;    
+    switch (event.target.id) {
+        case "A":
+            pressedA = true;
+            break;
+        case "B":
+            pressedB = true;
+            break;
+        case "full":
+            buttons.setFullScreen();
+            break;
     }
-  }
-
-function onButtonUp(event) {
-pressedA = pressedB = false;
 }
 
-function executeIfKeyPressed()
-{
+function onButtonUp(event) {
+    pressedA = pressedB = false;
+}
+
+function executeIfKeyPressed() {
     cadenciaTime3 += delta;
-    if(pressedA && cadenciaTime3 > cadenciaApertarBotoes)
-    {
+    if (pressedA && cadenciaTime3 > cadenciaApertarBotoes) {
         //Botão do tiro
 
         if (!boolSimulation) boolSimulation = true;
@@ -794,7 +791,7 @@ function executeIfKeyPressed()
             bullet: null,
             dir: null,
             bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
-            type:'a'
+            type: 'a'
         }
 
         let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
@@ -813,18 +810,18 @@ function executeIfKeyPressed()
 
         //Pego a diferença entre as coordenadas da câmera e do target
         var x = camera.position.x - aviao.target.position.x;
-        var y =  camera.position.y - aviao.target.position.y;
+        var y = camera.position.y - aviao.target.position.y;
         var z = camera.position.z - aviao.target.position.z;
 
         //Extraio o módulo
-        var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z,2));
+        var moduloDirectBullet = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
 
         //Normalizo
         x = x / moduloDirectBullet;
         y = y / moduloDirectBullet;
         z = z / moduloDirectBullet;
 
-        var directionBullet = new THREE.Vector3(x,y,z);
+        var directionBullet = new THREE.Vector3(x, y, z);
 
         obj.dir = directionBullet;
         soundAirship.stop();
@@ -833,90 +830,88 @@ function executeIfKeyPressed()
 
         cadenciaTime3 = 0;
     }
-    if(pressedB && cadenciaTime3 > cadenciaApertarBotoes )
-    {
+    if (pressedB && cadenciaTime3 > cadenciaApertarBotoes) {
         //Trilha Sonora  
-        if(isPlaying){
+        if (isPlaying) {
             sound.pause();
             isPlaying = false;
-        }   
-        else{
+        }
+        else {
             sound.play();
             isPlaying = true;
         }
-            
+
         cadenciaTime3 = 0;
     }
 }
 
 
-function addJoysticks(){
-   
+function addJoysticks() {
+
     // Details in the link bellow:
     // https://yoannmoi.net/nipplejs/
-  
+
     let joystickL = nipplejs.create({
-      zone: document.getElementById('joystickWrapper1'),
-      mode: 'static',
-      position: { top: '-80px', left: '80px' }
+        zone: document.getElementById('joystickWrapper1'),
+        mode: 'static',
+        position: { top: '-80px', left: '80px' }
     });
-    
+
     joystickL.on('move', function (evt, data) {
         const forward = data.vector.y
         const turn = data.vector.x
         fwdValue = bkdValue = lftValue = rgtValue = 0;
 
 
-        if(aviao.getAirplane()){
-            if (forward > 0){
+        if (aviao.getAirplane()) {
+            if (forward > 0) {
                 fwdValue = Math.abs(forward);
-                pointer.y = pointer.y+fwdValue;
-            }else if (forward < 0){
+                pointer.y = pointer.y + fwdValue;
+            } else if (forward < 0) {
                 bkdValue = Math.abs(forward);
-                pointer.y = pointer.y-bkdValue;
+                pointer.y = pointer.y - bkdValue;
             }
-                
-            if (turn > 0){
+
+            if (turn > 0) {
                 rgtValue = Math.abs(turn);
-                pointer.x = pointer.x+rgtValue;
+                pointer.x = pointer.x + rgtValue;
             }
-                
-            else if (turn < 0){
+
+            else if (turn < 0) {
                 lftValue = Math.abs(turn);
-                pointer.x = pointer.x-lftValue;
+                pointer.x = pointer.x - lftValue;
             }
-                
-            if(pointer.x>-45 && pointer.x<45 ) {
+
+            if (pointer.x > -45 && pointer.x < 45) {
                 lerpConfig.destination.x = pointer.x;
                 lerpConfig.destination.y = pointer.y;
             }
         }
     })
 
-    
+
     joystickL.on('end', function (evt) {
-      bkdValue = 0
-      fwdValue = 0
-      lftValue = 0
-      rgtValue = 0
+        bkdValue = 0
+        fwdValue = 0
+        lftValue = 0
+        rgtValue = 0
     })
-  
+
     // let joystickR = nipplejs.create({
     //   zone: document.getElementById('joystickWrapper2'),
     //   mode: 'static',
     //   lockY: true, // only move on the Y axis
     //   position: { top: '-80px', right: '80px' },
     // });
-  
+
     // joystickR.on('move', function (evt, data) {
     //   const changeScale = data.vector.y;
-  
+
     //   if(changeScale > previousScale) scale+=0.1;
     //   if(changeScale < previousScale) scale-=0.1;
     //   if(scale > 4.0) scale = 4.0;
     //   if(scale < 0.5) scale = 0.5;
-  
+
     //   previousScale = changeScale;
     // })
-  }
-  
+}
