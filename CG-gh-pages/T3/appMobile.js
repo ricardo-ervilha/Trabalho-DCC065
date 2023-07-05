@@ -80,9 +80,9 @@ camera = initCamera(new THREE.Vector3(cameraPosition.x, cameraPosition.y, camera
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls(camera, renderer.domElement);
-cameraControl.enablePan = false;
-cameraControl.enableRotate = false;
-cameraControl.enableZoom = false;
+cameraControl.enablePan = true;
+cameraControl.enableRotate = true;
+cameraControl.enableZoom = true;
 
 /*---------------------------------------------------------------------------------------------------- */
 
@@ -188,7 +188,6 @@ aviao.buildAirPlane(scene, loadingManager);
 window.addEventListener('resize', function () { onWindowResize(camera, renderer) }, false);
 // window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
 // window.addEventListener("click", onMouseClick);
-window.addEventListener("contextmenu", rightClick);
 // document.body.style.cursor = "none";
 
 // botões da versão mobile
@@ -295,6 +294,7 @@ function updatePositionPlanes() {
             env.setLeftCubeOpacity(0);
             env.setRightCubeOpacity(0);
             env.setPlaneOpacity(0);
+            env.setObjectsOpacity(0);
             // env.setOpacityTrees(0); //-> Não tem mais árvores
             if (env.getTurret() != null) {
                 env.getTurret().traverse(function (node) {
@@ -309,6 +309,7 @@ function updatePositionPlanes() {
             env.setLeftCubeOpacity((n - y) / (heightPlan));
             env.setRightCubeOpacity((n - y) / (heightPlan));
             env.setPlaneOpacity((n - y) / (heightPlan));
+            env.setObjectsOpacity((n - y) / (heightPlan));
             // env.setOpacityTrees((n-y)/(heightPlan)); //-> Não tem mais árvores
             if (env.getTurret() != null) {
                 env.getTurret().traverse(function (node) {
@@ -322,6 +323,7 @@ function updatePositionPlanes() {
             env.setLeftCubeOpacity(1);
             env.setRightCubeOpacity(1);
             env.setPlaneOpacity(1);
+            env.setObjectsOpacity(1);
             // env.setOpacityTrees(1); //-> Não tem mais árvores
             if (env.getTurret() != null) {
                 env.getTurret().traverse(function (node) {
@@ -549,11 +551,6 @@ function moveCamera() {
 //     }
 // }
 
-function rightClick(event) {
-    if (event.button == 2) {
-        turretShoot();
-    }
-}
 
 /*
     Função para disparar tiros da torreta a cada cadenciaTime segundos
@@ -569,7 +566,7 @@ function turretShoot() {
     cadenciaTime = 0;
     torretas.forEach(conjunto => {
         //Adicionei esse conjunto.plane.position.z para verificar se a posição do negócio não está depois do avião.
-        if (conjunto.torreta != null && conjunto.plane.position.z > 0) {
+        if (conjunto.torreta != null && !conjunto.destroyed && conjunto.plane.position.z > 0) {
             let obj = {
                 bullet: null,
                 dir: null,
@@ -695,7 +692,6 @@ function checkColisions() {
                     return;
                 }
                 cadenciaTime2 = 0;
-                // console.log('Chegou até aqui');
                 soundHitAirplane.stop();
                 soundHitAirplane.play();
                 aviao.airplaneHit();
