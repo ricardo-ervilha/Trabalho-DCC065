@@ -104,7 +104,7 @@ export class Environment{
         var edges = new THREE.EdgesGeometry( geometry ); 
         
         this.leftLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, linewidth: 5} ) ); 
-        this.leftCube.add( this.leftLine );
+        //this.leftCube.add( this.leftLine );
 
         this.rightCube = new THREE.Mesh( geometry, material2);
         this.rightCube.receiveShadow = true;
@@ -134,7 +134,7 @@ export class Environment{
         this.rightCube.material.map.minFilter = THREE.LinearFilter;
         this.rightCube.material.map.magFilter = THREE.LinearFilter;
         
-        this.rightCube.add( this.rightLine );
+        //this.rightCube.add( this.rightLine );
         
     }
     
