@@ -18,7 +18,7 @@ import { velocityPlan, cadenciaTirosTorreta, sizeCube } from './variables.js';
 let scene, renderer, camera, material, orbit; // Initial variables
 let pointer = new THREE.Vector2();// posição do mouse na tela
 let keyboard = new KeyboardState();
-let boolSimulation = true;//simulação está rodando
+let boolSimulation = false;//simulação está rodando
 let clock = new THREE.Clock();
 let delta = 0;//segundos entre cada iteraçao do render
 let cadenciaTime = 0;
@@ -26,7 +26,37 @@ let cadenciaTime2 = 0;
 let bullets = [];
 const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
+
+
 scene = new THREE.Scene();    // Create main scene
+
+// Create the loading manager
+const loadingManager = new THREE.LoadingManager( () => {
+    let loadingScreen = document.getElementById( 'loading-screen' );
+    loadingScreen.transition = 0;
+    loadingScreen.style.setProperty('--speed1', '0');  
+    loadingScreen.style.setProperty('--speed2', '0');  
+    loadingScreen.style.setProperty('--speed3', '0');      
+  
+    let button  = document.getElementById("myBtn")
+    button.style.backgroundColor = 'Red';
+    button.innerHTML = 'Click to Enter';
+    button.addEventListener("click", onButtonPressed);
+  });
+
+
+//-- Functions --------------------------------------------------------
+function onButtonPressed() {
+    const loadingScreen = document.getElementById( 'loading-screen' );
+    loadingScreen.transition = 0;
+    loadingScreen.classList.add( 'fade-out' );
+    loadingScreen.addEventListener( 'transitionend', (e) => {
+        const element = e.target;
+        element.remove();  
+    });  
+    boolSimulation = true;
+    document.body.style.cursor = "none";
+}
 
 /* Parte do Renderer */
 let color = "rgb(0, 0, 0)";
@@ -44,9 +74,9 @@ camera = initCamera(new THREE.Vector3(cameraPosition.x, cameraPosition.y, camera
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls( camera, renderer.domElement );
-cameraControl.enablePan = false;
-cameraControl.enableRotate = false;
-cameraControl.enableZoom = false;
+cameraControl.enablePan = true;
+cameraControl.enableRotate = true;
+cameraControl.enableZoom = true;
 
 /*---------------------------------------------------------------------------------------------------- */
 
@@ -145,7 +175,7 @@ scene.add(light);
 //---------------------------------------------------------
 //Cria o avião e o adiciona na cena
 let aviao = new Airplane();
-aviao.buildAirPlane(scene);
+aviao.buildAirPlane(scene, loadingManager);
 
 /********************************************************************************************** */
 
@@ -154,7 +184,7 @@ window.addEventListener( 'resize', function(){onWindowResize(camera, renderer)},
 window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
 window.addEventListener("click", onMouseClick);
 window.addEventListener("contextmenu", rightClick);
-document.body.style.cursor = "none";
+
 
 
 // -- Cria o raycaster que será usado para fazer interseção entre o plano e a posição do mouse
@@ -189,9 +219,9 @@ var torretas = [];
 for(var i = 0; i < numPlans; i++){
     var environment;
     if(i == 2 || i == 4 || i == 6 || i == 8){
-        environment = new Environment(heightPlan, widthPlan, true, i);
+        environment = new Environment(heightPlan, widthPlan, true, i, loadingManager);
     }else{
-        environment = new Environment(heightPlan, widthPlan, false, i);
+        environment = new Environment(heightPlan, widthPlan, false, i, loadingManager);
     }
 
     let plane = environment.getPlane();

@@ -15,7 +15,7 @@ export const numPlans = 9;
 export const heightPlan = 200;
 
 //Largura do plano -> Usado na gameController para setar o plano da environment
-export const widthPlan = 100;
+export const widthPlan = 200;
 
 //Colocar aqui as constantes para rotação do avião -> Usado na gameController
 export const velocityRotation = 0.01;
@@ -25,7 +25,7 @@ export const velocityReturn = 0.9;
 export const sizeCube = heightPlan;
 
 //velocidade das balas
-export const bulletVelocity = 600;
+export const bulletVelocity = 500;
 
 //posição do plano invisível
 export const invisiblePlanePosition = {x:0, y:30, z: -45};

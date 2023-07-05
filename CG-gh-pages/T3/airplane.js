@@ -19,8 +19,8 @@ export class Airplane {
     return this.originalRotation;
   }
 
-  buildAirPlane(scene) {
-    var loader = new GLTFLoader();
+  buildAirPlane(scene, manager) {
+    var loader = new GLTFLoader(manager);
     loader.load(
       "./assets/xwing.glb",
       (gltf) => {

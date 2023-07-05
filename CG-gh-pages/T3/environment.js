@@ -18,9 +18,11 @@ export class Environment{
         [7, 13, 8]
     ];
 
-    constructor(height, width, temTorreta, texturasVar){
+    constructor(height, width, temTorreta, texturasVar, manager){
 
         this.texturasVar = texturasVar;
+
+        this.manager = manager;
 
         const textureLoader = new THREE.TextureLoader();
         //-- Carregando as texturas da trench run
@@ -40,6 +42,11 @@ export class Environment{
 
         this.texture1 = textureLoader.load('./textures/texture1.jpg');
         this.texture2 = textureLoader.load('./textures/texture2.jpg');
+        this.texture3 = textureLoader.load('./textures/texture3.jpg');
+        this.texture4 = textureLoader.load('./textures/texture4.jpg');
+        this.texture5 = textureLoader.load('./textures/texture5.jpg');
+        this.texture6 = textureLoader.load('./textures/texture6.png');
+        this.texture7 = textureLoader.load('./textures/texture7.jpg');
         this.texture8 = textureLoader.load('./textures/texture8.png');
         this.texture9 = textureLoader.load('./textures/texture9.png');
         
@@ -58,7 +65,7 @@ export class Environment{
         //Desempacoto obj e pego o plano, setando a opacidade para 0
         this.plane = obj.plane;
         this.plane.material.transparent = true;
-        this.plane.material.map = this.texture2;
+        this.plane.material.map = this.texture1;
         this.plane.material.map.minFilter = THREE.LinearFilter;
         this.plane.material.map.magFilter = THREE.NearestFilter;
         
@@ -109,34 +116,18 @@ export class Environment{
 
 
         //Parte das texturas
-        if(this.texturasVar == 0){
-            this.leftCube.material.map = this.map1;
-            this.rightCube.material.map = this.map2;
-        }else if(this.texturasVar == 1){
-            this.leftCube.material.map = this.map5;
-            this.rightCube.material.map = this.map12;
-        }else if(this.texturasVar == 2){
-            this.leftCube.material.map = this.map5;
-            this.rightCube.material.map = this.map9;
-        }else if(this.texturasVar == 3){
-            this.leftCube.material.map = this.map10;
-            this.rightCube.material.map = this.map13;
-        }else if(this.texturasVar == 4){
-            this.leftCube.material.map = this.map11;
-            this.rightCube.material.map = this.map4;
-        }else if(this.texturasVar == 5){
-            this.leftCube.material.map = this.map13;
-            this.rightCube.material.map = this.map6;
-        }else if(this.texturasVar == 6){
-            this.leftCube.material.map = this.map1;
-            this.rightCube.material.map = this.map7;
-        }else if(this.texturasVar == 7){
-            this.leftCube.material.map = this.map5;
-            this.rightCube.material.map = this.map3;
-        }else if(this.texturasVar == 8){
-            this.leftCube.material.map = this.map4;
-            this.rightCube.material.map = this.map9;
-        }
+        
+        this.leftCube.material.map = this.texture1;
+        this.leftCube.material.map.wrapS = THREE.RepeatWrapping;
+        this.leftCube.material.map.wrapT = THREE.RepeatWrapping;
+        this.leftCube.material.map.repeat.set(0.7, 0.7);
+        
+        this.rightCube.material.map = this.texture1;
+        this.rightCube.material.map.wrapS = THREE.RepeatWrapping;
+        this.rightCube.material.map.wrapT = THREE.RepeatWrapping;
+        this.rightCube.material.map.repeat.set(0.7, 0.7);
+            
+        
 
         this.leftCube.material.map.minFilter = THREE.LinearFilter;
         this.leftCube.material.map.magFilter = THREE.LinearFilter;
@@ -151,9 +142,12 @@ export class Environment{
         if(this.texturasVar == 0){
             //Coluna cilindrica vertical da esquerda
             var material1 = new THREE.MeshPhongMaterial();
-            material1.map = this.texture2;
+            material1.map = this.texture1;
             material1.map.magFilter = THREE.LinearFilter;
             material1.map.minFilter = THREE.LinearFilter;
+            material1.map.wrapS = THREE.RepeatWrapping;
+            material1.map.wrapT = THREE.RepeatWrapping;
+            material1.map.repeat.set(0.9, 0.9);
             var geometry = new THREE.CylinderGeometry(10, 10, sizeCube, 64, 64, undefined, undefined, Math.PI);
             var cilindro1 = new THREE.Mesh(geometry, material1);
             cilindro1.position.x += sizeCube/2;
@@ -163,9 +157,12 @@ export class Environment{
 
             //Coluna cilindrica vertical da direita
             var material2 = new THREE.MeshPhongMaterial();
-            material2.map = this.texture9;
+            material2.map = this.texture1;
             material2.map.magFilter = THREE.LinearFilter;
             material2.map.minFilter = THREE.LinearFilter;
+            material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.9, 0.9);
             var cilindro2 = new THREE.Mesh(geometry, material2);
             cilindro2.rotateX(THREE.MathUtils.degToRad(90));
             cilindro2.position.y -= 25;
@@ -174,10 +171,13 @@ export class Environment{
             this.rightCube.add(cilindro2);
 
             //Paralelepípedo que fica em cima da parede direita.
-            var material3 = new THREE.MeshPhongMaterial();
-            material3.map = this.texture2;
+            var material3 = new THREE.MeshPhongMaterial({color: "#737373"});
+            material3.map = this.texture8;
             material3.map.magFilter = THREE.LinearFilter;
             material3.map.minFilter = THREE.LinearFilter;
+            material3.map.wrapS = THREE.RepeatWrapping;
+            material3.map.wrapT = THREE.RepeatWrapping;
+            material3.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.BoxGeometry(40,40,5);
             var placa1 = new THREE.Mesh(geometry2, material3);
             placa1.position.z += sizeCube/2;
@@ -186,10 +186,13 @@ export class Environment{
             this.rightCube.add(placa1);
 
             //Paralelepípedo que fica em cima da parede esquerda.
-            var material4 = new THREE.MeshPhongMaterial();
-            material4.map = this.texture2;
+            var material4 = new THREE.MeshPhongMaterial({color: "#737373"});
+            material4.map = this.texture8;
             material4.map.magFilter = THREE.LinearFilter;
             material4.map.minFilter = THREE.LinearFilter;
+            material4.map.wrapS = THREE.RepeatWrapping;
+            material4.map.wrapT = THREE.RepeatWrapping;
+            material4.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(100,20,5);
             var placa2 = new THREE.Mesh(geometry3, material3);
             placa2.position.z += sizeCube/2;
@@ -200,20 +203,19 @@ export class Environment{
         }else if(this.texturasVar == 1){
             this.addObjectsToPlan();
             //Cubo que fica em cima do plano.
-            var material1 = new THREE.MeshPhongMaterial();
+            var material1 = new THREE.MeshPhongMaterial({color: "#707070"});
             material1.map = this.texture2;
             material1.map.magFilter = THREE.LinearFilter;
             material1.map.minFilter = THREE.LinearFilter;
+            material1.map.wrapS = THREE.RepeatWrapping;
+            material1.map.wrapT = THREE.RepeatWrapping;
+            material1.map.repeat.set(0.5, 0.5);
             var geometry1 = new THREE.BoxGeometry(6,6,6);
             var cubo1 = new THREE.Mesh(geometry1, material1);
             cubo1.position.z += 3;
             this.plane.add(cubo1);
 
             //Paralelepípedo que fica em cima do plano.
-            var material1 = new THREE.MeshPhongMaterial();
-            material1.map = this.texture2;
-            material1.map.magFilter = THREE.LinearFilter;
-            material1.map.minFilter = THREE.LinearFilter;
             var geometry2 = new THREE.BoxGeometry(20,20,2);
             var cubo2 = new THREE.Mesh(geometry2, material1);
             cubo2.position.z += 3;
@@ -222,10 +224,13 @@ export class Environment{
             this.plane.add(cubo2);
 
             //Paralelepípedo que fica em cima da parede direita.
-            var material2 = new THREE.MeshPhongMaterial();
+            var material2 = new THREE.MeshPhongMaterial({color: "#737373"});
             material2.map = this.texture2;
             material2.map.magFilter = THREE.LinearFilter;
             material2.map.minFilter = THREE.LinearFilter;
+            material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(40,40,5);
             var placa1 = new THREE.Mesh(geometry3, material2);
             placa1.position.z += sizeCube/2;
@@ -234,10 +239,13 @@ export class Environment{
             this.rightCube.add(placa1);
 
             //Paralelepípedo que fica em cima da parede esquerda.
-            var material3 = new THREE.MeshPhongMaterial();
+            var material3 = new THREE.MeshPhongMaterial({color: "#737373"});
             material3.map = this.texture2;
             material3.map.magFilter = THREE.LinearFilter;
             material3.map.minFilter = THREE.LinearFilter;
+            material3.map.wrapS = THREE.RepeatWrapping;
+            material3.map.wrapT = THREE.RepeatWrapping;
+            material3.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.BoxGeometry(100,20,5);
             var placa2 = new THREE.Mesh(geometry4, material3);
             placa2.position.z += sizeCube/2;
@@ -247,11 +255,13 @@ export class Environment{
             this.leftCube.add(placa2);
 
             //Estrutura que fica na parede da esquerda
-            var material4 = new THREE.MeshPhongMaterial();
+            var material4 = new THREE.MeshPhongMaterial({color: "#707070"});
             material4.map = this.texture2;
             material4.map.magFilter = THREE.LinearFilter;
             material4.map.minFilter = THREE.LinearFilter;
-
+            material4.map.wrapS = THREE.RepeatWrapping;
+            material4.map.wrapT = THREE.RepeatWrapping;
+            material4.map.repeat.set(0.5, 0.5);
             var geometry5 = new THREE.BoxGeometry(20,20,3);
             var placa2 = new THREE.Mesh(geometry5, material4);
             var placa3 = new THREE.Mesh(geometry5, material4);
@@ -280,10 +290,13 @@ export class Environment{
             this.leftCube.add(ligamento1);
             this.leftCube.add(ligamento2);
 
-            var material5 = new THREE.MeshPhongMaterial();
+            var material5 = new THREE.MeshPhongMaterial({color: "#707070"});
             material5.map = this.texture9;
             material5.map.magFilter = THREE.LinearFilter;
             material5.map.minFilter = THREE.LinearFilter;
+            material5.map.wrapS = THREE.RepeatWrapping;
+            material5.map.wrapT = THREE.RepeatWrapping;
+            material5.map.repeat.set(0.5, 0.5);
             var geometry7 = new THREE.CylinderGeometry(3, 3, 1, 64, 64);
             var pino1 = new THREE.Mesh(geometry7, material5);
             pino1.position.z += 30;
@@ -292,10 +305,13 @@ export class Environment{
             this.leftCube.add(pino1);
 
             //Estrutura que fica na parede direita.
-            var material6 = new THREE.MeshPhongMaterial();
-            material6.map = this.texture2;
+            var material6 = new THREE.MeshPhongMaterial({color: "#707070"});
+            material6.map = this.texture7;
             material6.map.magFilter = THREE.LinearFilter;
             material6.map.minFilter = THREE.LinearFilter;
+            material6.map.wrapS = THREE.RepeatWrapping;
+            material6.map.wrapT = THREE.RepeatWrapping;
+            material6.map.repeat.set(0.5, 0.5);
             var geometry8 = new THREE.BoxGeometry(80,40,5);
             var placa4 = new THREE.Mesh(geometry8, material6);
             placa4.position.x -= sizeCube/2;
@@ -303,10 +319,13 @@ export class Environment{
             placa4.rotateY(THREE.MathUtils.degToRad(90));
             this.rightCube.add(placa4);
 
-            var material7 = new THREE.MeshPhongMaterial();
-            material7.map = this.texture2;
+            var material7 = new THREE.MeshPhongMaterial({color: "#707070"});
+            material7.map = this.texture4;
             material7.map.magFilter = THREE.LinearFilter;
             material7.map.minFilter = THREE.LinearFilter;
+            material7.map.wrapS = THREE.RepeatWrapping;
+            material7.map.wrapT = THREE.RepeatWrapping;
+            material7.map.repeat.set(0.5, 0.5);
             var geometry9 = new THREE.CylinderGeometry(5, 5, 10, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry9, material7);
             var cilindro2 = new THREE.Mesh(geometry9, material7);
@@ -327,12 +346,15 @@ export class Environment{
 
             
         }else if(this.texturasVar == 2){
-            this.addObjectsToPlan();
+            
             //Cubo que fica em cima do plano.
-            var material3 = new THREE.MeshPhongMaterial();
+            var material3 = new THREE.MeshPhongMaterial({color: "#474849"});
             material3.map = this.texture2;
             material3.map.magFilter = THREE.LinearFilter;
             material3.map.minFilter = THREE.LinearFilter;
+            material3.map.wrapS = THREE.RepeatWrapping;
+            material3.map.wrapT = THREE.RepeatWrapping;
+            material3.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(20,20,11);
             var cubo4 = new THREE.Mesh(geometry3, material3);
             // cubo1.position.z += 3;
@@ -341,20 +363,26 @@ export class Environment{
             this.plane.add(cubo4);
 
             //Calota esférica em cima do cubo da esquerda
-            var material1 = new THREE.MeshPhongMaterial();
-            material1.map = this.texture9;
+            var material1 = new THREE.MeshPhongMaterial({color: "#737373"});
+            material1.map = this.texture2;
             material1.map.magFilter = THREE.LinearFilter;
             material1.map.minFilter = THREE.LinearFilter;
+            material1.map.wrapS = THREE.RepeatWrapping;
+            material1.map.wrapT = THREE.RepeatWrapping;
+            material1.map.repeat.set(0.5, 0.5);
             var geometry1 = new THREE.SphereGeometry(12, 64, 64);
             var esfera1 = new THREE.Mesh(geometry1, material1);
             esfera1.position.z += sizeCube/2;
             this.leftCube.add(esfera1);
 
             //Cubo que fica na parede esquerda.
-            var material2 = new THREE.MeshPhongMaterial();
-            material2.map = this.texture8;
+            var material2 = new THREE.MeshPhongMaterial({color: "#707070"});
+            material2.map = this.texture5;
             material2.map.magFilter = THREE.LinearFilter;
             material2.map.minFilter = THREE.LinearFilter;
+            material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.BoxGeometry(10, 10,10);
             var cubo2 = new THREE.Mesh(geometry2, material2);
             cubo2.position.x += sizeCube/2;
@@ -368,10 +396,13 @@ export class Environment{
             this.leftCube.add(cubo3);
 
             //Cilindro no plano (Mais externo)
-            var material4 = new THREE.MeshPhongMaterial();
+            var material4 = new THREE.MeshPhongMaterial({color: "#474747"});
             material4.map = this.texture2;
             material4.map.magFilter = THREE.LinearFilter;
             material4.map.minFilter = THREE.LinearFilter;
+            material4.map.wrapS = THREE.RepeatWrapping;
+            material4.map.wrapT = THREE.RepeatWrapping;
+            material4.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.CylinderGeometry(6, 6, 10, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry4, material4);
             cilindro1.rotateX(THREE.MathUtils.degToRad(90));
@@ -385,9 +416,12 @@ export class Environment{
 
             //Paralelepípedo que fica em cima do cubo da direita.
             var material5 = new THREE.MeshPhongMaterial();
-            material5.map = this.texture2;
+            material5.map = this.texture4;
             material5.map.magFilter = THREE.LinearFilter;
             material5.map.minFilter = THREE.LinearFilter;
+            material5.map.wrapS = THREE.RepeatWrapping;
+            material5.map.wrapT = THREE.RepeatWrapping;
+            material5.map.repeat.set(0.5, 0.5);
             var geometry6 = new THREE.BoxGeometry(40,40,5);
             var placa1 = new THREE.Mesh(geometry6, material5);
             placa1.position.z += sizeCube/2;
@@ -397,9 +431,12 @@ export class Environment{
 
             //Paralelepípedo que fica em cima da parede esquerda.
             var material6 = new THREE.MeshPhongMaterial();
-            material6.map = this.texture2;
+            material6.map = this.texture1;
             material6.map.magFilter = THREE.LinearFilter;
             material6.map.minFilter = THREE.LinearFilter;
+            material6.map.wrapS = THREE.RepeatWrapping;
+            material6.map.wrapT = THREE.RepeatWrapping;
+            material6.map.repeat.set(0.5, 0.5);
             var geometry7 = new THREE.BoxGeometry(100,20,5);
             var placa2 = new THREE.Mesh(geometry7, material6);
             placa2.position.z += sizeCube/2;
@@ -408,12 +445,15 @@ export class Environment{
             this.leftCube.add(placa2);
 
         }else if(this.texturasVar == 3){
-            this.addObjectsToPlan();
+            
             //Coluna cilindrica vertical da esquerda
             var material1 = new THREE.MeshPhongMaterial();
-            material1.map = this.texture2;
+            material1.map = this.texture1;
             material1.map.magFilter = THREE.LinearFilter;
             material1.map.minFilter = THREE.LinearFilter;
+            material1.map.wrapS = THREE.RepeatWrapping;
+            material1.map.wrapT = THREE.RepeatWrapping;
+            material1.map.repeat.set(0.9, 0.9);
             var geometry = new THREE.CylinderGeometry(10, 10, sizeCube, 64, 64, undefined, undefined, Math.PI);
             var cilindro1 = new THREE.Mesh(geometry, material1);
             cilindro1.position.x += sizeCube/2;
@@ -423,9 +463,12 @@ export class Environment{
 
             //Coluna cilindrica vertical da direita
             var material2 = new THREE.MeshPhongMaterial();
-            material2.map = this.texture9;
+            material2.map = this.texture1;
             material2.map.magFilter = THREE.LinearFilter;
             material2.map.minFilter = THREE.LinearFilter;
+            material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.9, 0.9);
             var cilindro2 = new THREE.Mesh(geometry, material2);
             cilindro2.rotateX(THREE.MathUtils.degToRad(90));
             cilindro2.position.y -= 25;
@@ -435,9 +478,12 @@ export class Environment{
 
             //Tronco de pirâmide em cima do cubo da direita
             var material3 = new THREE.MeshPhongMaterial();
-            material3.map = this.texture2;
+            material3.map = this.map10;
             material3.map.magFilter = THREE.LinearFilter;
             material3.map.minFilter = THREE.LinearFilter;
+            material3.map.wrapS = THREE.RepeatWrapping;
+            material3.map.wrapT = THREE.RepeatWrapping;
+            material3.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.CylinderGeometry(18, 26, 30, 4, 1, undefined, undefined, undefined);
             var cilindro3 = new THREE.Mesh(geometry2, material3);
             cilindro3.rotateX(THREE.MathUtils.degToRad(90));
@@ -450,6 +496,9 @@ export class Environment{
             material4.map = this.texture2;
             material4.map.magFilter = THREE.LinearFilter;
             material4.map.minFilter = THREE.LinearFilter;
+            material4.map.wrapS = THREE.RepeatWrapping;
+            material4.map.wrapT = THREE.RepeatWrapping;
+            material4.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(40,40,30);
             var placa1 = new THREE.Mesh(geometry3, material3);
             placa1.position.z += sizeCube/2;
@@ -459,9 +508,12 @@ export class Environment{
 
             //Paralelepípedo que fica em cima da parede esquerda.
             var material5 = new THREE.MeshPhongMaterial();
-            material5.map = this.texture2;
+            material5.map = this.texture5;
             material5.map.magFilter = THREE.LinearFilter;
             material5.map.minFilter = THREE.LinearFilter;
+            material5.map.wrapS = THREE.RepeatWrapping;
+            material5.map.wrapT = THREE.RepeatWrapping;
+            material5.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.BoxGeometry(100,20,5);
             var placa2 = new THREE.Mesh(geometry4, material5);
             placa2.position.z += sizeCube/2;
@@ -473,10 +525,13 @@ export class Environment{
         }else if(this.texturasVar == 4){
             this.addObjectsToPlan();
             //Cubo que fica em cima do plano.
-            var material6 = new THREE.MeshPhongMaterial();
+            var material6 = new THREE.MeshPhongMaterial({color: "#474849"});
             material6.map = this.texture2;
             material6.map.magFilter = THREE.LinearFilter;
             material6.map.minFilter = THREE.LinearFilter;
+            material6.map.wrapS = THREE.RepeatWrapping;
+            material6.map.wrapT = THREE.RepeatWrapping;
+            material6.map.repeat.set(0.5, 0.5);
             var geometry6 = new THREE.BoxGeometry(20,20,21);
             var cubo5 = new THREE.Mesh(geometry6, material6);
             // cubo1.position.z += 3;
@@ -485,11 +540,14 @@ export class Environment{
             this.plane.add(cubo5);
 
             //Paralelepípedo que fica em cima do plano.
-            var material3 = new THREE.MeshPhongMaterial();
+            var material3 = new THREE.MeshPhongMaterial({color: "#222222"});
             material3.map = this.texture2;
             material3.map.magFilter = THREE.LinearFilter;
             material3.map.minFilter = THREE.LinearFilter;
-            var geometry3 = new THREE.BoxGeometry(sizeCube/2, 10, 3);
+            material3.map.wrapS = THREE.RepeatWrapping;
+            material3.map.wrapT = THREE.RepeatWrapping;
+            material3.map.repeat.set(0.5, 0.5);
+            var geometry3 = new THREE.BoxGeometry(widthPlan, 10, 3);
             var paralelepípedo1 = new THREE.Mesh(geometry3, material3);
             paralelepípedo1.position.z += 1.5;
             paralelepípedo1.position.y -= 45;
@@ -497,10 +555,13 @@ export class Environment{
 
 
             //Tronco de pirâmide em cima do cubo da esquerda
-            var material = new THREE.MeshPhongMaterial();
-            material.map = this.texture2;
+            var material = new THREE.MeshPhongMaterial({color: "#707070"});
+            material.map = this.texture7;
             material.map.magFilter = THREE.LinearFilter;
             material.map.minFilter = THREE.LinearFilter;
+            material.map.wrapS = THREE.RepeatWrapping;
+            material.map.wrapT = THREE.RepeatWrapping;
+            material.map.repeat.set(0.5, 0.5);
             var geometry1 = new THREE.CylinderGeometry(35, 45, 7, 4, 1, undefined, undefined, undefined);
             var cilindro1 = new THREE.Mesh(geometry1, material);
             cilindro1.rotateX(THREE.MathUtils.degToRad(90));
@@ -511,10 +572,13 @@ export class Environment{
 
 
             //Cubo que fica em cima do tronco de pirâmide 
-            var material2 = new THREE.MeshPhongMaterial();
-            material2.map = this.texture2;
+            var material2 = new THREE.MeshPhongMaterial({color: "#707070"});
+            material2.map = this.texture7;
             material2.map.magFilter = THREE.LinearFilter;
             material2.map.minFilter = THREE.LinearFilter;
+            material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.BoxGeometry(25,25,25);
             var cubo1 = new THREE.Mesh(geometry2, material2);
             cubo1.position.y += 16.5;
@@ -524,10 +588,13 @@ export class Environment{
             cilindro1.add(cubo1);
 
             //Cubos que ficam na parede direita.
-            var material4 = new THREE.MeshPhongMaterial();
+            var material4 = new THREE.MeshPhongMaterial({color: "#707070"});
             material4.map = this.texture8;
             material4.map.magFilter = THREE.LinearFilter;
             material4.map.minFilter = THREE.LinearFilter;
+            material4.map.wrapS = THREE.RepeatWrapping;
+            material4.map.wrapT = THREE.RepeatWrapping;
+            material4.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.BoxGeometry(10, 10,10);
             var cubo2 = new THREE.Mesh(geometry4, material4);
             cubo2.position.x -= sizeCube/2;
@@ -547,10 +614,13 @@ export class Environment{
             this.rightCube.add(cubo4);
 
             //Disco em cima do cubo da direita
-            var material5 = new THREE.MeshPhongMaterial();
+            var material5 = new THREE.MeshPhongMaterial({color: "#737373"});
             material5.map = this.texture9;
             material5.map.magFilter = THREE.LinearFilter;
             material5.map.minFilter = THREE.LinearFilter;
+            material5.map.wrapS = THREE.RepeatWrapping;
+            material5.map.wrapT = THREE.RepeatWrapping;
+            material5.map.repeat.set(0.5, 0.5);
             var geometry5 = new THREE.CylinderGeometry(20, 20, 10, 64, 64);
             var cilindro2 = new THREE.Mesh(geometry5, material5);
             cilindro2.position.z += sizeCube/2;
@@ -568,12 +638,15 @@ export class Environment{
             this.rightCube.add(placa1);
 
             //Cubo que fica em cima da parede esquerda.
-            var material6 = new THREE.MeshPhongMaterial();
-            material6.map = this.texture2;
-            material6.map.magFilter = THREE.LinearFilter;
-            material6.map.minFilter = THREE.LinearFilter;
+            var material7 = new THREE.MeshPhongMaterial();
+            material7.map = this.map7;
+            material7.map.magFilter = THREE.LinearFilter;
+            material7.map.minFilter = THREE.LinearFilter;
+            material7.map.wrapS = THREE.RepeatWrapping;
+            material7.map.wrapT = THREE.RepeatWrapping;
+            material7.map.repeat.set(0.5, 0.5);
             var geometry7 = new THREE.BoxGeometry(30,30,30);
-            var cubo5 = new THREE.Mesh(geometry7, material6);
+            var cubo5 = new THREE.Mesh(geometry7, material7);
             cubo5.position.z += sizeCube/2 + 15;
             cubo5.position.y += 10;
             cubo5.position.x -= 35;
@@ -582,12 +655,15 @@ export class Environment{
 
 
         }else if(this.texturasVar == 5){
-            this.addObjectsToPlan();
+            
             //Cilindro deitado na parede da esquerda (Mais externo)
             var material1 = new THREE.MeshPhongMaterial();
-            material1.map = this.texture2;
+            material1.map = this.texture1;
             material1.map.magFilter = THREE.LinearFilter;
             material1.map.minFilter = THREE.LinearFilter;
+            material1.map.wrapS = THREE.RepeatWrapping;
+            material1.map.wrapT = THREE.RepeatWrapping;
+            material1.map.repeat.set(0.5, 0.5);
             var geometry = new THREE.CylinderGeometry(5, 5, 10, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry, material1);
             cilindro1.position.x += sizeCube/2 + 5;
@@ -596,10 +672,13 @@ export class Environment{
             this.leftCube.add(cilindro1);
 
             //Cilindro deitado na parede da esquerda (Mais interno)
-            var material2 = new THREE.MeshPhongMaterial();
-            material2.map = this.texture9;
+            var material2 = new THREE.MeshPhongMaterial({color: "#707070"});
+            material2.map = this.texture2;
             material2.map.magFilter = THREE.LinearFilter;
             material2.map.minFilter = THREE.LinearFilter;
+            material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.CylinderGeometry(3, 3, 25, 64, 64);
             var cilindro2 = new THREE.Mesh(geometry2, material2);
             cilindro2.position.x += sizeCube/2 + 5;
@@ -609,9 +688,12 @@ export class Environment{
 
             //Paralelepípedo que fica em cima da parede direita.
             var material3 = new THREE.MeshPhongMaterial();
-            material3.map = this.texture2;
+            material3.map = this.texture9;
             material3.map.magFilter = THREE.LinearFilter;
             material3.map.minFilter = THREE.LinearFilter;
+            material3.map.wrapS = THREE.RepeatWrapping;
+            material3.map.wrapT = THREE.RepeatWrapping;
+            material3.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(40,40,5);
             var placa1 = new THREE.Mesh(geometry3, material3);
             placa1.position.z += sizeCube/2;
@@ -621,9 +703,12 @@ export class Environment{
 
              //Cilindro que fica em cima da parede esquerda.
              var material4 = new THREE.MeshPhongMaterial();
-             material4.map = this.texture2;
+             material4.map = this.map3;
              material4.map.magFilter = THREE.LinearFilter;
              material4.map.minFilter = THREE.LinearFilter;
+             material4.map.wrapS = THREE.RepeatWrapping;
+             material4.map.wrapT = THREE.RepeatWrapping;
+             material4.map.repeat.set(0.8, 0.8);
              var geometry4 = new THREE.CylinderGeometry(30,30,30);
              var cilindro3 = new THREE.Mesh(geometry4, material4);
              cilindro3.position.z += sizeCube/2 + 15;
@@ -634,12 +719,15 @@ export class Environment{
 
 
         }else if(this.texturasVar == 6){
-            this.addObjectsToPlan();
+            
             //Cubo que fica em cima do plano.
-            var material4 = new THREE.MeshPhongMaterial();
-            material4.map = this.texture2;
+            var material4 = new THREE.MeshPhongMaterial({color: "#474849"});
+            material4.map = this.texture1;
             material4.map.magFilter = THREE.LinearFilter;
             material4.map.minFilter = THREE.LinearFilter;
+            material4.map.wrapS = THREE.RepeatWrapping;
+            material4.map.wrapT = THREE.RepeatWrapping;
+            material4.map.repeat.set(0.9, 0.9);
             var geometry3 = new THREE.BoxGeometry(20,20,7);
             var cubo1 = new THREE.Mesh(geometry3, material4);
             // cubo1.position.z += 3;
@@ -649,9 +737,12 @@ export class Environment{
 
             //Coluna cilindrica vertical da esquerda
             var material1 = new THREE.MeshPhongMaterial();
-            material1.map = this.texture2;
+            material1.map = this.texture1;
             material1.map.magFilter = THREE.LinearFilter;
             material1.map.minFilter = THREE.LinearFilter;
+            material1.map.wrapS = THREE.RepeatWrapping;
+            material1.map.wrapT = THREE.RepeatWrapping;
+            material1.map.repeat.set(0.9, 0.9);
             var geometry = new THREE.CylinderGeometry(10, 10, sizeCube, 64, 64, undefined, undefined, Math.PI);
             var cilindro1 = new THREE.Mesh(geometry, material1);
             cilindro1.position.x += sizeCube/2;
@@ -661,9 +752,12 @@ export class Environment{
 
             //Coluna cilindrica vertical da direita
             var material2 = new THREE.MeshPhongMaterial();
-            material2.map = this.texture9;
+            material2.map = this.texture1;
             material2.map.magFilter = THREE.LinearFilter;
             material2.map.minFilter = THREE.LinearFilter;
+            material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.9, 0.9);
             var cilindro2 = new THREE.Mesh(geometry, material2);
             cilindro2.rotateX(THREE.MathUtils.degToRad(90));
             cilindro2.position.y -= 25;
@@ -673,9 +767,12 @@ export class Environment{
 
             //Tronco de pirâmide em cima do cubo da direita
             var material3 = new THREE.MeshPhongMaterial();
-            material3.map = this.texture2;
+            material3.map = this.texture6;
             material3.map.magFilter = THREE.LinearFilter;
             material3.map.minFilter = THREE.LinearFilter;
+            material3.map.wrapS = THREE.RepeatWrapping;
+            material3.map.wrapT = THREE.RepeatWrapping;
+            material3.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.CylinderGeometry(26, 35, 4, 4, 1, undefined, undefined, undefined);
             var cilindro3 = new THREE.Mesh(geometry2, material3);
             cilindro3.rotateX(THREE.MathUtils.degToRad(90));
@@ -685,9 +782,12 @@ export class Environment{
 
             //Paralelepipedo vertical que fica em cima da parede esquerda.
             var material4 = new THREE.MeshPhongMaterial();
-            material4.map = this.texture2;
+            material4.map = this.map10;
             material4.map.magFilter = THREE.LinearFilter;
             material4.map.minFilter = THREE.LinearFilter;
+            material4.map.wrapS = THREE.RepeatWrapping;
+            material4.map.wrapT = THREE.RepeatWrapping;
+            material4.map.repeat.set(0.5, 0.5);
             var geometry3= new THREE.BoxGeometry(60,20,30);
             var paralelepipedo1 = new THREE.Mesh(geometry3, material4);
             paralelepipedo1.position.z += sizeCube/2 + 15;
@@ -699,7 +799,7 @@ export class Environment{
         }else if(this.texturasVar == 7){
             this.addObjectsToPlan();
             //Disco em cima do cubo da esquerda
-            var material1 = new THREE.MeshPhongMaterial();
+            var material1 = new THREE.MeshPhongMaterial({color: "#737373"});
             material1.map = this.texture9;
             material1.map.magFilter = THREE.LinearFilter;
             material1.map.minFilter = THREE.LinearFilter;
@@ -713,10 +813,13 @@ export class Environment{
             this.leftCube.add(cilindro1);
 
             //Paralelepípedo que fica em cima da parede direita.
-            var material2 = new THREE.MeshPhongMaterial();
-            material2.map = this.texture2;
+            var material2 = new THREE.MeshPhongMaterial({color: "#707070"});
+            material2.map = this.texture1;
             material2.map.magFilter = THREE.LinearFilter;
             material2.map.minFilter = THREE.LinearFilter;
+            material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.BoxGeometry(40,40,5);
             var placa1 = new THREE.Mesh(geometry2, material2);
             placa1.position.z += sizeCube/2;
@@ -725,12 +828,15 @@ export class Environment{
             this.rightCube.add(placa1);
 
         }else if(this.texturasVar == 8){
-            this.addObjectsToPlan();
+            
             //Cubo que fica em cima do plano.
-            var material3 = new THREE.MeshPhongMaterial();
+            var material3 = new THREE.MeshPhongMaterial({color: "#474849"});
             material3.map = this.texture2;
             material3.map.magFilter = THREE.LinearFilter;
             material3.map.minFilter = THREE.LinearFilter;
+            material3.map.wrapS = THREE.RepeatWrapping;
+            material3.map.wrapT = THREE.RepeatWrapping;
+            material3.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(20,20,15);
             var cubo1 = new THREE.Mesh(geometry3, material3);
             // cubo1.position.z += 3;
@@ -739,10 +845,13 @@ export class Environment{
             this.plane.add(cubo1);
 
             //Cilindro que fica em cima do plano.
-            var material2 = new THREE.MeshPhongMaterial();
-            material2.map = this.texture2;
+            var material2 = new THREE.MeshPhongMaterial({color: "##222222"});
+            material2.map = this.texture4;
             material2.map.magFilter = THREE.LinearFilter;
             material2.map.minFilter = THREE.LinearFilter;
+            material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.CylinderGeometry(10, 10, 5, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry2, material2);
             cilindro1.rotateX(THREE.MathUtils.degToRad(90))
@@ -751,10 +860,13 @@ export class Environment{
             this.plane.add(cilindro1);
 
             //Paralelepípedo que fica na parede direita.
-            var material1 = new THREE.MeshPhongMaterial();
+            var material1 = new THREE.MeshPhongMaterial({color: "#707070"});
             material1.map = this.texture8;
             material1.map.magFilter = THREE.LinearFilter;
             material1.map.minFilter = THREE.LinearFilter;
+            material1.map.wrapS = THREE.RepeatWrapping;
+            material1.map.wrapT = THREE.RepeatWrapping;
+            material1.map.repeat.set(0.5, 0.5);
             var geometry1 = new THREE.BoxGeometry(3, 40,40);
             var paralelepípedo1 = new THREE.Mesh(geometry1, material1);
             paralelepípedo1.position.x -= sizeCube/2 + 1.5;
@@ -763,9 +875,12 @@ export class Environment{
 
             //Paralelepípedo que fica em cima da parede direita.
             var material4 = new THREE.MeshPhongMaterial();
-            material4.map = this.texture2;
+            material4.map = this.map1;
             material4.map.magFilter = THREE.LinearFilter;
             material4.map.minFilter = THREE.LinearFilter;
+            material4.map.wrapS = THREE.RepeatWrapping;
+            material4.map.wrapT = THREE.RepeatWrapping;
+            material4.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.BoxGeometry(40,40,5);
             var placa1 = new THREE.Mesh(geometry4, material4);
             placa1.position.z += sizeCube/2;
@@ -775,9 +890,12 @@ export class Environment{
 
             //Cubo que fica em cima da parede esquerda.
             var material5 = new THREE.MeshPhongMaterial();
-            material5.map = this.texture2;
+            material5.map = this.texture3;
             material5.map.magFilter = THREE.LinearFilter;
             material5.map.minFilter = THREE.LinearFilter;
+            material5.map.wrapS = THREE.RepeatWrapping;
+            material5.map.wrapT = THREE.RepeatWrapping;
+            material5.map.repeat.set(0.5, 0.5);
             var geometry5 = new THREE.BoxGeometry(20,20,20);
             var placa2 = new THREE.Mesh(geometry5, material5);
             placa2.position.z += sizeCube/2 + 15;
@@ -799,7 +917,7 @@ export class Environment{
             placa4.position.x -= 35;
             this.leftCube.add(placa4);
         }
-        this.addObjectsToPlan();
+        // this.addObjectsToPlan();
     }
 
 
@@ -855,7 +973,7 @@ export class Environment{
 
 
     buildOneTurret() {
-            var objLoader = new OBJLoader();
+            var objLoader = new OBJLoader(this.manager);
 
             objLoader.load("./assets/turret2.obj", (obj) => {
 
@@ -937,22 +1055,25 @@ export class Environment{
     }
 
     addObjectsToPlan(){
-        //Dodecaedro
-        var material = new THREE.MeshPhongMaterial();
-        material.map = this.texture2;
-        material.map.magFilter = THREE.LinearFilter;
-        material.map.minFilter = THREE.LinearFilter;
-        var geometry = new THREE.DodecahedronGeometry(20,20,21);
-        var dodecahed = new THREE.Mesh(geometry, material);
-        dodecahed.position.x = 60;
-        dodecahed.position.y = 30;
-        this.plane.add(dodecahed);
+        // //Dodecaedro
+        // var material = new THREE.MeshPhongMaterial();
+        // material.map = this.texture2;
+        // material.map.magFilter = THREE.LinearFilter;
+        // material.map.minFilter = THREE.LinearFilter;
+        // var geometry = new THREE.DodecahedronGeometry(20,20,21);
+        // var dodecahed = new THREE.Mesh(geometry, material);
+        // dodecahed.position.x = 60;
+        // dodecahed.position.y = 30;
+        // this.plane.add(dodecahed);
 
         // Paralelepípedo
         var material = new THREE.MeshPhongMaterial();
-        material.map = this.texture2;
+        material.map = this.texture1;
         material.map.magFilter = THREE.LinearFilter;
         material.map.minFilter = THREE.LinearFilter;
+        material.map.wrapS = THREE.RepeatWrapping;
+        material.map.wrapT = THREE.RepeatWrapping;
+        material.map.repeat.set(0.5, 0.5);
         var geometry = new THREE.BoxGeometry(10,10,30);
         var objMesh = new THREE.Mesh(geometry, material);
         objMesh.position.z =-10;
@@ -961,24 +1082,30 @@ export class Environment{
         this.plane.add(objMesh);
 
         // Paralelepípedo
-        var material = new THREE.MeshPhongMaterial();
-        material.map = this.texture2;
-        material.map.magFilter = THREE.LinearFilter;
-        material.map.minFilter = THREE.LinearFilter;
+        var material1 = new THREE.MeshPhongMaterial();
+        material1.map = this.texture5;
+        material1.map.magFilter = THREE.LinearFilter;
+        material1.map.minFilter = THREE.LinearFilter;
+        material1.map.wrapS = THREE.RepeatWrapping;
+        material1.map.wrapT = THREE.RepeatWrapping;
+        material1.map.repeat.set(0.5, 0.5);
         var geometry = new THREE.BoxGeometry(10,10,30);
-        var objMesh = new THREE.Mesh(geometry, material);
+        var objMesh = new THREE.Mesh(geometry, material1);
         objMesh.position.z = 0;
         objMesh.position.y = 60;
         objMesh.position.x = -15;
         this.plane.add(objMesh);
 
         // Cilindro
-        var material = new THREE.MeshPhongMaterial();
-        material.map = this.texture2;
-        material.map.magFilter = THREE.LinearFilter;
-        material.map.minFilter = THREE.LinearFilter;
+        var material2 = new THREE.MeshPhongMaterial();
+        material2.map = this.texture6;
+        material2.map.magFilter = THREE.LinearFilter;
+        material2.map.minFilter = THREE.LinearFilter;
+        material2.map.wrapS = THREE.RepeatWrapping;
+            material2.map.wrapT = THREE.RepeatWrapping;
+            material2.map.repeat.set(0.5, 0.5);
         var geometry = new THREE.CylinderGeometry(10,10,30);
-        var objMesh = new THREE.Mesh(geometry, material);
+        var objMesh = new THREE.Mesh(geometry, material2);
         objMesh.position.z = 0;
         objMesh.position.y = 60;
         objMesh.position.x = 30;
@@ -987,12 +1114,15 @@ export class Environment{
 
 
         // IcosahedronGeometry
-        var material = new THREE.MeshPhongMaterial();
-        material.map = this.texture2;
-        material.map.magFilter = THREE.LinearFilter;
-        material.map.minFilter = THREE.LinearFilter;
+        var material3 = new THREE.MeshPhongMaterial();
+        material3.map = this.texture9;
+        material3.map.magFilter = THREE.LinearFilter;
+        material3.map.minFilter = THREE.LinearFilter;
+        material3.map.wrapS = THREE.RepeatWrapping;
+            material3.map.wrapT = THREE.RepeatWrapping;
+            material3.map.repeat.set(0.5, 0.5);
         var geometry = new THREE.IcosahedronGeometry(10,0);
-        var objMesh = new THREE.Mesh(geometry, material);
+        var objMesh = new THREE.Mesh(geometry, material3);
         objMesh.position.z = 0;
         objMesh.position.y = 100;
         objMesh.position.x = 30;
