@@ -347,8 +347,7 @@ function onMouseMove(event){
         if (intersects.length > 0) // Check if there is a intersection
         {
             let point = intersects[0].point; // Pick the point where interception occurrs
-
-            if(point.x>-45 && point.x<45 && point.y>5 && invisiblePlane == intersects[0].object ) {
+            if(point.x>-80 && point.x<80 && point.y>5 && invisiblePlane == intersects[0].object ) {
                 lerpConfig.destination.x = point.x;
                 lerpConfig.destination.y = point.y;
             }
@@ -707,7 +706,6 @@ function removeBullet(bullet, index){
 
 render();
 function render() {
-
     //console.log(camera)
     if (boolSimulation) {
         if (aviao.getAirplane()) {

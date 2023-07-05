@@ -909,7 +909,7 @@ function addJoysticks() {
                 pointer.x = pointer.x - lftValue;
             }
 
-            if (pointer.x > -45 && pointer.x < 45) {
+            if (pointer.x > -80 && pointer.x < 80 && pointer.y >5 && pointer.y<100) {
                 lerpConfig.destination.x = pointer.x;
                 lerpConfig.destination.y = pointer.y;
             }
