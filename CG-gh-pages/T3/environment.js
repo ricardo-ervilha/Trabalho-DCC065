@@ -5,6 +5,7 @@ import { heightPlan, sizeCube, velocityPlan, widthPlan } from './variables.js';
 import {OBJLoader} from '../build/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from '../build/jsm/loaders/MTLLoader.js';
 import { MathUtils, MeshBasicMaterial } from '../build/three.module.js';
+import { GLTFLoader } from "../build/jsm/loaders/GLTFLoader.js";
 /*
 Classe responsável por modelar o ambiente com seus planos retangulares e cubos nas bordas.
 Além disso, nela associamos as "turrets" que serão gerados no ambiente.
@@ -60,7 +61,7 @@ export class Environment{
         this.height = height;
         this.width = width;
         
-        let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(80, 80, 80)", "rgb(204, 204, 204)");
+        let obj = createGroundPlaneWired(width, height, 10, 10, 3, "rgb(255, 255, 255)", "rgb(255, 255, 255)");
         
         //Desempacoto obj e pego o plano, setando a opacidade para 0
         this.plane = obj.plane;
@@ -973,16 +974,17 @@ export class Environment{
 
 
     buildOneTurret() {
-            var objLoader = new OBJLoader(this.manager);
+            var loader = new GLTFLoader(this.manager);
 
-            objLoader.load("./assets/turret2.obj", (obj) => {
-
+            loader.load("./assets/turret3.glb", (gltf) => {
+                var obj = gltf.scene;
                 obj.visible = true;
+                var obj = gltf.scene;
                 obj.traverse(function (child) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
+                    if (child) {
+                        child.castShadow = true;
+                    }
                 });
-
                 obj.traverse(function (node) {
                     if (node.material) node.material.side = THREE.DoubleSide;
                 });
