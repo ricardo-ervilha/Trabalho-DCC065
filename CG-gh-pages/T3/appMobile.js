@@ -188,7 +188,6 @@ aviao.buildAirPlane(scene, loadingManager);
 window.addEventListener('resize', function () { onWindowResize(camera, renderer) }, false);
 // window.addEventListener('mousemove', onMouseMove);//quando o mouse mover, atualiza a posição destino
 // window.addEventListener("click", onMouseClick);
-window.addEventListener("contextmenu", rightClick);
 // document.body.style.cursor = "none";
 
 // botões da versão mobile
@@ -549,11 +548,6 @@ function moveCamera() {
 //     }
 // }
 
-function rightClick(event) {
-    if (event.button == 2) {
-        turretShoot();
-    }
-}
 
 /*
     Função para disparar tiros da torreta a cada cadenciaTime segundos
@@ -569,7 +563,7 @@ function turretShoot() {
     cadenciaTime = 0;
     torretas.forEach(conjunto => {
         //Adicionei esse conjunto.plane.position.z para verificar se a posição do negócio não está depois do avião.
-        if (conjunto.torreta != null && conjunto.plane.position.z > 0) {
+        if (conjunto.torreta != null && !conjunto.destroyed && conjunto.plane.position.z > 0) {
             let obj = {
                 bullet: null,
                 dir: null,
@@ -695,7 +689,6 @@ function checkColisions() {
                     return;
                 }
                 cadenciaTime2 = 0;
-                // console.log('Chegou até aqui');
                 soundHitAirplane.stop();
                 soundHitAirplane.play();
                 aviao.airplaneHit();
