@@ -280,11 +280,14 @@ function updatePositionPlanes(){
         var x = y + heightPlan;
         var n = plane.position.z;
 
-
+        console.log("n: " + n + " y: " + y + " x: " + x)
         if(n < y){
+            console.log('Esse aqui');
             env.setLeftCubeOpacity(0);
             env.setRightCubeOpacity(0);
             env.setPlaneOpacity(0);
+            console.log("i = " + i);
+            env.setObjectsOpacity(0);
             // env.setOpacityTrees(0); //-> Não tem mais árvores
             if(env.getTurret() != null){
                 env.getTurret().traverse( function( node ) {
@@ -300,6 +303,7 @@ function updatePositionPlanes(){
             env.setLeftCubeOpacity((n-y)/(heightPlan));
             env.setRightCubeOpacity((n-y)/(heightPlan));
             env.setPlaneOpacity((n-y)/(heightPlan));
+            env.setObjectsOpacity((n-y)/(heightPlan));
             // env.setOpacityTrees((n-y)/(heightPlan)); //-> Não tem mais árvores
             if(env.getTurret() != null){
                 env.getTurret().traverse( function( node ) {
@@ -310,9 +314,11 @@ function updatePositionPlanes(){
                 });
             }
         } else if (n > x){
+            console.log('caiu aqui + i=' + i);
             env.setLeftCubeOpacity(1);
             env.setRightCubeOpacity(1);
             env.setPlaneOpacity(1);
+            env.setObjectsOpacity(1);
             // env.setOpacityTrees(1); //-> Não tem mais árvores
             if(env.getTurret() != null){
                 env.getTurret().traverse( function( node ) {
@@ -568,7 +574,7 @@ function turretShoot(){
             }
 
             let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
-                color: "yellow"
+                color: "orange"
             }));
             bullet.rotateX(THREE.MathUtils.degToRad(90));
 
@@ -684,7 +690,7 @@ function checkColisions(){
                     return;
                 }
                 cadenciaTime2 = 0;
-                console.log('Chegou até aqui');
+                // console.log('Chegou até aqui');
                 soundHitAirplane.stop();
                 soundHitAirplane.play();
                 aviao.airplaneHit();
@@ -767,7 +773,7 @@ function render() {
 
         renderer.render(scene, camera) // Render scene
     }else{
-        console.log(camera.position)
+        // console.log(camera.position)
     }
 
 

@@ -21,6 +21,8 @@ export class Environment {
 
     constructor(height, width, temTorreta, texturasVar, manager) {
 
+        this.objectsTextured = [];
+
         this.texturasVar = texturasVar;
 
         this.manager = manager;
@@ -151,8 +153,10 @@ export class Environment {
             material1.map.repeat.set(0.9, 0.9);
             var geometry = new THREE.CylinderGeometry(10, 10, sizeCube, 64, 64, undefined, undefined, Math.PI);
             var cilindro1 = new THREE.Mesh(geometry, material1);
+            cilindro1.material.transparent = true;
             cilindro1.position.x += sizeCube / 2;
             cilindro1.position.y -= 25;
+            this.objectsTextured.push(cilindro1);
             cilindro1.rotateX(THREE.MathUtils.degToRad(90));
             this.leftCube.add(cilindro1);
 
@@ -165,6 +169,8 @@ export class Environment {
             material2.map.wrapT = THREE.RepeatWrapping;
             material2.map.repeat.set(0.9, 0.9);
             var cilindro2 = new THREE.Mesh(geometry, material2);
+            this.objectsTextured.push(cilindro2);
+            cilindro2.material.transparent = true;
             cilindro2.rotateX(THREE.MathUtils.degToRad(90));
             cilindro2.position.y -= 25;
             cilindro2.rotateY(THREE.MathUtils.degToRad(180));
@@ -181,6 +187,8 @@ export class Environment {
             material3.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.BoxGeometry(40, 40, 5);
             var placa1 = new THREE.Mesh(geometry2, material3);
+            this.objectsTextured.push(placa1);
+            placa1.material.transparent = true;
             placa1.position.z += sizeCube / 2;
             placa1.position.y += 10;
             placa1.position.x -= 25;
@@ -196,6 +204,8 @@ export class Environment {
             material4.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(100, 20, 5);
             var placa2 = new THREE.Mesh(geometry3, material3);
+            this.objectsTextured.push(placa2);
+            placa2.material.transparent = true;
             placa2.position.z += sizeCube / 2;
             placa2.position.y += 10;
             placa2.position.x -= 25;
@@ -213,12 +223,16 @@ export class Environment {
             material1.map.repeat.set(0.5, 0.5);
             var geometry1 = new THREE.BoxGeometry(6, 6, 6);
             var cubo1 = new THREE.Mesh(geometry1, material1);
+            this.objectsTextured.push(cubo1);
+            cubo1.material.transparent = true;
             cubo1.position.z += 3;
             this.plane.add(cubo1);
 
             //Paralelepípedo que fica em cima do plano.
             var geometry2 = new THREE.BoxGeometry(20, 20, 2);
             var cubo2 = new THREE.Mesh(geometry2, material1);
+            this.objectsTextured.push(cubo2);
+            cubo2.material.transparent = true;
             cubo2.position.z += 3;
             cubo2.position.y -= 40;
             cubo2.position.x += 25;
@@ -234,6 +248,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(40, 40, 5);
             var placa1 = new THREE.Mesh(geometry3, material2);
+            this.objectsTextured.push(placa1);
+            placa1.material.transparent = true;
             placa1.position.z += sizeCube / 2;
             placa1.position.y += 35;
             placa1.position.x += 35;
@@ -249,6 +265,8 @@ export class Environment {
             material3.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.BoxGeometry(100, 20, 5);
             var placa2 = new THREE.Mesh(geometry4, material3);
+            this.objectsTextured.push(placa2);
+            placa2.material.transparent = true;
             placa2.position.z += sizeCube / 2;
             placa2.position.y += 10;
             placa2.position.x -= 25;
@@ -265,7 +283,10 @@ export class Environment {
             material4.map.repeat.set(0.5, 0.5);
             var geometry5 = new THREE.BoxGeometry(20, 20, 3);
             var placa2 = new THREE.Mesh(geometry5, material4);
+            this.objectsTextured.push(placa2);
             var placa3 = new THREE.Mesh(geometry5, material4);
+            placa3.material.transparent = true;
+            this.objectsTextured.push(placa3);
             placa2.position.z += 30;
             placa2.position.y -= 30;
             placa2.position.x += sizeCube / 2;
@@ -279,7 +300,11 @@ export class Environment {
 
             var geometry6 = new THREE.BoxGeometry(60, 5, 5);
             var ligamento1 = new THREE.Mesh(geometry6, material4);
+            this.objectsTextured.push(ligamento1);
             var ligamento2 = new THREE.Mesh(geometry6, material4);
+            this.objectsTextured.push(ligamento2);
+            ligamento1.material.transparent = true;
+            ligamento2.material.transparent = true;
             ligamento1.position.z += 25;
             ligamento1.position.y -= 0;
             ligamento1.position.x += sizeCube / 2 + 5;
@@ -300,6 +325,8 @@ export class Environment {
             material5.map.repeat.set(0.5, 0.5);
             var geometry7 = new THREE.CylinderGeometry(3, 3, 1, 64, 64);
             var pino1 = new THREE.Mesh(geometry7, material5);
+            this.objectsTextured.push(pino1);
+            pino1.material.transparent = true;
             pino1.position.z += 30;
             pino1.position.y -= 34;
             pino1.position.x += sizeCube / 2 + 5;
@@ -315,6 +342,8 @@ export class Environment {
             material6.map.repeat.set(0.5, 0.5);
             var geometry8 = new THREE.BoxGeometry(80, 40, 5);
             var placa4 = new THREE.Mesh(geometry8, material6);
+            placa4.material.transparent = true;
+            this.objectsTextured.push(placa4);
             placa4.position.x -= sizeCube / 2;
             placa4.position.z += 40;
             placa4.rotateY(THREE.MathUtils.degToRad(90));
@@ -329,8 +358,14 @@ export class Environment {
             material7.map.repeat.set(0.5, 0.5);
             var geometry9 = new THREE.CylinderGeometry(5, 5, 10, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry9, material7);
+            cilindro1.material.transparent = true;
+            this.objectsTextured.push(cilindro1);
             var cilindro2 = new THREE.Mesh(geometry9, material7);
+            cilindro2.material.transparent = true;
+            this.objectsTextured.push(cilindro2);
             var cilindro3 = new THREE.Mesh(geometry9, material7);
+            cilindro3.material.transparent = true;
+            this.objectsTextured.push(cilindro3);
             cilindro1.position.x -= sizeCube / 2 + 5;
             cilindro2.position.x -= sizeCube / 2 + 5
             cilindro1.position.z += 10;
@@ -358,6 +393,8 @@ export class Environment {
             material3.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(20, 20, 11);
             var cubo4 = new THREE.Mesh(geometry3, material3);
+            cubo4.material.transparent = true;
+            this.objectsTextured.push(cubo4);
             // cubo1.position.z += 3;
             cubo4.position.x = -widthPlan / 2 + 15;
             cubo4.position.y = heightPlan / 2 - 15;
@@ -373,6 +410,8 @@ export class Environment {
             material1.map.repeat.set(0.5, 0.5);
             var geometry1 = new THREE.SphereGeometry(12, 64, 64);
             var esfera1 = new THREE.Mesh(geometry1, material1);
+            esfera1.material.transparent = true;
+            this.objectsTextured.push(esfera1);
             esfera1.position.z += sizeCube / 2;
             this.leftCube.add(esfera1);
 
@@ -386,12 +425,17 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.BoxGeometry(10, 10, 10);
             var cubo2 = new THREE.Mesh(geometry2, material2);
+            cubo2.material.transparent = true;
+            this.objectsTextured.push(cubo2);
             cubo2.position.x += sizeCube / 2;
             cubo2.position.z += 50;
             this.leftCube.add(cubo2);
 
             //Cubo que fica na parede esquerda.
             var cubo3 = new THREE.Mesh(geometry2, material2);
+            cubo3.material.transparent = true;
+            this.objectsTextured.push(cubo3);
+            
             cubo3.position.x += sizeCube / 2;
             cubo3.position.z += 93;
             this.leftCube.add(cubo3);
@@ -406,12 +450,16 @@ export class Environment {
             material4.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.CylinderGeometry(6, 6, 10, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry4, material4);
+            cilindro1.material.transparent = true;
+            this.objectsTextured.push(cilindro1);
             cilindro1.rotateX(THREE.MathUtils.degToRad(90));
             this.plane.add(cilindro1);
 
             //Cilindro no plano (Mais interno)
             var geometry5 = new THREE.CylinderGeometry(3, 3, 25, 64, 64);
             var cilindro2 = new THREE.Mesh(geometry5, material4);
+            cilindro2.material.transparent = true;
+            this.objectsTextured.push(cilindro2);
             cilindro2.rotateX(THREE.MathUtils.degToRad(90));
             this.plane.add(cilindro2);
 
@@ -425,6 +473,8 @@ export class Environment {
             material5.map.repeat.set(0.5, 0.5);
             var geometry6 = new THREE.BoxGeometry(40, 40, 5);
             var placa1 = new THREE.Mesh(geometry6, material5);
+            placa1.material.transparent = true;
+            this.objectsTextured.push(placa1);
             placa1.position.z += sizeCube / 2;
             placa1.position.y -= 0;
             placa1.position.x -= sizeCube / 2 - 20;
@@ -440,6 +490,8 @@ export class Environment {
             material6.map.repeat.set(0.5, 0.5);
             var geometry7 = new THREE.BoxGeometry(100, 20, 5);
             var placa2 = new THREE.Mesh(geometry7, material6);
+            placa2.material.transparent = true;
+            this.objectsTextured.push(placa2);
             placa2.position.z += sizeCube / 2;
             placa2.position.y += 30;
             placa2.position.x -= 25;
@@ -457,6 +509,8 @@ export class Environment {
             material1.map.repeat.set(0.9, 0.9);
             var geometry = new THREE.CylinderGeometry(10, 10, sizeCube, 64, 64, undefined, undefined, Math.PI);
             var cilindro1 = new THREE.Mesh(geometry, material1);
+            cilindro1.material.transparent = true;
+            this.objectsTextured.push(cilindro1);
             cilindro1.position.x += sizeCube / 2;
             cilindro1.position.y -= 25;
             cilindro1.rotateX(THREE.MathUtils.degToRad(90));
@@ -471,6 +525,8 @@ export class Environment {
             material2.map.wrapT = THREE.RepeatWrapping;
             material2.map.repeat.set(0.9, 0.9);
             var cilindro2 = new THREE.Mesh(geometry, material2);
+            cilindro2.material.transparent = true;
+            this.objectsTextured.push(cilindro2);
             cilindro2.rotateX(THREE.MathUtils.degToRad(90));
             cilindro2.position.y -= 25;
             cilindro2.rotateY(THREE.MathUtils.degToRad(180));
@@ -487,6 +543,8 @@ export class Environment {
             material3.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.CylinderGeometry(18, 26, 30, 4, 1, undefined, undefined, undefined);
             var cilindro3 = new THREE.Mesh(geometry2, material3);
+            cilindro3.material.transparent = true;
+            this.objectsTextured.push(cilindro3);
             cilindro3.rotateX(THREE.MathUtils.degToRad(90));
             cilindro3.position.z += sizeCube / 2;
             cilindro3.rotateY(THREE.MathUtils.degToRad(45));
@@ -502,6 +560,8 @@ export class Environment {
             material4.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(40, 40, 30);
             var placa1 = new THREE.Mesh(geometry3, material3);
+            placa1.material.transparent = true;
+            this.objectsTextured.push(placa1);
             placa1.position.z += sizeCube / 2;
             placa1.position.y -= 0;
             placa1.position.x -= 0;
@@ -516,7 +576,10 @@ export class Environment {
             material5.map.wrapT = THREE.RepeatWrapping;
             material5.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.BoxGeometry(100, 20, 5);
+            
             var placa2 = new THREE.Mesh(geometry4, material5);
+            placa2.material.transparent = true;
+            this.objectsTextured.push(placa2);
             placa2.position.z += sizeCube / 2;
             placa2.position.y += 10;
             placa2.position.x -= 35;
@@ -535,6 +598,8 @@ export class Environment {
             material6.map.repeat.set(0.5, 0.5);
             var geometry6 = new THREE.BoxGeometry(20, 20, 21);
             var cubo5 = new THREE.Mesh(geometry6, material6);
+            cubo5.material.transparent = true;
+            this.objectsTextured.push(cubo5);
             // cubo1.position.z += 3;
             cubo5.position.x = 40;
             cubo5.position.y = 30;
@@ -549,10 +614,12 @@ export class Environment {
             material3.map.wrapT = THREE.RepeatWrapping;
             material3.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(widthPlan, 10, 3);
-            var paralelepípedo1 = new THREE.Mesh(geometry3, material3);
-            paralelepípedo1.position.z += 1.5;
-            paralelepípedo1.position.y -= 45;
-            this.plane.add(paralelepípedo1);
+            var paralelepipedo1 = new THREE.Mesh(geometry3, material3);
+            paralelepipedo1.material.transparent = true;
+            this.objectsTextured.push(paralelepipedo1);
+            paralelepipedo1.position.z += 1.5;
+            paralelepipedo1.position.y -= 45;
+            this.plane.add(paralelepipedo1);
 
 
             //Tronco de pirâmide em cima do cubo da esquerda
@@ -565,6 +632,8 @@ export class Environment {
             material.map.repeat.set(0.5, 0.5);
             var geometry1 = new THREE.CylinderGeometry(35, 45, 7, 4, 1, undefined, undefined, undefined);
             var cilindro1 = new THREE.Mesh(geometry1, material);
+            cilindro1.material.transparent = true;
+            this.objectsTextured.push(cilindro1);
             cilindro1.rotateX(THREE.MathUtils.degToRad(90));
             cilindro1.position.z += sizeCube / 2;
             cilindro1.position.x += 35;
@@ -582,6 +651,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.BoxGeometry(25, 25, 25);
             var cubo1 = new THREE.Mesh(geometry2, material2);
+            cubo1.material.transparent = true;
+            this.objectsTextured.push(cubo1);
             cubo1.position.y += 16.5;
             cubo1.rotateY(THREE.MathUtils.degToRad(45));
             cubo1.position.x += 5;
@@ -598,17 +669,23 @@ export class Environment {
             material4.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.BoxGeometry(10, 10, 10);
             var cubo2 = new THREE.Mesh(geometry4, material4);
+            cubo2.material.transparent = true;
+            this.objectsTextured.push(cubo2);
             cubo2.position.x -= sizeCube / 2;
             cubo2.position.z += 93;
             this.rightCube.add(cubo2);
 
             var cubo3 = new THREE.Mesh(geometry4, material4);
+            cubo3.material.transparent = true;
+            this.objectsTextured.push(cubo3);
             cubo3.position.x -= sizeCube / 2;
             cubo3.position.z += 93;
             cubo3.position.y += 30;
             this.rightCube.add(cubo3);
 
             var cubo4 = new THREE.Mesh(geometry4, material4);
+            cubo4.material.transparent = true;
+            this.objectsTextured.push(cubo4);
             cubo4.position.x -= sizeCube / 2;
             cubo4.position.z += 93;
             cubo4.position.y -= 30;
@@ -624,6 +701,8 @@ export class Environment {
             material5.map.repeat.set(0.5, 0.5);
             var geometry5 = new THREE.CylinderGeometry(20, 20, 10, 64, 64);
             var cilindro2 = new THREE.Mesh(geometry5, material5);
+            cilindro2.material.transparent = true;
+            this.objectsTextured.push(cilindro2);
             cilindro2.position.z += sizeCube / 2;
             cilindro2.position.x -= 40;
             cilindro2.position.y -= 40;
@@ -633,6 +712,8 @@ export class Environment {
             //Paralelepípedo que fica em cima da parede direita.
             var geometry6 = new THREE.BoxGeometry(40, 40, 5);
             var placa1 = new THREE.Mesh(geometry6, material5);
+            placa1.material.transparent = true;
+            this.objectsTextured.push(placa1);
             placa1.position.z += sizeCube / 2;
             placa1.position.y += 30;
             placa1.position.x -= sizeCube / 2 - 20;
@@ -648,6 +729,8 @@ export class Environment {
             material7.map.repeat.set(0.5, 0.5);
             var geometry7 = new THREE.BoxGeometry(30, 30, 30);
             var cubo5 = new THREE.Mesh(geometry7, material7);
+            cubo5.material.transparent = true;
+            this.objectsTextured.push(cubo5);
             cubo5.position.z += sizeCube / 2 + 15;
             cubo5.position.y += 10;
             cubo5.position.x -= 35;
@@ -667,6 +750,8 @@ export class Environment {
             material1.map.repeat.set(0.5, 0.5);
             var geometry = new THREE.CylinderGeometry(5, 5, 10, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry, material1);
+            cilindro1.material.transparent = true;
+            this.objectsTextured.push(cilindro1);
             cilindro1.position.x += sizeCube / 2 + 5;
             cilindro1.position.z += 70;
             cilindro1.rotateZ(THREE.MathUtils.degToRad(90));
@@ -682,6 +767,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.CylinderGeometry(3, 3, 25, 64, 64);
             var cilindro2 = new THREE.Mesh(geometry2, material2);
+            cilindro2.material.transparent = true;
+            this.objectsTextured.push(cilindro2);
             cilindro2.position.x += sizeCube / 2 + 5;
             cilindro2.position.z += 70;
             cilindro2.rotateZ(THREE.MathUtils.degToRad(90));
@@ -697,6 +784,8 @@ export class Environment {
             material3.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(40, 40, 5);
             var placa1 = new THREE.Mesh(geometry3, material3);
+            placa1.material.transparent = true;
+            this.objectsTextured.push(placa1);
             placa1.position.z += sizeCube / 2;
             placa1.position.y += 30;
             placa1.position.x += sizeCube / 2 - 20;
@@ -712,6 +801,8 @@ export class Environment {
             material4.map.repeat.set(0.8, 0.8);
             var geometry4 = new THREE.CylinderGeometry(30, 30, 30);
             var cilindro3 = new THREE.Mesh(geometry4, material4);
+            cilindro3.material.transparent = true;
+            this.objectsTextured.push(cilindro3);
             cilindro3.position.z += sizeCube / 2 + 15;
             cilindro3.position.y += 10;
             cilindro3.position.x -= 35;
@@ -731,6 +822,8 @@ export class Environment {
             material4.map.repeat.set(0.9, 0.9);
             var geometry3 = new THREE.BoxGeometry(20, 20, 7);
             var cubo1 = new THREE.Mesh(geometry3, material4);
+            cubo1.material.transparent = true;
+            this.objectsTextured.push(cubo1);
             // cubo1.position.z += 3;
             cubo1.position.x = -10;
             cubo1.position.y = -heightPlan / 2 + 30;
@@ -746,6 +839,8 @@ export class Environment {
             material1.map.repeat.set(0.9, 0.9);
             var geometry = new THREE.CylinderGeometry(10, 10, sizeCube, 64, 64, undefined, undefined, Math.PI);
             var cilindro1 = new THREE.Mesh(geometry, material1);
+            cilindro1.material.transparent = true;
+            this.objectsTextured.push(cilindro1);
             cilindro1.position.x += sizeCube / 2;
             cilindro1.position.y -= 25;
             cilindro1.rotateX(THREE.MathUtils.degToRad(90));
@@ -760,6 +855,8 @@ export class Environment {
             material2.map.wrapT = THREE.RepeatWrapping;
             material2.map.repeat.set(0.9, 0.9);
             var cilindro2 = new THREE.Mesh(geometry, material2);
+            cilindro2.material.transparent = true;
+            this.objectsTextured.push(cilindro2);
             cilindro2.rotateX(THREE.MathUtils.degToRad(90));
             cilindro2.position.y -= 25;
             cilindro2.rotateY(THREE.MathUtils.degToRad(180));
@@ -776,6 +873,8 @@ export class Environment {
             material3.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.CylinderGeometry(26, 35, 4, 4, 1, undefined, undefined, undefined);
             var cilindro3 = new THREE.Mesh(geometry2, material3);
+            cilindro3.material.transparent = true;
+            this.objectsTextured.push(cilindro3);
             cilindro3.rotateX(THREE.MathUtils.degToRad(90));
             cilindro3.position.z += sizeCube / 2;
             cilindro3.rotateY(THREE.MathUtils.degToRad(45));
@@ -791,6 +890,8 @@ export class Environment {
             material4.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(60, 20, 30);
             var paralelepipedo1 = new THREE.Mesh(geometry3, material4);
+            paralelepipedo1.material.transparent = true;
+            this.objectsTextured.push(paralelepipedo1);
             paralelepipedo1.position.z += sizeCube / 2 + 15;
             paralelepipedo1.position.y += 10;
             paralelepipedo1.position.x -= 35;
@@ -809,6 +910,9 @@ export class Environment {
             material1.map.repeat.set(0.5, 0.5);
             var geometry = new THREE.CylinderGeometry(40, 40, 10, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry, material1);
+            cilindro1.material.transparent = true;
+            cilindro1.opacity = 0;
+            this.objectsTextured.push(cilindro1);
             cilindro1.position.z += sizeCube / 2;
             cilindro1.rotateX(THREE.MathUtils.degToRad(90));
             this.leftCube.add(cilindro1);
@@ -823,6 +927,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.BoxGeometry(40, 40, 5);
             var placa1 = new THREE.Mesh(geometry2, material2);
+            placa1.material.transparent = true;
+            this.objectsTextured.push(placa1);
             placa1.position.z += sizeCube / 2;
             placa1.position.y -= 45;
             placa1.position.x -= sizeCube / 2 - 30;
@@ -840,6 +946,8 @@ export class Environment {
             material3.map.repeat.set(0.5, 0.5);
             var geometry3 = new THREE.BoxGeometry(20, 20, 15);
             var cubo1 = new THREE.Mesh(geometry3, material3);
+            cubo1.material.transparent = true;
+            this.objectsTextured.push(cubo1);
             // cubo1.position.z += 3;
             cubo1.position.x = 7;
             cubo1.position.y = 13;
@@ -855,6 +963,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry2 = new THREE.CylinderGeometry(10, 10, 5, 64, 64);
             var cilindro1 = new THREE.Mesh(geometry2, material2);
+            cilindro1.material.transparent = true;
+            this.objectsTextured.push(cilindro1);
             cilindro1.rotateX(THREE.MathUtils.degToRad(90))
             cilindro1.position.z += 2.5;
             cilindro1.position.x -= 30;
@@ -869,10 +979,12 @@ export class Environment {
             material1.map.wrapT = THREE.RepeatWrapping;
             material1.map.repeat.set(0.5, 0.5);
             var geometry1 = new THREE.BoxGeometry(3, 40, 40);
-            var paralelepípedo1 = new THREE.Mesh(geometry1, material1);
-            paralelepípedo1.position.x -= sizeCube / 2 + 1.5;
-            paralelepípedo1.position.z += 50;
-            this.rightCube.add(paralelepípedo1);
+            var paralelepipedo1 = new THREE.Mesh(geometry1, material1);
+            paralelepipedo1.material.transparent = true;
+            this.objectsTextured.push(paralelepipedo1);
+            paralelepipedo1.position.x -= sizeCube / 2 + 1.5;
+            paralelepipedo1.position.z += 50;
+            this.rightCube.add(paralelepipedo1);
 
             //Paralelepípedo que fica em cima da parede direita.
             var material4 = new THREE.MeshPhongMaterial();
@@ -884,6 +996,8 @@ export class Environment {
             material4.map.repeat.set(0.5, 0.5);
             var geometry4 = new THREE.BoxGeometry(40, 40, 5);
             var placa1 = new THREE.Mesh(geometry4, material4);
+            placa1.material.transparent = true;
+            this.objectsTextured.push(placa1);
             placa1.position.z += sizeCube / 2;
             placa1.position.y -= 0;
             placa1.position.x -= sizeCube / 2 - 20;
@@ -899,6 +1013,8 @@ export class Environment {
             material5.map.repeat.set(0.5, 0.5);
             var geometry5 = new THREE.BoxGeometry(20, 20, 20);
             var placa2 = new THREE.Mesh(geometry5, material5);
+            placa2.material.transparent = true;
+            this.objectsTextured.push(placa2);
             placa2.position.z += sizeCube / 2 + 15;
             placa2.position.y += 10;
             placa2.position.x -= 35;
@@ -906,6 +1022,8 @@ export class Environment {
 
             //Cubo que fica em cima da parede esquerda.
             var placa3 = new THREE.Mesh(geometry5, material5);
+            placa3.material.transparent = true;
+            this.objectsTextured.push(placa3);
             placa3.position.z += sizeCube / 2 + 15;
             placa3.position.y += 90;
             placa3.position.x -= 35;
@@ -913,12 +1031,15 @@ export class Environment {
 
             //Cubo que fica em cima da parede esquerda.;
             var placa4 = new THREE.Mesh(geometry5, material5);
+            placa4.material.transparent = true;
+            this.objectsTextured.push(placa4);
             placa4.position.z += sizeCube / 2 + 15;
             placa4.position.y += 50;
             placa4.position.x -= 35;
             this.leftCube.add(placa4);
         }
         this.addObjectsToPlan(this.texturasVar);
+        this.setObjectsOpacity(0);
     }
 
 
@@ -1024,6 +1145,13 @@ export class Environment {
         this.leftLine.material.opacity = opacity;
     }
 
+    setObjectsOpacity(opacity){
+        for(var i = 0; i < this.objectsTextured.length; i++){
+            this.objectsTextured[i].material.opacity = opacity;
+            console.log(this.objectsTextured[i].opacity);
+        }
+    }
+
     setRightCubeOpacity(opacity) {
         this.rightCube.material.opacity = opacity;
         this.rightLine.material.opacity = opacity;
@@ -1081,6 +1209,8 @@ export class Environment {
                 material.map.repeat.set(0.5, 0.5);
                 var geometry = new THREE.BoxGeometry(70, 25, 30);
                 var objMesh = new THREE.Mesh(geometry, material);
+                objMesh.material.transparent = true;
+                this.objectsTextured.push(objMesh);
                 objMesh.position.z = 0;
                 objMesh.position.y = 100;
                 objMesh.position.x = 0;
@@ -1116,6 +1246,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry = new THREE.CylinderGeometry(10, 10, 30);
             var objMesh = new THREE.Mesh(geometry, material2);
+            objMesh.material.transparent = true;
+            this.objectsTextured.push(objMesh);
             objMesh.position.z = 10;
             objMesh.position.y = 40;
             objMesh.position.x = -80;
@@ -1133,6 +1265,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry = new THREE.CylinderGeometry(10, 10, 30);
             var objMesh = new THREE.Mesh(geometry, material2);
+            objMesh.material.transparent = true;
+            this.objectsTextured.push(objMesh);
             objMesh.position.z = -5;
             objMesh.position.y = -40;
             objMesh.position.x = -80;
@@ -1152,6 +1286,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry = new THREE.CylinderGeometry(10, 10, 30);
             var objMesh = new THREE.Mesh(geometry, material2);
+            objMesh.material.transparent = true;
+            this.objectsTextured.push(objMesh);
             objMesh.position.z = 10;
             objMesh.position.y = -40;
             objMesh.position.x = 60;
@@ -1167,6 +1303,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry = new THREE.CylinderGeometry(10, 10, 30);
             var objMesh = new THREE.Mesh(geometry, material2);
+            objMesh.material.transparent = true;
+            this.objectsTextured.push(objMesh);
             objMesh.position.z = 5;
             objMesh.position.y = 0;
             objMesh.position.x = 80;
@@ -1182,6 +1320,8 @@ export class Environment {
             material2.map.repeat.set(0.5, 0.5);
             var geometry = new THREE.CylinderGeometry(10, 10, 30);
             var objMesh = new THREE.Mesh(geometry, material2);
+            objMesh.material.transparent = true;
+            this.objectsTextured.push(objMesh);
             objMesh.position.z = -5;
             objMesh.position.y = 40;
             objMesh.position.x = 20;

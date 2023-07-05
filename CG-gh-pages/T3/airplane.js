@@ -99,7 +99,7 @@ export class Airplane {
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
     const material = new THREE.LineBasicMaterial({
-      color: "black",
+      color: "white",
       linewidth: 2,
     });
     this.target = new THREE.LineSegments(geometry, material);

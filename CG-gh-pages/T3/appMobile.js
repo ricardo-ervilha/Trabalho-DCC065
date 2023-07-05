@@ -578,7 +578,7 @@ function turretShoot() {
             }
 
             let bullet = new THREE.Mesh(new THREE.CapsuleGeometry(0.9, 2, 32, 32), new THREE.MeshPhongMaterial({
-                color: "yellow"
+                color: "orange"
             }));
             bullet.rotateX(THREE.MathUtils.degToRad(90));
 
