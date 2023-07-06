@@ -122,9 +122,9 @@ camera = initCamera(new THREE.Vector3(cameraPosition.x, cameraPosition.y, camera
 
 // Enable mouse rotation, pan, zoom etc.
 var cameraControl = new OrbitControls( camera, renderer.domElement );
-cameraControl.enablePan = true;
-cameraControl.enableRotate = true;
-cameraControl.enableZoom = true;
+cameraControl.enablePan = false;
+cameraControl.enableRotate = false;
+cameraControl.enableZoom = false;
 
 /*---------------------------------------------------------------------------------------------------- */
 
