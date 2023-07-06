@@ -24,6 +24,7 @@ let delta = 0;//segundos entre cada iteraçao do render
 let cadenciaTime = 0;
 let cadenciaTime2 = 0;
 let bullets = [];
+var isPlaying = true; //Variável para ajudar a controlar o som ambiente!
 const lerpConfig = { destination: new THREE.Vector3(0.0, 12.0, 0), alpha: 0.05 }//posição destino para a qual o avião vai se deslocar
 
 
@@ -40,10 +41,19 @@ const loadingManager = new THREE.LoadingManager( () => {
   
     let button  = document.getElementById("myBtn")
     button.style.backgroundColor = 'Red';
-    button.innerHTML = 'Click to Enter';
+    button.innerHTML = 'Clique para jogar';
     button.addEventListener("click", onButtonPressed);
   });
 
+var queue = new Queue();
+var torretas = [];
+
+const audioLoader = new THREE.AudioLoader();
+    audioLoader.load( './sounds/environmentSound.mp3', function( buffer ) {
+	sound.setBuffer( buffer );
+	sound.setLoop( true );
+	sound.setVolume( 0.4 );
+});
 
 //-- Functions --------------------------------------------------------
 function onButtonPressed() {
@@ -55,6 +65,44 @@ function onButtonPressed() {
         element.remove();  
     });  
     boolSimulation = true;
+
+    
+    // O oitavo plano será o que estará na parte de reposição.
+    for (var i = 0; i < numPlans; i++) {
+        var environment;
+        if (i == 2 || i == 4 || i == 6 || i == 8) {
+            environment = new Environment(heightPlan, widthPlan, true, i, loadingManager);
+        } else {
+            environment = new Environment(heightPlan, widthPlan, false, i, loadingManager);
+        }
+
+        let plane = environment.getPlane();
+        //O primeiro plano será renderizado SEMPRE na posição (3h)/2  em z.
+        plane.position.z = ((3 * heightPlan) / 2) - heightPlan * i;
+        plane.material.opacity = 1;
+
+        let grid = environment.getGrid();
+        grid.material.opacity = 1;
+
+        scene.add(plane);
+
+        let conjunto = {
+            torreta: null,
+            bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
+            loaded: false,
+            animation: false,
+            initialScale: null,
+            animationStartTime: 0,
+            destroyed: false,
+            plane: plane
+        }
+
+        torretas.push(conjunto);
+        queue.enqueue(environment);
+    }
+
+    sound.play();
+
     document.body.style.cursor = "none";
 }
 
@@ -89,14 +137,8 @@ camera.add( listener );
 const sound = new THREE.Audio( listener );
 
 // Som ambiente
-var isPlaying = true; //Variável para ajudar a controlar o som ambiente!
-const audioLoader = new THREE.AudioLoader();
-audioLoader.load( './sounds/environmentSound.mp3', function( buffer ) {
-	sound.setBuffer( buffer );
-	sound.setLoop( true );
-	sound.setVolume( 0.4 );
-	sound.pause(); //Voltar para PLAY depois
-});
+
+
 
 //Som de tiro do avião
 const soundAirship = new THREE.PositionalAudio( listener );
@@ -208,45 +250,11 @@ invisiblePlane.layers.set(1);  // change layer
 scene.add(invisiblePlane);
 
 // Show axes (parameter is size of each axis)
-let axesHelper = new THREE.AxesHelper( 12 );
-axesHelper.translateY(10)
-scene.add(axesHelper);
+// let axesHelper = new THREE.AxesHelper( 12 );
+// axesHelper.translateY(10)
+// scene.add(axesHelper);
 
-var queue = new Queue();
-var torretas = [];
-// O oitavo plano será o que estará na parte de reposição.
-for(var i = 0; i < numPlans; i++){
-    var environment;
-    if(i == 2 || i == 4 || i == 6 || i == 8){
-        environment = new Environment(heightPlan, widthPlan, true, i, loadingManager);
-    }else{
-        environment = new Environment(heightPlan, widthPlan, false, i, loadingManager);
-    }
 
-    let plane = environment.getPlane();
-    //O primeiro plano será renderizado SEMPRE na posição (3h)/2  em z.
-    plane.position.z = ((3*heightPlan)/2) - heightPlan * i;
-    plane.material.opacity = 1;
-
-    let grid = environment.getGrid();
-    grid.material.opacity = 1;
-
-    scene.add(plane);
-
-    let conjunto = {
-        torreta: null,
-        bb: new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
-        loaded: false,
-        animation: false,
-        initialScale: null,
-        animationStartTime: 0,
-        destroyed:false,
-        plane: plane
-    }
-
-    torretas.push(conjunto);
-    queue.enqueue(environment);
-}
 
 /*
     Parte do fade
@@ -279,13 +287,13 @@ function updatePositionPlanes(){
         var x = y + heightPlan;
         var n = plane.position.z;
 
-        console.log("n: " + n + " y: " + y + " x: " + x)
+        // console.log("n: " + n + " y: " + y + " x: " + x)
         if(n < y){
-            console.log('Esse aqui');
+            // console.log('Esse aqui');
             env.setLeftCubeOpacity(0);
             env.setRightCubeOpacity(0);
             env.setPlaneOpacity(0);
-            console.log("i = " + i);
+            // console.log("i = " + i);
             env.setObjectsOpacity(0);
             // env.setOpacityTrees(0); //-> Não tem mais árvores
             if(env.getTurret() != null){
@@ -313,7 +321,7 @@ function updatePositionPlanes(){
                 });
             }
         } else if (n > x){
-            console.log('caiu aqui + i=' + i);
+            // console.log('caiu aqui + i=' + i);
             env.setLeftCubeOpacity(1);
             env.setRightCubeOpacity(1);
             env.setPlaneOpacity(1);
@@ -623,6 +631,15 @@ function keyboardUpdate() {
 
     if ( keyboard.down("esc") ){
         boolSimulation = !boolSimulation;
+
+        
+        if(isPlaying){
+            sound.stop();isPlaying = false;
+        }else{
+            sound.play();isPlaying = true;
+        }
+            
+
         if(boolSimulation){            
             document.body.style.cursor = "none";
         }else{
@@ -708,6 +725,8 @@ function render() {
     //console.log(camera)
     if (boolSimulation) {
         if (aviao.getAirplane()) {
+            //Tentativa de diminuir essa bounding box.
+            aviao.getAirplane().bb.expandByScalar(0.1);
             aviao.getAirplane().bb.setFromObject(aviao.getAirplane());
             bullets.forEach((bulletObj, index) => {
                 bulletObj.bb.setFromObject(bulletObj.bullet);

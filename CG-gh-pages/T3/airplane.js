@@ -42,7 +42,7 @@ export class Airplane {
         this.airplane = obj;
         //this.airplane.rotateZ(THREE.MathUtils.degToRad(-45));
 
-         this.airplane.add(new THREE.AxesHelper(12));
+        //  this.airplane.add(new THREE.AxesHelper(12));
 
         this.buildTarget(scene);
 

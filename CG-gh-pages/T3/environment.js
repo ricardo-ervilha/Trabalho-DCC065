@@ -13,7 +13,7 @@ Além disso, nela associamos as "turrets" que serão gerados no ambiente.
 export class Environment {
     static count = 0;
     static TurretPositionsGeneration = [
-        [-widthPlan / 2 + 15, heightPlan / 2 - 15, 6],
+        [-widthPlan / 2 + 15, heightPlan / 2 + 35, 6],
         [40, 30, 11],
         [-10, -heightPlan / 2 + 30, 4],
         [7, 13, 8]
@@ -397,7 +397,7 @@ export class Environment {
             this.objectsTextured.push(cubo4);
             // cubo1.position.z += 3;
             cubo4.position.x = -widthPlan / 2 + 15;
-            cubo4.position.y = heightPlan / 2 - 15;
+            cubo4.position.y = heightPlan / 2 + 35;
             this.plane.add(cubo4);
 
             //Calota esférica em cima do cubo da esquerda
