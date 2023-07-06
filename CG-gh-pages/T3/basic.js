@@ -150,6 +150,16 @@ audioLoaderAirship.load( './sounds/blasterAirship.mp3', function( buffer ) {
 	// soundAirship.play();
 });
 
+//Som de tiro da torreta
+const soundTurretShoot = new THREE.PositionalAudio( listener );
+const audioLoaderTurretShoot = new THREE.AudioLoader();
+audioLoaderTurretShoot.load( './sounds/blasterTurret.mp3', function( buffer ) {
+	soundTurretShoot.setBuffer( buffer );
+	soundTurretShoot.setRefDistance( 20 );
+    soundTurretShoot.setVolume(0.8);
+	// soundAirship.play();
+});
+
 //Som de colisão da turret
 const soundHitTurret = new THREE.PositionalAudio( listener );
 const audioLoaderHitTurret = new THREE.AudioLoader();
@@ -507,6 +517,8 @@ function moveCamera() {
 }
 
 function onMouseClick(event) {
+    soundAirship.stop();
+    soundAirship.play();
     if(event.button == 0){
         if (!boolSimulation) boolSimulation = true;
         let obj = {
@@ -546,8 +558,7 @@ function onMouseClick(event) {
         var directionBullet = new THREE.Vector3(x,y,z);
 
         obj.dir = directionBullet;
-        soundAirship.stop();
-        soundAirship.play();
+        
         bullets.push(obj);
     }
 }
@@ -603,6 +614,8 @@ function turretShoot(){
             bullets.push(obj);
 
             scene.add(bullet);
+            soundTurretShoot.stop();
+            soundTurretShoot.play();
         }
     })
 }

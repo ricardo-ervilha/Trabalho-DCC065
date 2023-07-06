@@ -156,6 +156,16 @@ audioLoaderAirship.load('./sounds/blasterAirship.mp3', function (buffer) {
     // soundAirship.play();
 });
 
+//Som de tiro da torreta
+const soundTurretShoot = new THREE.PositionalAudio( listener );
+const audioLoaderTurretShoot = new THREE.AudioLoader();
+audioLoaderTurretShoot.load( './sounds/blasterTurret.mp3', function( buffer ) {
+	soundTurretShoot.setBuffer( buffer );
+	soundTurretShoot.setRefDistance( 20 );
+    soundTurretShoot.setVolume(0.8);
+	// soundAirship.play();
+});
+
 //Som de colisão da turret
 const soundHitTurret = new THREE.PositionalAudio(listener);
 const audioLoaderHitTurret = new THREE.AudioLoader();
@@ -562,6 +572,8 @@ function moveCamera() {
     Função para disparar tiros da torreta a cada cadenciaTime segundos
 */
 function turretShoot() {
+    soundTurretShoot.stop();
+    soundTurretShoot.play();
 
     cadenciaTime += delta;
 
@@ -608,6 +620,7 @@ function turretShoot() {
             obj.dir = directionBullet;
             bullets.push(obj);
 
+            
             scene.add(bullet);
         }
     })
